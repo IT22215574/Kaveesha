@@ -2,12 +2,87 @@
 require_once __DIR__ . '/config.php';
 require_admin();
 
-// Fetch users list (Users page)
-$users = db()->query('SELECT id, username, mobile_number, is_admin, created_at FROM users ORDER BY created_at DESC LIMIT 100')->fetchAll();
-$flash = '';
+// Search params and validation
+$sessionFlash = '';
 if (!empty($_SESSION['flash'])) {
-  $flash = (string)$_SESSION['flash'];
+  $sessionFlash = (string)$_SESSION['flash'];
   unset($_SESSION['flash']);
+}
+
+$q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+$digits = preg_replace('/\D+/', '', $q);
+$hasAlpha = (preg_match('/[A-Za-z]/', $q) === 1);
+
+$where = [];
+$params = [];
+
+// Single merged search logic:
+// - Exactly 10 digits and no letters => exact mobile match
+// - 1-9 digits and no letters       => mobile starts-with match
+// - otherwise                        => name partial match
+if ($q !== '') {
+  if (!$hasAlpha && preg_match('/^\d{10}$/', $digits)) {
+    $where[] = 'mobile_number = ?';
+    $params[] = $digits;
+  } elseif (!$hasAlpha && $digits !== '') {
+    $where[] = 'mobile_number LIKE ?';
+    $params[] = $digits . '%';
+  } else {
+    $where[] = 'username LIKE ?';
+    $params[] = '%' . $q . '%';
+  }
+}
+
+// Fetch users list (Users page) with optional filters
+$sql = 'SELECT id, username, mobile_number, is_admin, created_at FROM users';
+if (!empty($where)) {
+  $sql .= ' WHERE ' . implode(' AND ', $where);
+}
+$sql .= ' ORDER BY created_at DESC LIMIT 100';
+
+if (!empty($params)) {
+  $stmt = db()->prepare($sql);
+  $stmt->execute($params);
+  $users = $stmt->fetchAll();
+} else {
+  $users = db()->query($sql)->fetchAll();
+}
+
+// If this is an AJAX request, return just the table rows to avoid page reload and keep focus in the search box
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+if ($isAjax) {
+  header('Content-Type: text/html; charset=utf-8');
+  if (!$users) {
+    echo '<tr><td colspan="6" class="py-3 px-4 text-center text-gray-500">No users found.</td></tr>';
+    exit;
+  }
+  foreach ($users as $u) {
+    $id = (int)$u['id'];
+    $username = htmlspecialchars($u['username']);
+    $mobile = htmlspecialchars($u['mobile_number']);
+    $role = !empty($u['is_admin']) ? 'Admin' : 'User';
+    $created = htmlspecialchars($u['created_at']);
+    $isSelf = isset($_SESSION['user_id']) && ((int)$_SESSION['user_id'] === $id);
+    echo '<tr class="border-b last:border-0">';
+    echo '<td class="py-2 pr-4">' . $id . '</td>';
+    echo '<td class="py-2 pr-4">' . $username . '</td>';
+    echo '<td class="py-2 pr-4">' . $mobile . '</td>';
+    echo '<td class="py-2 pr-4">' . $role . '</td>';
+    echo '<td class="py-2 pr-4">' . $created . '</td>';
+    echo '<td class="py-2 pr-4">';
+    echo '<div class="flex items-center gap-2">';
+    echo '<a href="/Kaveesha/admin_user_edit.php?id=' . $id . '" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Edit</a>';
+    echo '<form action="/Kaveesha/admin_user_delete.php" method="post" onsubmit="return confirm(\'Delete this user? This cannot be undone.\');">';
+    echo '<input type="hidden" name="id" value="' . $id . '">';
+    $btnClass = $isSelf ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700';
+    $disabled = $isSelf ? ' disabled' : '';
+    echo '<button type="submit" class="px-3 py-1 rounded ' . $btnClass . '"' . $disabled . '>Delete</button>';
+    echo '</form>';
+    echo '</div>';
+    echo '</td>';
+    echo '</tr>';
+  }
+  exit;
 }
 ?>
 <!doctype html>
@@ -22,13 +97,17 @@ if (!empty($_SESSION['flash'])) {
   <?php include __DIR__ . '/includes/admin_nav.php'; ?>
 
   <main class="max-w-6xl mx-auto p-6 space-y-6">
-    <?php if ($flash): ?>
+    <?php if ($sessionFlash): ?>
       <div class="bg-green-100 text-green-800 px-4 py-3 rounded">
-        <?= htmlspecialchars($flash) ?>
+        <?= htmlspecialchars($sessionFlash) ?>
       </div>
     <?php endif; ?>
     <section class="bg-white rounded shadow p-6">
       <h2 class="text-xl font-semibold mb-4">Users</h2>
+      <form id="userSearchForm" method="get" class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="q">Search by name or mobile</label>
+        <input id="q" name="q" value="<?= htmlspecialchars($q) ?>" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type a name or 10-digit mobile..." autocomplete="off" />
+      </form>
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead>
@@ -41,7 +120,7 @@ if (!empty($_SESSION['flash'])) {
               <th class="py-2 pr-4">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="usersTbody">
             <?php foreach ($users as $u): ?>
               <tr class="border-b last:border-0">
                 <td class="py-2 pr-4"><?= (int)$u['id'] ?></td>
@@ -66,5 +145,45 @@ if (!empty($_SESSION['flash'])) {
       </div>
     </section>
   </main>
+  <script>
+    (function(){
+      const form = document.getElementById('userSearchForm');
+      const q = document.getElementById('q');
+      const tbody = document.getElementById('usersTbody');
+      if (!form || !q || !tbody) return;
+      let t = null;
+      let lastValue = q.value;
+      const doFetch = () => {
+        const val = q.value;
+        if (val === lastValue) return; // avoid duplicate fetches
+        lastValue = val;
+        const url = new URL(window.location.href);
+        if (val) url.searchParams.set('q', val); else url.searchParams.delete('q');
+        window.history.replaceState(null, '', url);
+        fetch(url.pathname + (url.search || ''), {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(r => r.text()).then(html => {
+          tbody.innerHTML = html;
+        }).catch(() => {
+          // optional: could show an error state
+        });
+      };
+      const debounced = () => {
+        if (t) clearTimeout(t);
+        t = setTimeout(doFetch, 350);
+      };
+      q.addEventListener('input', debounced);
+
+      // Keep focus on load when coming back with q in URL
+      window.addEventListener('DOMContentLoaded', () => {
+        if (q.value) {
+          q.focus();
+          // place caret at end
+          const len = q.value.length;
+          q.setSelectionRange(len, len);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

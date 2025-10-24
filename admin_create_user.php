@@ -7,17 +7,18 @@ $success = '';
 
 // Handle create user form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = isset($_POST['username']) ? trim($_POST['username']) : '';
-    $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : '';
+  $name = isset($_POST['username']) ? trim($_POST['username']) : '';
+  $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : '';
+  $mobileDigits = preg_replace('/\D+/', '', $mobile);
 
-    if ($name === '' || $mobile === '') {
+  if ($name === '' || $mobile === '') {
         $flash = 'Please enter both name and mobile number.';
-    } elseif (!preg_match('/^[0-9\s+\-()]{7,}$/', $mobile)) {
-        $flash = 'Please enter a valid mobile number.';
+  } elseif (!preg_match('/^\d{10}$/', $mobileDigits)) {
+    $flash = 'Please enter a valid 10-digit mobile number.';
     } else {
         try {
-            $stmt = db()->prepare('INSERT INTO users (username, mobile_number) VALUES (?, ?)');
-            $stmt->execute([$name, $mobile]);
+      $stmt = db()->prepare('INSERT INTO users (username, mobile_number) VALUES (?, ?)');
+      $stmt->execute([$name, $mobileDigits]);
             $success = 'User created successfully.';
         } catch (PDOException $e) {
             if ((int)$e->errorInfo[1] === 1062) { // duplicate entry
@@ -56,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Mobile number</label>
-          <input name="mobile" type="tel" inputmode="numeric" pattern="[0-9\s+\-()]{7,}" placeholder="e.g., 0771234567" required class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input name="mobile" type="tel" inputmode="numeric" pattern="\d{10}" maxlength="10" oninput="this.value=this.value.replace(/\D+/g,'').slice(0,10)" title="Enter exactly 10 digits" placeholder="e.g., 0771234567" required class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
         <div class="flex items-end">
           <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700">Create</button>
