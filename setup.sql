@@ -2,8 +2,8 @@
 -- Run this in phpMyAdmin or the MySQL CLI
 
 -- 1) Create database
-CREATE DATABASE IF NOT EXISTS `kaveesha_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `kaveesha_db`;
+CREATE DATABASE IF NOT EXISTS `Electronice` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `Electronice`;
 
 -- 2) Create users table
 DROP TABLE IF EXISTS `users`;

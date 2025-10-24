@@ -9,7 +9,7 @@ Setup
 1. Start MySQL in XAMPP.
 2. Import the database schema:
 	- Open phpMyAdmin (http://localhost/phpmyadmin/) and run `setup.sql` from this folder, or use the MySQL CLI.
-3. Adjust DB credentials in `config.php` if needed (defaults: host 127.0.0.1, db `kaveesha_db`, user `root`, empty password).
+3. Adjust DB credentials in `config.php` if needed (defaults: host 127.0.0.1, db `Electronice`, user `root`, empty password).
 4. Start Apache in XAMPP.
 5. Open http://localhost/Kaveesha/ in your browser.
 
