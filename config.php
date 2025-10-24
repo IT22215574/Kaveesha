@@ -46,11 +46,19 @@ function check_credentials($username, $password) {
 function find_user_by_mobile($mobile) {
     $mobile = trim((string)$mobile);
     if ($mobile === '') return false;
-    $sql = 'SELECT id, username, mobile_number, created_at FROM users WHERE mobile_number = ? LIMIT 1';
+    $sql = 'SELECT id, username, mobile_number, is_admin, created_at FROM users WHERE mobile_number = ? LIMIT 1';
     $stmt = db()->prepare($sql);
     $stmt->execute([$mobile]);
     $row = $stmt->fetch();
     return $row ?: false;
+}
+
+// Helper: require admin
+function require_admin() {
+    if (empty($_SESSION['user']) || empty($_SESSION['is_admin'])) {
+        header('Location: /Kaveesha/login.php');
+        exit;
+    }
 }
 
 // Helper: require login

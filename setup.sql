@@ -12,13 +12,15 @@ CREATE TABLE `users` (
   `username` VARCHAR(191) NOT NULL,
   `mobile_number` VARCHAR(20) NOT NULL,
   `password_hash` VARCHAR(255) NULL,
+  `is_admin` TINYINT(1) NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_username` (`username`),
   UNIQUE KEY `uniq_mobile` (`mobile_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 3) Seed an admin user
--- Mobile-only login: password column is unused and may be NULL
-INSERT INTO `users` (`username`, `mobile_number`, `password_hash`) VALUES
-('admin', '0712345678', NULL);
+-- 3) Seed users
+-- Admin user (mobile-only login): password column is unused and may be NULL
+INSERT INTO `users` (`username`, `mobile_number`, `password_hash`, `is_admin`) VALUES
+('Admin', '0775604833', NULL, 1),
+('Demo User', '0712345678', NULL, 0);

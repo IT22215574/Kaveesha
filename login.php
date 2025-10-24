@@ -16,8 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = find_user_by_mobile($mobile);
     if ($user) {
       session_regenerate_id(true);
-      // Store a friendly name in session if available, otherwise the mobile number
+      // Store session details for later use
+      $_SESSION['user_id'] = (int)$user['id'];
       $_SESSION['user'] = $user['username'] ?: $user['mobile_number'];
+      $_SESSION['is_admin'] = !empty($user['is_admin']);
       header('Location: /Kaveesha/dashboard.php');
       exit;
     } else {

@@ -21,11 +21,15 @@ Files
 - `index.php` — redirects to login or dashboard
 - `login.php` — Tailwind-styled mobile-only login form and POST processing (same file)
 - `dashboard.php` — protected page (requires login)
+- `admin.php` — admin-only panel to create users and view recent users
 - `logout.php` — clears session
 - `config.php` — session start and DB connection (PDO) + credential check
 - `setup.sql` — MySQL schema and seed admin user
 - `assets/css/styles.css` — small custom CSS
 
 Notes
-- Seed user created by `setup.sql`: username `admin`, mobile `0712345678`.
+- Seed users created by `setup.sql`:
+	- Admin: name `Admin`, mobile `0775604833` (admin privileges)
+	- Regular user: name `Demo User`, mobile `0712345678`
 - Login is by mobile number only (no password) per project requirement.
+- Admin can access `http://localhost/Kaveesha/admin.php` to create users by name and mobile number.
