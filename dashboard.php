@@ -15,7 +15,7 @@ $is_admin = !empty($_SESSION['is_admin']);
 <body class="bg-gray-100 min-h-screen">
   <nav class="bg-white shadow">
     <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="text-lg font-semibold">Kaveesha</div>
+      <div class="text-lg font-semibold">Yoma Electronics</div>
       <div class="flex items-center space-x-4">
         <?php if ($is_admin): ?>
           <a href="/Kaveesha/admin.php" class="text-sm bg-indigo-600 text-white px-3 py-1 rounded">Admin</a>

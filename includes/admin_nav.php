@@ -31,7 +31,7 @@ if (!empty($_SESSION['user_id'])) {
 <nav class="bg-white shadow">
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
   <!-- Admin name + role (live from DB) -->
-  <div class="text-lg font-semibold"><?= htmlspecialchars($adminName) ?> — Admin</div>
+  <div class="text-lg font-semibold"><?= htmlspecialchars($adminName) ?> — Yoma Electronics</div>
 
     <!-- Desktop nav -->
     <div class="hidden md:flex items-center space-x-8">
