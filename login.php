@@ -3,7 +3,11 @@ require_once __DIR__ . '/config.php';
 // If already logged in, go to appropriate area
 if (!empty($_SESSION['user'])) {
   if (!empty($_SESSION['is_admin'])) {
-    header('Location: /Kaveesha/admin.php');
+    if (!empty($_SESSION['is_admin_confirmed'])) {
+      header('Location: /Kaveesha/admin.php');
+    } else {
+      header('Location: /Kaveesha/admin_confirm.php');
+    }
   } else {
     header('Location: /Kaveesha/dashboard.php');
   }
@@ -24,8 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['user_id'] = (int)$user['id'];
       $_SESSION['user'] = $user['username'] ?: $user['mobile_number'];
       $_SESSION['is_admin'] = !empty($user['is_admin']);
+      // Reset any prior admin confirmation state on new login
+      unset($_SESSION['is_admin_confirmed']);
       if (!empty($_SESSION['is_admin'])) {
-        header('Location: /Kaveesha/admin.php');
+        // For admin via mobile login, require extra confirmation step
+        header('Location: /Kaveesha/admin_confirm.php');
       } else {
         header('Location: /Kaveesha/dashboard.php');
       }

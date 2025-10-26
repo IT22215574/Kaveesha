@@ -26,6 +26,10 @@ if (check_credentials($username, $password)) {
         if ($row = $stmt->fetch()) {
             $_SESSION['user_id'] = (int)$row['id'];
             $_SESSION['is_admin'] = !empty($row['is_admin']);
+            if (!empty($_SESSION['is_admin'])) {
+                // Admins who log in with username+password are considered confirmed
+                $_SESSION['is_admin_confirmed'] = true;
+            }
         }
     } catch (Throwable $e) {
         // leave as basic session if query fails
