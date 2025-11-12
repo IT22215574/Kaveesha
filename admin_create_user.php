@@ -15,19 +15,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $flash = 'Please enter both name and mobile number.';
   } elseif (!preg_match('/^\d{10}$/', $mobileDigits)) {
     $flash = 'Please enter a valid 10-digit mobile number.';
-    } else {
-        try {
-      $stmt = db()->prepare('INSERT INTO users (username, mobile_number) VALUES (?, ?)');
-      $stmt->execute([$name, $mobileDigits]);
-            $success = 'User created successfully.';
-        } catch (PDOException $e) {
-            if ((int)$e->errorInfo[1] === 1062) { // duplicate entry
-                $flash = 'A user with that mobile number or username already exists.';
-            } else {
-                $flash = 'Failed to create user. Please try again.';
-            }
+  } else {
+    // Proactive duplicate checks before attempting insert
+    try {
+      // Check mobile number uniqueness
+      $dupMobile = db()->prepare('SELECT id FROM users WHERE mobile_number = ? LIMIT 1');
+      $dupMobile->execute([$mobileDigits]);
+      if ($dupMobile->fetch()) {
+        $flash = 'An account with that mobile number already exists.';
+      } else {
+        // Check username uniqueness (optional but keeps clarity in messaging)
+        $dupUser = db()->prepare('SELECT id FROM users WHERE username = ? LIMIT 1');
+        $dupUser->execute([$name]);
+        if ($dupUser->fetch()) {
+          $flash = 'A user with that username already exists.';
+        } else {
+          // Safe to insert
+          $stmt = db()->prepare('INSERT INTO users (username, mobile_number) VALUES (?, ?)');
+          $stmt->execute([$name, $mobileDigits]);
+          $success = 'User created successfully.';
         }
+      }
+    } catch (PDOException $e) {
+      // Fallback: rely on DB unique constraints just in case of race condition
+      if ((int)$e->errorInfo[1] === 1062) { // duplicate entry
+        $flash = 'Duplicate entry detected. Please use a unique mobile number and username.';
+      } else {
+        $flash = 'Failed to create user. Please try again.';
+      }
     }
+  }
 }
 ?>
 <!doctype html>
