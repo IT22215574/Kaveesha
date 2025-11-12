@@ -63,9 +63,11 @@ if ($isAjax) {
     $role = !empty($u['is_admin']) ? 'Admin' : 'User';
     $created = htmlspecialchars($u['created_at']);
     $isSelf = isset($_SESSION['user_id']) && ((int)$_SESSION['user_id'] === $id);
-    echo '<tr class="border-b last:border-0">';
-    echo '<td class="py-2 pr-4">' . $id . '</td>';
-    echo '<td class="py-2 pr-4">' . $username . '</td>';
+    // Make entire row clickable via data-href (progressive enhancement) and provide a direct anchor in username cell.
+    $listingHref = '/Kaveesha/add_listing.php?user_id=' . $id;
+    echo '<tr class="border-b last:border-0 cursor-pointer hover:bg-indigo-50" data-href="' . $listingHref . '">';
+    echo '<td class="py-2 pr-4"><a href="' . $listingHref . '" class="text-indigo-700 hover:underline" title="Add listing for user #' . $id . '">' . $id . '</a></td>';
+    echo '<td class="py-2 pr-4"><a href="' . $listingHref . '" class="text-indigo-700 hover:underline" title="Add listing for ' . $username . '">' . $username . '</a></td>';
     echo '<td class="py-2 pr-4">' . $mobile . '</td>';
     echo '<td class="py-2 pr-4">' . $role . '</td>';
     echo '<td class="py-2 pr-4">' . $created . '</td>';
@@ -122,9 +124,10 @@ if ($isAjax) {
           </thead>
           <tbody id="usersTbody">
             <?php foreach ($users as $u): ?>
-              <tr class="border-b last:border-0">
-                <td class="py-2 pr-4"><?= (int)$u['id'] ?></td>
-                <td class="py-2 pr-4"><?= htmlspecialchars($u['username']) ?></td>
+              <?php $listingHref = '/Kaveesha/add_listing.php?user_id=' . (int)$u['id']; ?>
+              <tr class="border-b last:border-0 cursor-pointer hover:bg-indigo-50" data-href="<?= $listingHref ?>">
+                <td class="py-2 pr-4"><a href="<?= $listingHref ?>" class="text-indigo-700 hover:underline" title="Add listing for user #<?= (int)$u['id'] ?>"><?= (int)$u['id'] ?></a></td>
+                <td class="py-2 pr-4"><a href="<?= $listingHref ?>" class="text-indigo-700 hover:underline" title="Add listing for <?= htmlspecialchars($u['username']) ?>"><?= htmlspecialchars($u['username']) ?></a></td>
                 <td class="py-2 pr-4"><?= htmlspecialchars($u['mobile_number']) ?></td>
                 <td class="py-2 pr-4"><?= !empty($u['is_admin']) ? 'Admin' : 'User' ?></td>
                 <td class="py-2 pr-4"><?= htmlspecialchars($u['created_at']) ?></td>
@@ -164,6 +167,7 @@ if ($isAjax) {
           headers: { 'X-Requested-With': 'XMLHttpRequest' }
         }).then(r => r.text()).then(html => {
           tbody.innerHTML = html;
+          attachRowClicks();
         }).catch(() => {
           // optional: could show an error state
         });
@@ -182,7 +186,20 @@ if ($isAjax) {
           const len = q.value.length;
           q.setSelectionRange(len, len);
         }
+        attachRowClicks();
       });
+
+      function attachRowClicks() {
+        tbody.querySelectorAll('tr[data-href]').forEach(tr => {
+          tr.addEventListener('click', (e) => {
+            // Avoid triggering when clicking inside a form button or anchor (they already have their own action)
+            const tag = e.target.tagName.toLowerCase();
+            if (tag === 'a' || tag === 'button' || e.target.closest('form')) return;
+            const href = tr.getAttribute('data-href');
+            if (href) window.location.href = href;
+          });
+        });
+      }
     })();
   </script>
 </body>

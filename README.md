@@ -22,6 +22,7 @@ Files
 - `login.php` — Tailwind-styled mobile-only login form and POST processing (same file)
 - `dashboard.php` — protected page (requires login)
 - `admin.php` — admin-only panel to create users and view recent users
+- `add_listing.php` — admin-only page to add a listing for a selected user
 - `logout.php` — clears session
 - `config.php` — session start and DB connection (PDO) + credential check
 - `setup.sql` — MySQL schema and seed admin user
@@ -33,3 +34,8 @@ Notes
 	- Regular user: name `Demo User`, mobile `0712345678`
 - Login is by mobile number only (no password) per project requirement.
 - Admin can access `http://localhost/Kaveesha/admin.php` to create users by name and mobile number.
+
+New: Listings (optional)
+- The admin Users table now allows clicking a user (ID or Name) to open `add_listing.php?user_id=...`.
+- To store listings, run the updated `setup.sql` which now includes a `listings` table.
+- If you haven't created the `listings` table yet, the Add Listing page will show a helpful message.
