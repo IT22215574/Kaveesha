@@ -213,6 +213,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $u = db()->prepare('UPDATE listings SET ' . implode(', ', $updateFields) . ' WHERE id = ?');
         $u->execute($updateValues);
       }
+      
+      // Return JSON response for AJAX request
+      if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'Listing updated successfully']);
+        exit;
+      }
+      
       $_SESSION['flash'] = 'Listing updated.';
       header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
@@ -255,6 +263,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       delete_image_if_safe($existing['image_path'] ?? null);
       delete_image_if_safe($existing['image_path_2'] ?? null);
       delete_image_if_safe($existing['image_path_3'] ?? null);
+      
+      // Return JSON response for AJAX request
+      if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'All images removed successfully']);
+        exit;
+      }
+      
       $_SESSION['flash'] = 'All images removed.';
       header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
@@ -280,10 +296,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $u = db()->prepare("UPDATE listings SET $fieldName = NULL WHERE id = ?");
         $u->execute([$listingId]);
         delete_image_if_safe($imagePath);
-        $_SESSION['flash'] = "Image $imageIndex removed.";
+        $message = "Image $imageIndex removed successfully";
       } else {
-        $_SESSION['flash'] = 'Image not found.';
+        $message = 'Image not found';
       }
+      
+      // Return JSON response for AJAX request
+      if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => $message]);
+        exit;
+      }
+      
+      $_SESSION['flash'] = $message;
       header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'update_status') {
@@ -309,13 +334,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
   } catch (PDOException $e) {
+    $errorMessage = '';
     if ($e->getCode() === '42S02') {
-      $sessionFlash = 'Listings table is missing. Please run the updated setup.sql to create the listings table.';
+      $errorMessage = 'Listings table is missing. Please run the updated setup.sql to create the listings table.';
     } else {
-      $sessionFlash = 'Operation failed. Please try again.';
+      $errorMessage = 'Operation failed. Please try again.';
     }
+    
+    // Return JSON error for AJAX request
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+      header('Content-Type: application/json');
+      echo json_encode(['success' => false, 'message' => $errorMessage]);
+      exit;
+    }
+    
+    $sessionFlash = $errorMessage;
   } catch (Throwable $e) {
-    $sessionFlash = $e->getMessage();
+    $errorMessage = $e->getMessage();
+    
+    // Return JSON error for AJAX request
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+      header('Content-Type: application/json');
+      echo json_encode(['success' => false, 'message' => $errorMessage]);
+      exit;
+    }
+    
+    $sessionFlash = $errorMessage;
   }
 }
 
@@ -416,6 +460,10 @@ foreach ($listings as $lTok) {
       cursor: pointer;
       font-size: 12px;
     }
+    .has-unsaved-changes {
+      border-left: 4px solid #f59e0b;
+      background-color: #fffbeb;
+    }
   </style>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="data:,">
@@ -476,7 +524,7 @@ foreach ($listings as $lTok) {
       
       setTimeout(() => {
         messageDiv.remove();
-      }, 3000);
+      }, 2000);
     }
     
     // Individual image preview
@@ -535,6 +583,17 @@ foreach ($listings as $lTok) {
     }
     
     function handleFormSubmit(form) {
+      // Check if this is an update form
+      const action = form.querySelector('input[name="action"]').value;
+      const listingId = form.querySelector('input[name="listing_id"]')?.value;
+      
+      if (action === 'update' && listingId) {
+        // Handle update via AJAX
+        submitFormAjax(form);
+        return false; // Prevent default form submission
+      }
+      
+      // For create forms, use normal submission
       const imageInputs = form.querySelectorAll('input[type="file"][name^="image_"]');
       let hasImages = false;
       
@@ -547,7 +606,391 @@ foreach ($listings as $lTok) {
       if (hasImages) {
         simulateUploadProgress(form);
       }
-      return true;
+      
+      return true; // Allow normal form submission
+    }
+    
+    function submitFormAjax(form) {
+      const formData = new FormData(form);
+      const listingId = form.querySelector('input[name="listing_id"]').value;
+      
+      // Show progress if there are images
+      const imageInputs = form.querySelectorAll('input[type="file"][name^="image_"]');
+      let hasImages = false;
+      imageInputs.forEach(input => {
+        if (input.files.length > 0) {
+          hasImages = true;
+        }
+      });
+      
+      if (hasImages) {
+        simulateUploadProgress(form);
+      }
+      
+      // Disable form during submission
+      const submitButton = form.querySelector('button[type="submit"]');
+      const originalText = submitButton.textContent;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Saving...';
+      
+      fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showStatusMessage(data.message, 'success');
+          // Update the stored original values to current form values
+          updateOriginalValuesAfterSave(listingId);
+          // Remove visual indicator since changes are now saved
+          updateUnsavedChangesIndicator(listingId);
+          // Clear any file input previews since they're now saved
+          clearFileInputPreviews(listingId);
+          // No page reload - keep user in edit mode
+        } else {
+          showStatusMessage(data.message || 'Failed to update listing', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error updating listing:', error);
+        showStatusMessage('Failed to update listing', 'error');
+      })
+      .finally(() => {
+        // Re-enable form
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+        // Hide progress bar
+        const progressContainer = form.querySelector('.upload-progress');
+        if (progressContainer) {
+          progressContainer.classList.add('hidden');
+        }
+      });
+    }
+    
+    // Track original form values for unsaved changes detection
+    window.originalFormValues = {};
+    
+    function storeOriginalValues(listingId) {
+      const form = document.querySelector(`#edit-${listingId} form`);
+      if (!form) return;
+      
+      const values = {};
+      const inputs = form.querySelectorAll('input[name="title"], textarea[name="description"], select[name="status"]');
+      inputs.forEach(input => {
+        values[input.name] = input.value;
+      });
+      
+      window.originalFormValues[listingId] = values;
+    }
+    
+    function hasUnsavedChanges(listingId) {
+      const form = document.querySelector(`#edit-${listingId} form`);
+      if (!form || !window.originalFormValues[listingId]) return false;
+      
+      const originalValues = window.originalFormValues[listingId];
+      const inputs = form.querySelectorAll('input[name="title"], textarea[name="description"], select[name="status"]');
+      
+      for (const input of inputs) {
+        if (input.value !== originalValues[input.name]) {
+          return true;
+        }
+      }
+      
+      // Check if any file inputs have files selected
+      const fileInputs = form.querySelectorAll('input[type="file"]');
+      for (const fileInput of fileInputs) {
+        if (fileInput.files.length > 0) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
+    function restoreOriginalValues(listingId) {
+      const form = document.querySelector(`#edit-${listingId} form`);
+      if (!form || !window.originalFormValues[listingId]) return;
+      
+      const originalValues = window.originalFormValues[listingId];
+      const inputs = form.querySelectorAll('input[name="title"], textarea[name="description"], select[name="status"]');
+      
+      inputs.forEach(input => {
+        input.value = originalValues[input.name];
+      });
+      
+      // Clear any file inputs and their previews
+      const fileInputs = form.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => {
+        input.value = '';
+      });
+      
+      // Clear image previews
+      for (let i = 0; i < 3; i++) {
+        const previewContainer = form.querySelector(`.preview-${i}`);
+        if (previewContainer) {
+          previewContainer.innerHTML = '';
+        }
+      }
+      
+      // Remove unsaved changes indicator
+      const editDiv = document.getElementById(`edit-${listingId}`);
+      if (editDiv) {
+        editDiv.classList.remove('has-unsaved-changes');
+      }
+    }
+    
+    function closeEditForm(listingId) {
+      if (hasUnsavedChanges(listingId)) {
+        openUnsavedChangesModal(listingId);
+      } else {
+        const editDiv = document.getElementById(`edit-${listingId}`);
+        editDiv.classList.add('hidden');
+        editDiv.classList.remove('has-unsaved-changes');
+        // Clean up stored values
+        if (window.originalFormValues[listingId]) {
+          delete window.originalFormValues[listingId];
+        }
+      }
+    }
+    
+    function openUnsavedChangesModal(listingId) {
+      const modal = document.getElementById('unsavedChangesModal');
+      if (modal) {
+        modal.dataset.listingId = listingId;
+        modal.classList.remove('hidden');
+      }
+    }
+    
+    function closeUnsavedChangesModal() {
+      const modal = document.getElementById('unsavedChangesModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        delete modal.dataset.listingId;
+      }
+    }
+    
+    function continueWithoutSaving() {
+      const modal = document.getElementById('unsavedChangesModal');
+      const listingId = modal ? modal.dataset.listingId : null;
+      
+      if (listingId) {
+        restoreOriginalValues(listingId);
+        document.getElementById(`edit-${listingId}`).classList.add('hidden');
+        
+        // Clean up stored values
+        if (window.originalFormValues[listingId]) {
+          delete window.originalFormValues[listingId];
+        }
+      }
+      
+      closeUnsavedChangesModal();
+    }
+    
+    // Override the existing edit button functionality to store original values
+    function toggleEditForm(listingId) {
+      const editDiv = document.getElementById(`edit-${listingId}`);
+      if (editDiv.classList.contains('hidden')) {
+        storeOriginalValues(listingId);
+        editDiv.classList.remove('hidden');
+        setupChangeTracking(listingId);
+      } else {
+        closeEditForm(listingId);
+      }
+    }
+    
+    function setupChangeTracking(listingId) {
+      const form = document.querySelector(`#edit-${listingId} form`);
+      if (!form) return;
+      
+      const inputs = form.querySelectorAll('input[name="title"], textarea[name="description"], select[name="status"], input[type="file"]');
+      
+      inputs.forEach(input => {
+        const eventType = input.type === 'file' ? 'change' : 'input';
+        input.addEventListener(eventType, () => {
+          updateUnsavedChangesIndicator(listingId);
+        });
+      });
+    }
+    
+    function updateUnsavedChangesIndicator(listingId) {
+      const editDiv = document.getElementById(`edit-${listingId}`);
+      if (!editDiv) return;
+      
+      if (hasUnsavedChanges(listingId)) {
+        editDiv.classList.add('has-unsaved-changes');
+      } else {
+        editDiv.classList.remove('has-unsaved-changes');
+      }
+    }
+    
+    function deleteSingleImage(listingId, imageIndex, token) {
+      if (!confirm(`Remove image ${imageIndex}?`)) return;
+      
+      const formData = new FormData();
+      formData.append('action', 'delete_single_image');
+      formData.append('listing_id', listingId);
+      formData.append('image_index', imageIndex);
+      formData.append('token', token);
+      
+      fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showStatusMessage(data.message, 'success');
+          // Update the UI to reflect image deletion without page reload
+          updateImageDisplayAfterDeletion(listingId, imageIndex);
+        } else {
+          showStatusMessage(data.message || 'Failed to delete image', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting image:', error);
+        showStatusMessage('Failed to delete image', 'error');
+      });
+    }
+    
+    function deleteAllImages(listingId, token) {
+      if (!confirm('Remove ALL images from this listing?')) return;
+      
+      const formData = new FormData();
+      formData.append('action', 'delete_image');
+      formData.append('listing_id', listingId);
+      formData.append('token', token);
+      
+      fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showStatusMessage(data.message, 'success');
+          // Update the UI to reflect all images deletion without page reload
+          updateImageDisplayAfterDeletion(listingId, 'all');
+        } else {
+          showStatusMessage(data.message || 'Failed to delete images', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting images:', error);
+        showStatusMessage('Failed to delete images', 'error');
+      });
+    }
+    
+    function updateImageDisplayAfterDeletion(listingId, imageIndex) {
+      // Find the listing container
+      const listingContainers = document.querySelectorAll('.border.rounded.p-4');
+      let targetContainer = null;
+      
+      for (const container of listingContainers) {
+        const editForm = container.querySelector(`#edit-${listingId}`);
+        if (editForm) {
+          targetContainer = container;
+          break;
+        }
+      }
+      
+      if (!targetContainer) return;
+      
+      // Find the image display area
+      const imageGrid = targetContainer.querySelector('.grid.grid-cols-3.gap-1');
+      if (!imageGrid) return;
+      
+      if (imageIndex === 'all') {
+        // Hide all delete buttons and show placeholder for all images
+        const imageContainers = imageGrid.querySelectorAll('.relative');
+        imageContainers.forEach((container, index) => {
+          container.innerHTML = `<div class="w-full h-16 bg-gray-100 border border-dashed rounded flex items-center justify-center text-xs text-gray-400">${index + 1}</div>`;
+        });
+        
+        // Hide all individual delete buttons
+        const deleteButtons = targetContainer.querySelectorAll('button[onclick*="deleteSingleImage"]');
+        deleteButtons.forEach(btn => btn.style.display = 'none');
+        
+        // Hide "Del All" button
+        const delAllButton = targetContainer.querySelector('button[onclick*="deleteAllImages"]');
+        if (delAllButton) delAllButton.style.display = 'none';
+      } else {
+        // Hide specific image and its delete button
+        const specificImageContainer = imageGrid.children[imageIndex - 1];
+        if (specificImageContainer) {
+          specificImageContainer.innerHTML = `<div class="w-full h-16 bg-gray-100 border border-dashed rounded flex items-center justify-center text-xs text-gray-400">${imageIndex}</div>`;
+        }
+        
+        // Hide the specific delete button
+        const deleteButton = targetContainer.querySelector(`button[onclick*="deleteSingleImage(${listingId}, ${imageIndex}"]`);
+        if (deleteButton) {
+          deleteButton.style.display = 'none';
+        }
+        
+        // Check if all images are deleted, if so hide "Del All" button
+        const remainingImages = targetContainer.querySelectorAll('button[onclick*="deleteSingleImage"]:not([style*="display: none"])');
+        if (remainingImages.length === 0) {
+          const delAllButton = targetContainer.querySelector('button[onclick*="deleteAllImages"]');
+          if (delAllButton) delAllButton.style.display = 'none';
+        }
+      }
+    }
+    
+    function updateOriginalValuesAfterSave(listingId) {
+      const form = document.querySelector(`#edit-${listingId} form`);
+      if (!form) return;
+      
+      // Update the stored original values with current form values
+      const values = {};
+      const inputs = form.querySelectorAll('input[name="title"], textarea[name="description"], select[name="status"]');
+      inputs.forEach(input => {
+        values[input.name] = input.value;
+      });
+      
+      window.originalFormValues[listingId] = values;
+    }
+    
+    function clearFileInputPreviews(listingId) {
+      const form = document.querySelector(`#edit-${listingId} form`);
+      if (!form) return;
+      
+      // Clear file inputs (they're now saved)
+      const fileInputs = form.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => {
+        input.value = '';
+      });
+      
+      // Clear image previews
+      for (let i = 0; i < 3; i++) {
+        const previewContainer = form.querySelector(`.preview-${i}`);
+        if (previewContainer) {
+          previewContainer.innerHTML = '';
+        }
+      }
     }
   </script>
   </head>
@@ -633,33 +1076,23 @@ foreach ($listings as $lTok) {
                     <p class="mt-2 text-gray-700 whitespace-pre-line"><?= nl2br(htmlspecialchars($l['description'])) ?></p>
                   <?php endif; ?>
                   <div class="mt-3 flex flex-wrap gap-2">
-                    <button type="button" onclick="document.getElementById('edit-<?= (int)$l['id'] ?>').classList.toggle('hidden')" class="px-3 py-1 rounded border border-indigo-600 text-indigo-700 hover:bg-indigo-50">Edit</button>
+                    <button type="button" onclick="toggleEditForm(<?= (int)$l['id'] ?>)" class="px-3 py-1 rounded border border-indigo-600 text-indigo-700 hover:bg-indigo-50">Edit</button>
                     <form method="post" onsubmit="return confirm('Delete this listing? This cannot be undone.');">
                       <input type="hidden" name="action" value="delete" />
                       <input type="hidden" name="listing_id" value="<?= (int)$l['id'] ?>" />
                       <input type="hidden" name="token" value="<?= htmlspecialchars($deleteTokens[(int)$l['id']]) ?>" />
                       <button type="submit" class="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">Delete</button>
                     </form>
+                    <a href="create_invoice.php?listing_id=<?= (int)$l['id'] ?>" class="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 inline-block">Invoice</a>
                     <?php if (!empty($hasImages)): ?>
                       <div class="flex flex-wrap gap-1">
                         <?php for ($imgIdx = 1; $imgIdx <= 3; $imgIdx++): ?>
                           <?php $imgField = $imgIdx === 1 ? 'image_path' : 'image_path_' . $imgIdx; ?>
                           <?php if (!empty($l[$imgField])): ?>
-                            <form method="post" class="inline" onsubmit="return confirm('Remove image <?= $imgIdx ?>?');">
-                              <input type="hidden" name="action" value="delete_single_image" />
-                              <input type="hidden" name="listing_id" value="<?= (int)$l['id'] ?>" />
-                              <input type="hidden" name="image_index" value="<?= $imgIdx ?>" />
-                              <input type="hidden" name="token" value="<?= htmlspecialchars($deleteSingleImageTokens[(int)$l['id']][$imgIdx]) ?>" />
-                              <button type="submit" class="px-2 py-1 text-xs rounded bg-yellow-500 text-white hover:bg-yellow-600">Del <?= $imgIdx ?></button>
-                            </form>
+                            <button type="button" onclick="deleteSingleImage(<?= (int)$l['id'] ?>, <?= $imgIdx ?>, '<?= htmlspecialchars($deleteSingleImageTokens[(int)$l['id']][$imgIdx]) ?>')" class="px-2 py-1 text-xs rounded bg-yellow-500 text-white hover:bg-yellow-600">Del <?= $imgIdx ?></button>
                           <?php endif; ?>
                         <?php endfor; ?>
-                        <form method="post" class="inline" onsubmit="return confirm('Remove ALL images from this listing?');">
-                          <input type="hidden" name="action" value="delete_image" />
-                          <input type="hidden" name="listing_id" value="<?= (int)$l['id'] ?>" />
-                          <input type="hidden" name="token" value="<?= htmlspecialchars($deleteImageTokens[(int)$l['id']]) ?>" />
-                          <button type="submit" class="px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600">Del All</button>
-                        </form>
+                        <button type="button" onclick="deleteAllImages(<?= (int)$l['id'] ?>, '<?= htmlspecialchars($deleteImageTokens[(int)$l['id']]) ?>')" class="px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600">Del All</button>
                       </div>
                     <?php endif; ?>
                   </div>
@@ -720,8 +1153,9 @@ foreach ($listings as $lTok) {
                           </div>
                         </div>
                       </div>
-                      <div class="sm:col-span-2">
+                      <div class="sm:col-span-2 flex gap-2">
                         <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">Save changes</button>
+                        <button type="button" onclick="closeEditForm(<?= (int)$l['id'] ?>)" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Close</button>
                       </div>
                     </form>
                   </div>
@@ -787,6 +1221,25 @@ foreach ($listings as $lTok) {
                 <button type="button" onclick="closeModal('createModal')" class="px-4 py-2 border rounded">Cancel</button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unsaved Changes Confirmation Modal -->
+      <div id="unsavedChangesModal" class="fixed inset-0 bg-black/40 z-50 hidden" aria-modal="true" role="dialog">
+        <div class="absolute inset-0 flex items-center justify-center px-4">
+          <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold text-gray-900">Unsaved Changes</h2>
+              <button type="button" onclick="closeUnsavedChangesModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div class="mb-6">
+              <p class="text-sm text-gray-600">There are unsaved changes. If not saved and you press continue, the changes will disappear.</p>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="closeUnsavedChangesModal()" class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded">Cancel</button>
+              <button type="button" onclick="continueWithoutSaving()" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded">Continue</button>
+            </div>
           </div>
         </div>
       </div>
