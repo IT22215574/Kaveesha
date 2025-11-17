@@ -44,8 +44,10 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `user_id` INT UNSIGNED NOT NULL,
   `title` VARCHAR(191) NOT NULL,
   `description` TEXT NULL,
-  `price` DECIMAL(10,2) NULL,
+  `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1=not finished, 2=stopped, 3=finished & pending payments, 4=completed & received payments',
   `image_path` VARCHAR(255) NULL,
+  `image_path_2` VARCHAR(255) NULL,
+  `image_path_3` VARCHAR(255) NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_listings_user_id` (`user_id`)

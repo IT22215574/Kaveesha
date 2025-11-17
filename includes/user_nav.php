@@ -39,6 +39,9 @@ if (!empty($_SESSION['user_id'])) {
     <div class="hidden md:flex items-center space-x-6">
       <a href="/Kaveesha/dashboard.php" class="<?= user_nav_link_classes($isDashboard) ?>">Home</a>
       <a href="/Kaveesha/contact.php" class="<?= user_nav_link_classes($isContact) ?>">Contact Yoma Electronics</a>
+      <?php if (!empty($_SESSION['is_admin'])): ?>
+        <a href="/Kaveesha/admin.php" class="text-sm bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 transition-colors">Admin Panel</a>
+      <?php endif; ?>
       <span class="text-sm text-gray-600 hidden lg:inline">Signed in as <strong><?= htmlspecialchars($displayName) ?></strong></span>
     <a href="/Kaveesha/logout.php" class="logout-link text-sm bg-red-500 text-white px-3 py-1 rounded">Logout</a>
     </div>
@@ -57,6 +60,9 @@ if (!empty($_SESSION['user_id'])) {
       <div class="text-sm text-gray-500 mb-2">Signed in as <strong><?= htmlspecialchars($displayName) ?></strong><?= $mobileNumber ? ' • ' . htmlspecialchars($mobileNumber) : '' ?></div>
       <a href="/Kaveesha/dashboard.php" class="block w-full <?= $isDashboard ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Dashboard</a>
       <a href="/Kaveesha/contact.php" class="block w-full <?= $isContact ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Contact</a>
+      <?php if (!empty($_SESSION['is_admin'])): ?>
+        <a href="/Kaveesha/admin.php" class="block w-full bg-indigo-500 text-white px-3 py-2 rounded hover:bg-indigo-600">Admin Panel</a>
+      <?php endif; ?>
       <div class="pt-2 mt-2 border-t border-gray-200">
         <a href="/Kaveesha/logout.php" class="logout-link block text-center bg-red-500 text-white px-3 py-2 rounded">Logout</a>
       </div>
