@@ -92,7 +92,23 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
   FOREIGN KEY (`invoice_id`) REFERENCES `invoices`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 8) Migration commands for existing tables (run if tables already exist)
+-- 8) Create chat messages table for admin-customer communication
+CREATE TABLE IF NOT EXISTS `chat_messages` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `conversation_id` VARCHAR(64) NOT NULL COMMENT 'user_id to group messages',
+  `sender_id` INT UNSIGNED NOT NULL,
+  `sender_type` ENUM('user', 'admin') NOT NULL,
+  `message` TEXT NOT NULL,
+  `is_read` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_conversation_id` (`conversation_id`),
+  KEY `idx_sender_id` (`sender_id`),
+  KEY `idx_created_at` (`created_at`),
+  FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 9) Migration commands for existing tables (run if tables already exist)
 -- Add missing columns to invoices table if they don't exist
 ALTER TABLE `invoices` 
 ADD COLUMN IF NOT EXISTS `discount_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `subtotal`,

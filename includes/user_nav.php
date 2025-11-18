@@ -39,6 +39,10 @@ if (!empty($_SESSION['user_id'])) {
     <div class="hidden md:flex items-center space-x-6">
       <a href="/Kaveesha/dashboard.php" class="<?= user_nav_link_classes($isDashboard) ?>">Home</a>
       <a href="/Kaveesha/contact.php" class="<?= user_nav_link_classes($isContact) ?>">Contact Yoma Electronics</a>
+      <a href="/Kaveesha/messages.php" class="<?= user_nav_link_classes($current === 'messages.php') ?> relative">
+        Messages
+        <span class="messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
+      </a>
       <?php if (!empty($_SESSION['is_admin'])): ?>
         <a href="/Kaveesha/admin.php" class="text-sm bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 transition-colors">Admin Panel</a>
       <?php endif; ?>
@@ -60,6 +64,10 @@ if (!empty($_SESSION['user_id'])) {
       <div class="text-sm text-gray-500 mb-2">Signed in as <strong><?= htmlspecialchars($displayName) ?></strong><?= $mobileNumber ? ' • ' . htmlspecialchars($mobileNumber) : '' ?></div>
       <a href="/Kaveesha/dashboard.php" class="block w-full <?= $isDashboard ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Dashboard</a>
       <a href="/Kaveesha/contact.php" class="block w-full <?= $isContact ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Contact</a>
+      <a href="/Kaveesha/messages.php" class="block w-full <?= ($current === 'messages.php') ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative">
+        Messages
+        <span class="messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
+      </a>
       <?php if (!empty($_SESSION['is_admin'])): ?>
         <a href="/Kaveesha/admin.php" class="block w-full bg-indigo-500 text-white px-3 py-2 rounded hover:bg-indigo-600">Admin Panel</a>
       <?php endif; ?>
@@ -125,6 +133,56 @@ if (!empty($_SESSION['user_id'])) {
         });
       });
     }
+    
+    // Update unread message count
+    function updateUnreadCount() {
+      fetch('/Kaveesha/messages_api.php?action=unread_count')
+        .then(response => response.json())
+        .then(data => {
+          updateBadges(data.unread_count);
+        })
+        .catch(error => console.error('Error updating unread count:', error));
+    }
+    
+    function updateBadges(count) {
+      const badges = document.querySelectorAll('.messages-badge');
+      badges.forEach(badge => {
+        if (count > 0) {
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      });
+    }
+    
+    // Setup real-time updates with fallback
+    function setupRealtimeUpdates() {
+      if (typeof(EventSource) !== "undefined") {
+        const eventSource = new EventSource('/Kaveesha/messages_sse.php');
+        
+        eventSource.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.unread_count !== undefined) {
+              updateBadges(data.unread_count);
+            }
+          } catch (e) {
+            console.error('Error parsing SSE data:', e);
+          }
+        };
+        
+        eventSource.onerror = function() {
+          eventSource.close();
+          // SSE failed - badge will show on manual refresh
+        };
+      }
+    }
+    
+    // Check for unread messages on page load and setup real-time updates
+    document.addEventListener('DOMContentLoaded', function() {
+      updateUnreadCount(); // Initial load
+      setupRealtimeUpdates();
+    });
     if (confirmBtn) confirmBtn.addEventListener('click', function(){ if (pendingHref) window.location.href = pendingHref; });
     if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
     if (modal) modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
