@@ -28,6 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['user_id'] = (int)$user['id'];
       $_SESSION['user'] = $user['username'] ?: $user['mobile_number'];
       $_SESSION['is_admin'] = !empty($user['is_admin']);
+      // Cache user data on login for better navigation performance
+      $_SESSION['cached_username'] = $user['username'] ?: $user['mobile_number'];
+      $_SESSION['cached_mobile'] = $user['mobile_number'];
       // Reset any prior admin confirmation state on new login
       unset($_SESSION['is_admin_confirmed']);
       if (!empty($_SESSION['is_admin'])) {

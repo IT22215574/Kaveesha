@@ -127,6 +127,17 @@ function getUnreadCount() {
     $userId = $_SESSION['user_id'];
     $isAdmin = $_SESSION['is_admin'] ?? false;
     
+    // Cache key for this user's unread count
+    $cacheKey = 'unread_count_' . ($isAdmin ? 'admin' : $userId);
+    
+    // Check session cache first (valid for 30 seconds)
+    if (isset($_SESSION[$cacheKey]) && isset($_SESSION[$cacheKey . '_time'])) {
+        if (time() - $_SESSION[$cacheKey . '_time'] < 30) {
+            echo json_encode(['unread_count' => (int)$_SESSION[$cacheKey]]);
+            return;
+        }
+    }
+    
     if ($isAdmin) {
         // For admin, count unread messages from all users
         $stmt = db()->prepare("
@@ -146,7 +157,13 @@ function getUnreadCount() {
     }
     
     $result = $stmt->fetch();
-    echo json_encode(['unread_count' => (int)$result['unread_count']]);
+    $unreadCount = (int)$result['unread_count'];
+    
+    // Cache the result
+    $_SESSION[$cacheKey] = $unreadCount;
+    $_SESSION[$cacheKey . '_time'] = time();
+    
+    echo json_encode(['unread_count' => $unreadCount]);
 }
 
 function sendMessage() {

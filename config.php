@@ -80,4 +80,25 @@ function require_login() {
     }
 }
 
+// Helper: clear navigation cache when user data changes
+function clear_nav_cache($userId = null) {
+    $userId = $userId ?: ($_SESSION['user_id'] ?? null);
+    if (!$userId) return;
+    
+    // Clear user data cache
+    unset($_SESSION['cached_username']);
+    unset($_SESSION['cached_mobile']);
+    
+    // Clear unread count cache
+    $isAdmin = $_SESSION['is_admin'] ?? false;
+    $cacheKey = 'unread_count_' . ($isAdmin ? 'admin' : $userId);
+    unset($_SESSION[$cacheKey]);
+    unset($_SESSION[$cacheKey . '_time']);
+    
+    // Clear SSE cache
+    $sseCacheKey = 'sse_unread_count_' . ($isAdmin ? 'admin' : $userId);
+    unset($_SESSION[$sseCacheKey]);
+    unset($_SESSION[$sseCacheKey . '_time']);
+}
+
 ?>

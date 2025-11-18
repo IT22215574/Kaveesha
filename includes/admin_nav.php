@@ -13,19 +13,23 @@ if (!function_exists('nav_link_classes')) {
     }
 }
 
-// Fetch live admin name from DB so changes reflect immediately
+// Use cached admin name from session (updated on login/profile changes)
 $adminName = isset($_SESSION['user']) ? (string)$_SESSION['user'] : 'Admin';
-if (!empty($_SESSION['user_id'])) {
+// Only fetch from DB if session cache is missing or expired
+if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   try {
     $stmt = db()->prepare('SELECT username FROM users WHERE id = ? LIMIT 1');
     $stmt->execute([(int)$_SESSION['user_id']]);
     $row = $stmt->fetch();
     if ($row && isset($row['username']) && $row['username'] !== '') {
       $adminName = (string)$row['username'];
+      $_SESSION['cached_username'] = $adminName; // Cache for future requests
     }
   } catch (Throwable $e) {
     // Fallback to session name on any error
   }
+} elseif (!empty($_SESSION['cached_username'])) {
+  $adminName = $_SESSION['cached_username'];
 }
 ?>
 <nav class="bg-white shadow">
@@ -131,14 +135,23 @@ if (!empty($_SESSION['user_id'])) {
       });
     }
     
-    // Update unread message count for admin
+    // Update unread message count for admin with debouncing
+    let updateTimeout = null;
     function updateAdminUnreadCount() {
-      fetch('/Kaveesha/messages_api.php?action=unread_count')
-        .then(response => response.json())
-        .then(data => {
-          updateAdminBadges(data.unread_count);
-        })
-        .catch(error => console.error('Error updating admin unread count:', error));
+      // Debounce API calls to prevent excessive requests
+      if (updateTimeout) clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(() => {
+        fetch('/Kaveesha/messages_api.php?action=unread_count')
+          .then(response => response.json())
+          .then(data => {
+            updateAdminBadges(data.unread_count);
+          })
+          .catch(error => {
+            console.error('Error updating admin unread count:', error);
+            // Retry after delay on error
+            setTimeout(updateAdminUnreadCount, 10000);
+          });
+      }, 1000);
     }
     
     function updateAdminBadges(count) {
@@ -153,9 +166,17 @@ if (!empty($_SESSION['user_id'])) {
     }
     
     // Setup real-time updates with fallback for admin
+    let sseRetryTimeout = null;
+    let sseRetryCount = 0;
+    const maxRetries = 3;
+    
     function setupAdminRealtimeUpdates() {
-      if (typeof(EventSource) !== "undefined") {
+      if (typeof(EventSource) !== "undefined" && sseRetryCount < maxRetries) {
         const eventSource = new EventSource('/Kaveesha/messages_sse.php');
+        
+        eventSource.onopen = function() {
+          sseRetryCount = 0; // Reset retry count on successful connection
+        };
         
         eventSource.onmessage = function(event) {
           try {
@@ -170,8 +191,19 @@ if (!empty($_SESSION['user_id'])) {
         
         eventSource.onerror = function() {
           eventSource.close();
-          // SSE failed - badge will show on manual refresh
+          sseRetryCount++;
+          if (sseRetryCount < maxRetries) {
+            // Exponential backoff retry
+            const retryDelay = Math.pow(2, sseRetryCount) * 1000;
+            sseRetryTimeout = setTimeout(setupAdminRealtimeUpdates, retryDelay);
+          } else {
+            // Fall back to periodic polling after max retries
+            setInterval(updateAdminUnreadCount, 30000);
+          }
         };
+      } else {
+        // No SSE support or max retries reached - use polling
+        setInterval(updateAdminUnreadCount, 30000);
       }
     }
     

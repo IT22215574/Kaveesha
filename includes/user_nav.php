@@ -15,20 +15,31 @@ if (!function_exists('user_nav_link_classes')) {
     }
 }
 
-// Live user info from DB (prefer DB over session for latest)
+// Use cached user info from session (updated on login/profile changes)
 $displayName = isset($_SESSION['user']) ? (string)$_SESSION['user'] : 'User';
 $mobileNumber = '';
-if (!empty($_SESSION['user_id'])) {
+// Only fetch from DB if session cache is missing or expired
+if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empty($_SESSION['cached_mobile']))) {
     try {
         $stmt = db()->prepare('SELECT username, mobile_number FROM users WHERE id = ? LIMIT 1');
         $stmt->execute([(int)$_SESSION['user_id']]);
         if ($row = $stmt->fetch()) {
-            if (!empty($row['username'])) $displayName = (string)$row['username'];
-            if (!empty($row['mobile_number'])) $mobileNumber = (string)$row['mobile_number'];
+            if (!empty($row['username'])) {
+                $displayName = (string)$row['username'];
+                $_SESSION['cached_username'] = $displayName;
+            }
+            if (!empty($row['mobile_number'])) {
+                $mobileNumber = (string)$row['mobile_number'];
+                $_SESSION['cached_mobile'] = $mobileNumber;
+            }
         }
     } catch (Throwable $e) {
         // ignore and fallback to session
     }
+} else {
+    // Use cached values
+    if (!empty($_SESSION['cached_username'])) $displayName = $_SESSION['cached_username'];
+    if (!empty($_SESSION['cached_mobile'])) $mobileNumber = $_SESSION['cached_mobile'];
 }
 ?>
 <nav class="bg-white shadow">
@@ -134,14 +145,23 @@ if (!empty($_SESSION['user_id'])) {
       });
     }
     
-    // Update unread message count
+    // Update unread message count with debouncing
+    let userUpdateTimeout = null;
     function updateUnreadCount() {
-      fetch('/Kaveesha/messages_api.php?action=unread_count')
-        .then(response => response.json())
-        .then(data => {
-          updateBadges(data.unread_count);
-        })
-        .catch(error => console.error('Error updating unread count:', error));
+      // Debounce API calls to prevent excessive requests
+      if (userUpdateTimeout) clearTimeout(userUpdateTimeout);
+      userUpdateTimeout = setTimeout(() => {
+        fetch('/Kaveesha/messages_api.php?action=unread_count')
+          .then(response => response.json())
+          .then(data => {
+            updateBadges(data.unread_count);
+          })
+          .catch(error => {
+            console.error('Error updating unread count:', error);
+            // Retry after delay on error
+            setTimeout(updateUnreadCount, 10000);
+          });
+      }, 1000);
     }
     
     function updateBadges(count) {
@@ -156,9 +176,17 @@ if (!empty($_SESSION['user_id'])) {
     }
     
     // Setup real-time updates with fallback
+    let userSSERetryTimeout = null;
+    let userSSERetryCount = 0;
+    const userMaxRetries = 3;
+    
     function setupRealtimeUpdates() {
-      if (typeof(EventSource) !== "undefined") {
+      if (typeof(EventSource) !== "undefined" && userSSERetryCount < userMaxRetries) {
         const eventSource = new EventSource('/Kaveesha/messages_sse.php');
+        
+        eventSource.onopen = function() {
+          userSSERetryCount = 0; // Reset retry count on successful connection
+        };
         
         eventSource.onmessage = function(event) {
           try {
@@ -173,8 +201,19 @@ if (!empty($_SESSION['user_id'])) {
         
         eventSource.onerror = function() {
           eventSource.close();
-          // SSE failed - badge will show on manual refresh
+          userSSERetryCount++;
+          if (userSSERetryCount < userMaxRetries) {
+            // Exponential backoff retry
+            const retryDelay = Math.pow(2, userSSERetryCount) * 1000;
+            userSSERetryTimeout = setTimeout(setupRealtimeUpdates, retryDelay);
+          } else {
+            // Fall back to periodic polling after max retries
+            setInterval(updateUnreadCount, 30000);
+          }
         };
+      } else {
+        // No SSE support or max retries reached - use polling
+        setInterval(updateUnreadCount, 30000);
       }
     }
     

@@ -21,11 +21,16 @@ if (check_credentials($username, $password)) {
     $_SESSION['user'] = $username;
     // Fetch user details to determine role and id
     try {
-        $stmt = db()->prepare('SELECT id, is_admin FROM users WHERE username = ? LIMIT 1');
+        $stmt = db()->prepare('SELECT id, is_admin, username, mobile_number FROM users WHERE username = ? LIMIT 1');
         $stmt->execute([$username]);
         if ($row = $stmt->fetch()) {
             $_SESSION['user_id'] = (int)$row['id'];
             $_SESSION['is_admin'] = !empty($row['is_admin']);
+            // Cache user data on login for better navigation performance
+            $_SESSION['cached_username'] = $row['username'];
+            if (!empty($row['mobile_number'])) {
+                $_SESSION['cached_mobile'] = $row['mobile_number'];
+            }
             if (!empty($_SESSION['is_admin'])) {
                 // Admins who log in with username+password are considered confirmed
                 $_SESSION['is_admin_confirmed'] = true;
