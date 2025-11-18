@@ -226,11 +226,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Back to Listings
       </a>
       
-      <?php if ($invoice['status'] === 'draft'): ?>
+      <?php if ($invoice['status'] === 'draft' || $invoice['status'] === 'sent'): ?>
         <form method="post" class="inline">
           <input type="hidden" name="action" value="send_invoice">
           <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Send to Customer
+            <?= $invoice['status'] === 'draft' ? 'Send to Customer' : 'Resend to Customer' ?>
           </button>
         </form>
       <?php endif; ?>
