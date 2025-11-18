@@ -174,13 +174,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       /* Logo print styles */
       img { 
-        height: 60px !important; 
+        height: 224px !important; /* Match h-56 */
         width: auto !important; 
         max-width: none !important;
         display: block !important;
       }
       .flex-shrink-0 { flex-shrink: 0 !important; }
-      .gap-4 { gap: 10px !important; }
+      .gap-4 { gap: 16px !important; }
+      
+      /* Reduce calculation font sizes by 50% for print */
+      .totals-section .grid {
+        font-size: 0.5em !important;
+      }
+      .totals-section .font-bold {
+        font-size: 0.6em !important;
+      }
     }
   </style>
   <style>
@@ -260,21 +268,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="max-w-full md:max-w-7xl mx-0 md:mx-2 bg-white rounded-lg shadow-md p-0 md:p-1">
       <!-- Header -->
       <div class="border-b pb-6 mb-6">
+        <!-- Logo at top-left -->
+        <div class="flex justify-start">
+          <div class="flex-shrink-0">
+            <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-56 w-auto">
+          </div>
+        </div>
+        <!-- Text content below logo in parallel columns -->
         <div class="flex justify-between items-start">
           <div>
             <h1 class="text-3xl font-bold text-gray-900">INVOICE</h1>
-            <p class="text-gray-600 mt-1">Yoma Electronics</p>
+            <p class="text-gray-600">Yoma Electronics</p>
             <p class="text-gray-600">Mobile: 0775604833</p>
           </div>
-          <div class="flex items-start gap-4">
-            <div class="text-right">
-              <p class="text-2xl font-bold text-gray-900">#<?= htmlspecialchars($invoice['invoice_number']) ?></p>
-              <p class="text-gray-600">Date: <?= date('M d, Y', strtotime($invoice['invoice_date'])) ?></p>
-              <p class="text-gray-600">Due Date: <?= date('M d, Y', strtotime($invoice['due_date'])) ?></p>
-            </div>
-            <div class="flex-shrink-0">
-              <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-16 w-auto">
-            </div>
+          <div class="text-right">
+            <p class="text-2xl font-bold text-gray-900">#<?= htmlspecialchars($invoice['invoice_number']) ?></p>
+            <p class="text-gray-600">Date: <?= date('M d, Y', strtotime($invoice['invoice_date'])) ?></p>
+            <p class="text-gray-600">Due Date: <?= date('M d, Y', strtotime($invoice['due_date'])) ?></p>
           </div>
         </div>
       </div>
@@ -335,7 +345,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Totals -->
       <div class="flex justify-end">
         <div class="w-96">
-          <div class="border-t pt-4 space-y-3">
+          <div class="totals-section border-t pt-4 space-y-3">
             <?php 
               // Calculate total before discount
               $totalBeforeDiscount = $invoice['subtotal'] + $invoice['discount_amount'];
