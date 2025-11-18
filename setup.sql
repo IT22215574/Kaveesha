@@ -26,19 +26,7 @@ INSERT INTO `users` (`username`, `mobile_number`, `password_hash`, `is_admin`) V
 ('yoma electronics', '0775604833', NULL, 1),
 ('Demo User', '0712345678', NULL, 0);
 
--- 4) Create messages table for contact form submissions
-CREATE TABLE IF NOT EXISTS `messages` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` INT UNSIGNED NULL,
-  `name` VARCHAR(191) NULL,
-  `phone` VARCHAR(32) NULL,
-  `message` TEXT NOT NULL,
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 5) Create listings table (optional new feature)
+-- 4) Create listings table (optional new feature)
 CREATE TABLE IF NOT EXISTS `listings` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
