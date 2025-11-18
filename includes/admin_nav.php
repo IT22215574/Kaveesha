@@ -3,8 +3,6 @@
 $current = basename($_SERVER['PHP_SELF']);
 $isUsers = in_array($current, ['admin.php', 'admin_users.php'], true);
 $isCreate = ($current === 'admin_create_user.php');
-$isListings = in_array($current, ['add_listing.php'], true);
-$isInvoices = in_array($current, ['invoices.php', 'create_invoice.php', 'view_invoice.php'], true);
 
 if (!function_exists('nav_link_classes')) {
     function nav_link_classes($active) {
@@ -40,8 +38,6 @@ if (!empty($_SESSION['user_id'])) {
       <div class="flex items-center space-x-4">
         <a href="/Kaveesha/admin.php" class="<?= nav_link_classes($isUsers) ?>">Users</a>
         <a href="/Kaveesha/admin_create_user.php" class="<?= nav_link_classes($isCreate) ?>">Create User</a>
-        <a href="/Kaveesha/add_listing.php" class="<?= nav_link_classes($isListings) ?>">Listings</a>
-        <a href="/Kaveesha/invoices.php" class="<?= nav_link_classes($isInvoices) ?>">Invoices</a>
       </div>
       <div class="flex items-center space-x-4">
         <a href="/Kaveesha/dashboard.php" class="text-sm bg-gray-200 text-gray-800 px-3 py-1 rounded">Dashboard</a>
@@ -62,8 +58,6 @@ if (!empty($_SESSION['user_id'])) {
     <div class="px-4 py-4 space-y-3">
       <a href="/Kaveesha/admin.php" class="block w-full <?= $isUsers ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Users</a>
       <a href="/Kaveesha/admin_create_user.php" class="block w-full <?= $isCreate ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Create User</a>
-      <a href="/Kaveesha/add_listing.php" class="block w-full <?= $isListings ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Listings</a>
-      <a href="/Kaveesha/invoices.php" class="block w-full <?= $isInvoices ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Invoices</a>
       <div class="pt-2 mt-2 border-t border-gray-200 flex items-center space-x-2">
         <a href="/Kaveesha/dashboard.php" class="flex-1 text-center bg-gray-200 text-gray-800 px-3 py-2 rounded">Dashboard</a>
         <a href="/Kaveesha/logout.php" class="logout-link flex-1 text-center bg-red-500 text-white px-3 py-2 rounded">Logout</a>

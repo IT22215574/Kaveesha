@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS `invoices` (
   `invoice_date` DATE NOT NULL,
   `due_date` DATE NOT NULL,
   `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `discount_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `service_charge` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `tax_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `total_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `notes` TEXT NULL,
@@ -83,9 +85,20 @@ CREATE TABLE IF NOT EXISTS `invoice_items` (
   `description` VARCHAR(255) NOT NULL,
   `quantity` INT NOT NULL DEFAULT 1,
   `unit_price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `discount_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `total_price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`id`),
   KEY `idx_invoice_id` (`invoice_id`),
   FOREIGN KEY (`invoice_id`) REFERENCES `invoices`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 8) Migration commands for existing tables (run if tables already exist)
+-- Add missing columns to invoices table if they don't exist
+ALTER TABLE `invoices` 
+ADD COLUMN IF NOT EXISTS `discount_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `subtotal`,
+ADD COLUMN IF NOT EXISTS `service_charge` DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `discount_amount`;
+
+-- Add missing column to invoice_items table if it doesn't exist
+ALTER TABLE `invoice_items`
+ADD COLUMN IF NOT EXISTS `discount_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER `unit_price`;
 

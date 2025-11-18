@@ -1083,7 +1083,6 @@ foreach ($listings as $lTok) {
                       <input type="hidden" name="token" value="<?= htmlspecialchars($deleteTokens[(int)$l['id']]) ?>" />
                       <button type="submit" class="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">Delete</button>
                     </form>
-                    <a href="create_invoice.php?listing_id=<?= (int)$l['id'] ?>" class="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 inline-block">Invoice</a>
                     <?php if (!empty($hasImages)): ?>
                       <div class="flex flex-wrap gap-1">
                         <?php for ($imgIdx = 1; $imgIdx <= 3; $imgIdx++): ?>
@@ -1095,6 +1094,9 @@ foreach ($listings as $lTok) {
                         <button type="button" onclick="deleteAllImages(<?= (int)$l['id'] ?>, '<?= htmlspecialchars($deleteImageTokens[(int)$l['id']]) ?>')" class="px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600">Del All</button>
                       </div>
                     <?php endif; ?>
+                  </div>
+                  <div class="mt-3 flex justify-end">
+                    <a href="create_invoice.php?listing_id=<?= (int)$l['id'] ?>" class="px-4 py-2 text-sm rounded bg-green-600 text-white hover:bg-green-700 inline-block font-medium">Invoice</a>
                   </div>
                   <div id="edit-<?= (int)$l['id'] ?>" class="mt-4 hidden">
                     <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 sm:grid-cols-2 gap-4" onsubmit="return handleFormSubmit(this)">

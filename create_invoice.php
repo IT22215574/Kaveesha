@@ -43,48 +43,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $invoiceNumber = $_POST['invoice_number'] ?? generateInvoiceNumber();
             $invoiceDate = $_POST['invoice_date'] ?? date('Y-m-d');
-            $dueDate = $_POST['due_date'] ?? date('Y-m-d', strtotime('+30 days'));
+            $dueDate = $_POST['due_date'] ?? date('Y-m-d', strtotime('+7 days'));
             $notes = trim($_POST['notes'] ?? '');
             $taxRate = (float)($_POST['tax_rate'] ?? 0);
+            $serviceCharge = max(0, (float)($_POST['service_charge'] ?? 0));
             
             // Process invoice items
             $items = [];
             $subtotal = 0;
+            $totalDiscount = 0;
             
             if (isset($_POST['item_description']) && is_array($_POST['item_description'])) {
                 for ($i = 0; $i < count($_POST['item_description']); $i++) {
                     $desc = trim($_POST['item_description'][$i] ?? '');
                     $qty = max(1, (int)($_POST['item_quantity'][$i] ?? 1));
                     $price = max(0, (float)($_POST['item_price'][$i] ?? 0));
+                    $discountPerUnit = max(0, (float)($_POST['item_discount'][$i] ?? 0));
                     
                     if ($desc !== '') {
-                        $itemTotal = $qty * $price;
+                        $itemTotal = $qty * ($price - $discountPerUnit);
+                        $itemTotalDiscount = $qty * $discountPerUnit;
                         $items[] = [
                             'description' => $desc,
                             'quantity' => $qty,
                             'unit_price' => $price,
+                            'discount_amount' => $discountPerUnit,
                             'total_price' => $itemTotal
                         ];
                         $subtotal += $itemTotal;
+                        $totalDiscount += $itemTotalDiscount;
                     }
                 }
             }
             
             $taxAmount = $subtotal * ($taxRate / 100);
-            $totalAmount = $subtotal + $taxAmount;
+            $totalAmount = $subtotal + $serviceCharge + $taxAmount;
             
             if ($action === 'create') {
                 // Create new invoice
-                $stmt = db()->prepare('INSERT INTO invoices (listing_id, user_id, invoice_number, invoice_date, due_date, subtotal, tax_amount, total_amount, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $stmt->execute([$listingId, $listing['user_id'], $invoiceNumber, $invoiceDate, $dueDate, $subtotal, $taxAmount, $totalAmount, $notes]);
+                $stmt = db()->prepare('INSERT INTO invoices (listing_id, user_id, invoice_number, invoice_date, due_date, subtotal, discount_amount, service_charge, tax_amount, total_amount, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $status = ($action === 'send') ? 'sent' : 'draft';
+                $stmt->execute([$listingId, $listing['user_id'], $invoiceNumber, $invoiceDate, $dueDate, $subtotal, $totalDiscount, $serviceCharge, $taxAmount, $totalAmount, $notes, $status]);
                 $invoiceId = db()->lastInsertId();
                 
-                $_SESSION['flash'] = 'Invoice created successfully!';
+                $_SESSION['flash'] = 'Invoice saved successfully!';
             } else {
                 // Update existing invoice
                 $invoiceId = $invoice['id'];
-                $stmt = db()->prepare('UPDATE invoices SET invoice_date = ?, due_date = ?, subtotal = ?, tax_amount = ?, total_amount = ?, notes = ? WHERE id = ?');
-                $stmt->execute([$invoiceDate, $dueDate, $subtotal, $taxAmount, $totalAmount, $notes, $invoiceId]);
+                $status = ($action === 'send') ? 'sent' : $invoice['status'];
+                $stmt = db()->prepare('UPDATE invoices SET invoice_date = ?, due_date = ?, subtotal = ?, discount_amount = ?, service_charge = ?, tax_amount = ?, total_amount = ?, notes = ?, status = ? WHERE id = ?');
+                $stmt->execute([$invoiceDate, $dueDate, $subtotal, $totalDiscount, $serviceCharge, $taxAmount, $totalAmount, $notes, $status, $invoiceId]);
                 
                 // Delete existing items
                 $stmt = db()->prepare('DELETE FROM invoice_items WHERE invoice_id = ?');
@@ -95,10 +103,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Insert invoice items
             if (!empty($items)) {
-                $stmt = db()->prepare('INSERT INTO invoice_items (invoice_id, description, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)');
+                $stmt = db()->prepare('INSERT INTO invoice_items (invoice_id, description, quantity, unit_price, discount_amount, total_price) VALUES (?, ?, ?, ?, ?, ?)');
                 foreach ($items as $item) {
-                    $stmt->execute([$invoiceId, $item['description'], $item['quantity'], $item['unit_price'], $item['total_price']]);
+                    $stmt->execute([$invoiceId, $item['description'], $item['quantity'], $item['unit_price'], $item['discount_amount'], $item['total_price']]);
                 }
+            }
+            
+            // Handle send action
+            if ($action === 'send') {
+                $_SESSION['flash'] = 'Invoice sent to customer successfully!';
             }
             
             db()->commit();
@@ -202,7 +215,7 @@ if ($invoice) {
           <div>
             <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
             <input type="date" id="due_date" name="due_date" 
-                   value="<?= $invoiceData['due_date'] ?? date('Y-m-d', strtotime('+30 days')) ?>"
+                   value="<?= $invoiceData['due_date'] ?? date('Y-m-d', strtotime('+7 days')) ?>"
                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           </div>
         </div>
@@ -212,7 +225,7 @@ if ($invoice) {
           <div id="invoice-items">
             <?php if (!empty($invoiceItems)): ?>
               <?php foreach ($invoiceItems as $index => $item): ?>
-                <div class="invoice-item grid grid-cols-1 md:grid-cols-5 gap-3 mb-3 p-3 border rounded-lg">
+                <div class="invoice-item grid grid-cols-1 md:grid-cols-6 gap-3 mb-3 p-3 border rounded-lg">
                   <div class="md:col-span-2">
                     <input type="text" name="item_description[]" placeholder="Description" 
                            value="<?= htmlspecialchars($item['description']) ?>"
@@ -228,6 +241,11 @@ if ($invoice) {
                            value="<?= number_format($item['unit_price'], 2, '.', '') ?>"
                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
+                  <div>
+                    <input type="number" name="item_discount[]" placeholder="Discount/Unit" min="0" step="0.01" 
+                           value="<?= number_format($item['discount_amount'] ?? 0, 2, '.', '') ?>"
+                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                  </div>
                   <div class="flex items-center">
                     <span class="item-total text-sm font-medium">Rs. <?= number_format($item['total_price'], 2) ?></span>
                     <button type="button" onclick="removeItem(this)" class="ml-2 text-red-600 hover:text-red-800">
@@ -239,17 +257,21 @@ if ($invoice) {
                 </div>
               <?php endforeach; ?>
             <?php else: ?>
-              <div class="invoice-item grid grid-cols-1 md:grid-cols-5 gap-3 mb-3 p-3 border rounded-lg">
+              <div class="invoice-item grid grid-cols-1 md:grid-cols-6 gap-3 mb-3 p-3 border rounded-lg">
                 <div class="md:col-span-2">
                   <input type="text" name="item_description[]" placeholder="Description" 
                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
-                  <input type="number" name="item_quantity[]" placeholder="Qty" min="1" value="1"
+                  <input type="number" name="item_quantity[]" placeholder="Qty" min="1"
                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
                   <input type="number" name="item_price[]" placeholder="Unit Price" min="0" step="0.01" 
+                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                  <input type="number" name="item_discount[]" placeholder="Discount/Unit" min="0" step="0.01"
                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div class="flex items-center">
@@ -283,6 +305,16 @@ if ($invoice) {
                 <span id="subtotal">Rs. <?= isset($invoiceData) ? number_format($invoiceData['subtotal'], 2) : '0.00' ?></span>
               </div>
               <div class="flex justify-between items-center">
+                <span>Service Charge:</span>
+                <input type="number" name="service_charge" id="service_charge" min="0" step="0.01" 
+                       value="<?= isset($invoiceData) ? number_format($invoiceData['service_charge'], 2, '.', '') : '0' ?>"
+                       class="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              </div>
+              <div class="flex justify-between">
+                <span>Total Discount:</span>
+                <span id="total-discount">Rs. <?= isset($invoiceData) ? number_format($invoiceData['discount_amount'], 2) : '0.00' ?></span>
+              </div>
+              <div class="flex justify-between items-center">
                 <span>Tax Rate (%):</span>
                 <input type="number" name="tax_rate" id="tax_rate" min="0" max="100" step="0.01" 
                        value="<?= isset($invoiceData) ? number_format(($invoiceData['tax_amount'] / max($invoiceData['subtotal'], 0.01)) * 100, 2) : '0' ?>"
@@ -301,17 +333,15 @@ if ($invoice) {
         </div>
 
         <div class="flex flex-wrap gap-3 pt-6 border-t">
-          <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-            <?= $invoice ? 'Update Invoice' : 'Create Invoice' ?>
+          <button type="submit" name="action" value="<?= $invoice ? 'update' : 'create' ?>" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <?= $invoice ? 'Save Invoice' : 'Save Invoice' ?>
           </button>
           
-          <?php if ($invoice && $invoiceData['status'] === 'draft'): ?>
-            <button type="submit" name="action" value="send" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              Mark as Sent
-            </button>
-          <?php endif; ?>
+          <button type="submit" name="action" value="send" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Send Invoice
+          </button>
           
-          <a href="/Kaveesha/add_listing.php" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+          <a href="/Kaveesha/add_listing.php" onclick="return confirmLeave()" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
             Back to Listings
           </a>
           
@@ -322,24 +352,64 @@ if ($invoice) {
           <?php endif; ?>
         </div>
       </form>
+      
+    </div>
+  </div>
+
+  <!-- Payment Notice Popup Modal -->
+  <div id="paymentNoticeModal" class="fixed inset-0 z-50 hidden" aria-labelledby="paymentNoticeTitle" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+    <div class="relative mx-auto mt-20 w-[90%] max-w-md rounded-lg bg-white shadow-xl">
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <div class="flex-shrink-0 mr-3">
+            <svg class="h-8 w-8 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h2 id="paymentNoticeTitle" class="text-lg font-semibold text-gray-900">Payment Notice</h2>
+        </div>
+        <div class="mb-6">
+          <p class="text-sm text-gray-700">
+            <strong class="text-red-600">Important:</strong> Please ensure to make the payment within 
+            <strong class="text-red-600">seven (7) days</strong> after the invoice is issued. 
+            Late payments may incur additional charges.
+          </p>
+          <p class="text-xs text-gray-500 mt-2">
+            This notice will be included with your invoice when sent to the customer.
+          </p>
+        </div>
+        <div class="flex justify-end gap-3">
+          <button type="button" id="paymentNoticeOkBtn" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Understood
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    let hasUnsavedChanges = false;
+    let originalFormData = '';
+
     function addItem() {
       const container = document.getElementById('invoice-items');
       const itemHtml = `
-        <div class="invoice-item grid grid-cols-1 md:grid-cols-5 gap-3 mb-3 p-3 border rounded-lg">
+        <div class="invoice-item grid grid-cols-1 md:grid-cols-6 gap-3 mb-3 p-3 border rounded-lg">
           <div class="md:col-span-2">
             <input type="text" name="item_description[]" placeholder="Description" 
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           </div>
           <div>
-            <input type="number" name="item_quantity[]" placeholder="Qty" min="1" value="1"
+            <input type="number" name="item_quantity[]" placeholder="Qty" min="1"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           </div>
           <div>
             <input type="number" name="item_price[]" placeholder="Unit Price" min="0" step="0.01" 
+                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          </div>
+          <div>
+            <input type="number" name="item_discount[]" placeholder="Discount/Unit" min="0" step="0.01"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           </div>
           <div class="flex items-center">
@@ -354,47 +424,157 @@ if ($invoice) {
       `;
       container.insertAdjacentHTML('beforeend', itemHtml);
       attachEventListeners();
+      hasUnsavedChanges = true;
     }
 
     function removeItem(button) {
       const item = button.closest('.invoice-item');
       item.remove();
       calculateTotal();
+      hasUnsavedChanges = true;
     }
 
     function calculateTotal() {
       let subtotal = 0;
+      let totalDiscount = 0;
       
       document.querySelectorAll('.invoice-item').forEach(item => {
         const qty = parseFloat(item.querySelector('input[name="item_quantity[]"]').value) || 0;
         const price = parseFloat(item.querySelector('input[name="item_price[]"]').value) || 0;
-        const total = qty * price;
+        const discountPerUnit = parseFloat(item.querySelector('input[name="item_discount[]"]').value) || 0;
+        const total = qty * (price - discountPerUnit);
+        const itemTotalDiscount = qty * discountPerUnit;
         
-        item.querySelector('.item-total').textContent = 'Rs. ' + total.toFixed(2);
-        subtotal += total;
+        item.querySelector('.item-total').textContent = 'Rs. ' + Math.max(0, total).toFixed(2);
+        subtotal += Math.max(0, total);
+        totalDiscount += itemTotalDiscount;
       });
       
+      const serviceCharge = parseFloat(document.getElementById('service_charge').value) || 0;
       const taxRate = parseFloat(document.getElementById('tax_rate').value) || 0;
       const taxAmount = subtotal * (taxRate / 100);
-      const totalAmount = subtotal + taxAmount;
+      const totalAmount = subtotal + serviceCharge + taxAmount;
       
       document.getElementById('subtotal').textContent = 'Rs. ' + subtotal.toFixed(2);
+      document.getElementById('total-discount').textContent = 'Rs. ' + totalDiscount.toFixed(2);
       document.getElementById('tax-amount').textContent = 'Rs. ' + taxAmount.toFixed(2);
       document.getElementById('total-amount').textContent = 'Rs. ' + totalAmount.toFixed(2);
     }
 
     function attachEventListeners() {
-      document.querySelectorAll('input[name="item_quantity[]"], input[name="item_price[]"]').forEach(input => {
-        input.addEventListener('input', calculateTotal);
+      document.querySelectorAll('input[name="item_quantity[]"], input[name="item_price[]"], input[name="item_discount[]"]').forEach(input => {
+        input.addEventListener('input', function() {
+          calculateTotal();
+          hasUnsavedChanges = true;
+        });
       });
       
-      document.getElementById('tax_rate').addEventListener('input', calculateTotal);
+      document.getElementById('tax_rate').addEventListener('input', function() {
+        calculateTotal();
+        hasUnsavedChanges = true;
+      });
+      
+      document.getElementById('service_charge').addEventListener('input', function() {
+        calculateTotal();
+        hasUnsavedChanges = true;
+      });
+    }
+
+    function confirmLeave() {
+      if (hasUnsavedChanges) {
+        return confirm('You have unsaved changes. Are you sure you want to leave without saving?');
+      }
+      return true;
+    }
+
+    function trackFormChanges() {
+      document.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('input', function() {
+          hasUnsavedChanges = true;
+        });
+      });
+    }
+
+    function showPaymentNotice() {
+      const modal = document.getElementById('paymentNoticeModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function hidePaymentNotice() {
+      const modal = document.getElementById('paymentNoticeModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
     }
 
     // Initialize event listeners on page load
     document.addEventListener('DOMContentLoaded', function() {
       attachEventListeners();
+      trackFormChanges();
       calculateTotal();
+      
+      // Auto-set due date when invoice date changes
+      document.getElementById('invoice_date').addEventListener('change', function() {
+        const invoiceDate = new Date(this.value);
+        if (!isNaN(invoiceDate.getTime())) {
+          const dueDate = new Date(invoiceDate);
+          dueDate.setDate(dueDate.getDate() + 7);
+          document.getElementById('due_date').value = dueDate.toISOString().split('T')[0];
+          hasUnsavedChanges = true;
+        }
+      });
+      
+      // Store original form data
+      const form = document.querySelector('form');
+      originalFormData = new FormData(form).toString();
+      
+      // Reset unsaved changes flag when form is submitted
+      form.addEventListener('submit', function() {
+        hasUnsavedChanges = false;
+      });
+      
+      // Payment notice modal handlers
+      const paymentModal = document.getElementById('paymentNoticeModal');
+      const paymentOkBtn = document.getElementById('paymentNoticeOkBtn');
+      
+      if (paymentOkBtn) {
+        paymentOkBtn.addEventListener('click', hidePaymentNotice);
+      }
+      
+      // Close modal when clicking outside
+      if (paymentModal) {
+        paymentModal.addEventListener('click', function(e) {
+          if (e.target === paymentModal) {
+            hidePaymentNotice();
+          }
+        });
+      }
+      
+      // Show payment notice when Send Invoice button is clicked
+      const sendButtons = document.querySelectorAll('button[value="send"]');
+      sendButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          showPaymentNotice();
+          
+          // After user acknowledges, submit the form
+          paymentOkBtn.addEventListener('click', function() {
+            hidePaymentNotice();
+            hasUnsavedChanges = false;
+            button.closest('form').submit();
+          }, { once: true });
+        });
+      });
+      
+      // Warn before leaving page
+      window.addEventListener('beforeunload', function(e) {
+        if (hasUnsavedChanges) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
     });
   </script>
 </body>
