@@ -43,7 +43,10 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
 ?>
 <nav class="bg-white shadow">
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-    <a href="/Kaveesha/dashboard.php" class="text-lg font-semibold text-indigo-700 hover:text-indigo-900">Yoma Electronics</a>
+    <a href="/Kaveesha/dashboard.php" class="flex items-center space-x-2 text-lg font-semibold text-indigo-700 hover:text-indigo-900">
+      <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-24 w-auto">
+      <span>Yoma Electronics</span>
+    </a>
 
     <!-- Desktop nav -->
     <div class="hidden md:flex items-center space-x-6">

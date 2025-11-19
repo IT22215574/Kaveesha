@@ -80,13 +80,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $totalAmount = $subtotal + $serviceCharge + $taxAmount;
             
             if ($action === 'create') {
+                // Check if there's an existing invoice for this listing - delete it
+                $checkExisting = db()->prepare('SELECT id FROM invoices WHERE listing_id = ?');
+                $checkExisting->execute([$listingId]);
+                $oldInvoice = $checkExisting->fetch();
+                
+                if ($oldInvoice) {
+                    // Delete old invoice items first (due to foreign key)
+                    $deleteItems = db()->prepare('DELETE FROM invoice_items WHERE invoice_id = ?');
+                    $deleteItems->execute([$oldInvoice['id']]);
+                    
+                    // Delete old invoice
+                    $deleteInvoice = db()->prepare('DELETE FROM invoices WHERE id = ?');
+                    $deleteInvoice->execute([$oldInvoice['id']]);
+                }
+                
                 // Create new invoice
                 $stmt = db()->prepare('INSERT INTO invoices (listing_id, user_id, invoice_number, invoice_date, due_date, subtotal, discount_amount, service_charge, tax_amount, total_amount, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 $status = ($action === 'send') ? 'sent' : 'draft';
                 $stmt->execute([$listingId, $listing['user_id'], $invoiceNumber, $invoiceDate, $dueDate, $subtotal, $totalDiscount, $serviceCharge, $taxAmount, $totalAmount, $notes, $status]);
                 $invoiceId = db()->lastInsertId();
                 
-                $_SESSION['flash'] = 'Invoice saved successfully!';
+                $_SESSION['flash'] = $oldInvoice ? 'Old invoice replaced with new invoice successfully!' : 'Invoice saved successfully!';
             } else {
                 // Update existing invoice
                 $invoiceId = $invoice['id'];
@@ -110,8 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Handle send action
-            if ($action === 'send') {
-                $_SESSION['flash'] = 'Invoice sent to customer successfully!';
+            if ($action === 'send' || $status === 'sent') {
+                if ($oldInvoice ?? false) {
+                    $_SESSION['flash'] = 'Old invoice replaced and new invoice sent to customer successfully!';
+                } else {
+                    $_SESSION['flash'] = 'Invoice sent to customer successfully!';
+                }
             }
             
             db()->commit();

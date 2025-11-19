@@ -1,11 +1,15 @@
 <?php
 require_once __DIR__ . '/config.php';
-require_admin();
+require_login();
+
+// Check if user is admin
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
 $invoiceId = (int)($_GET['id'] ?? 0);
 if ($invoiceId <= 0) {
     $_SESSION['flash'] = 'Invalid invoice ID.';
-    header('Location: /Kaveesha/add_listing.php');
+    $redirectUrl = $isAdmin ? '/Kaveesha/invoices.php' : '/Kaveesha/dashboard.php';
+    header('Location: ' . $redirectUrl);
     exit;
 }
 
@@ -23,7 +27,15 @@ $invoice = $stmt->fetch();
 
 if (!$invoice) {
     $_SESSION['flash'] = 'Invoice not found.';
-    header('Location: /Kaveesha/add_listing.php');
+    $redirectUrl = $isAdmin ? '/Kaveesha/invoices.php' : '/Kaveesha/dashboard.php';
+    header('Location: ' . $redirectUrl);
+    exit;
+}
+
+// If not admin, verify the invoice belongs to the logged-in user
+if (!$isAdmin && $invoice['user_id'] != $_SESSION['user_id']) {
+    $_SESSION['flash'] = 'You do not have permission to view this invoice.';
+    header('Location: /Kaveesha/dashboard.php');
     exit;
 }
 
@@ -32,8 +44,8 @@ $stmt = db()->prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY
 $stmt->execute([$invoiceId]);
 $items = $stmt->fetchAll();
 
-// Handle status updates
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle status updates (admin only)
+if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
     if ($action === 'update_status') {
@@ -202,7 +214,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="bg-gray-50">
   <div class="no-print">
-    <?php include __DIR__ . '/includes/admin_nav.php'; ?>
+    <?php 
+      if ($isAdmin) {
+        include __DIR__ . '/includes/admin_nav.php';
+      } else {
+        include __DIR__ . '/includes/user_nav.php';
+      }
+    ?>
   </div>
   
   <div class="container mx-auto px-4 py-8">
@@ -213,30 +231,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php unset($_SESSION['flash']); ?>
     <?php endif; ?>
 
+    <!-- Invoice Notification (User only) -->
+    <?php if (!$isAdmin): ?>
+    <div class="no-print mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg shadow-md">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <div class="ml-3 flex-1">
+          <p class="text-sm font-medium text-indigo-900">
+            📋 You have received an invoice for: <span class="font-bold"><?= htmlspecialchars($invoice['listing_title']) ?></span>
+          </p>
+          <a href="/Kaveesha/dashboard.php?listing_id=<?= (int)$invoice['listing_id'] ?>" class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800 font-semibold">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+            View Listing
+          </a>
+        </div>
+      </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Action buttons -->
     <div class="no-print mb-6 flex flex-wrap gap-3">
       <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
         Print Invoice
       </button>
-      <a href="/Kaveesha/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
-         class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-        Edit Invoice
-      </a>
-      <a href="/Kaveesha/add_listing.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-        Back to Listings
-      </a>
       
-      <?php if ($invoice['status'] === 'draft' || $invoice['status'] === 'sent'): ?>
-        <form method="post" class="inline">
-          <input type="hidden" name="action" value="send_invoice">
-          <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            <?= $invoice['status'] === 'draft' ? 'Send to Customer' : 'Resend to Customer' ?>
-          </button>
-        </form>
+      <?php if ($isAdmin): ?>
+        <a href="/Kaveesha/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
+           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+          Edit Invoice
+        </a>
+        <a href="/Kaveesha/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+          Back to Invoices
+        </a>
+        
+        <?php if ($invoice['status'] === 'draft' || $invoice['status'] === 'sent'): ?>
+          <form method="post" class="inline">
+            <input type="hidden" name="action" value="send_invoice">
+            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+              <?= $invoice['status'] === 'draft' ? 'Send to Customer' : 'Resend to Customer' ?>
+            </button>
+          </form>
+        <?php endif; ?>
+      <?php else: ?>
+        <button onclick="downloadInvoice()" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Download Invoice
+        </button>
+        <a href="/Kaveesha/dashboard.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+          Back to Dashboard
+        </a>
       <?php endif; ?>
     </div>
 
-    <!-- Status update form -->
+    <!-- Status update form (Admin only) -->
+    <?php if ($isAdmin): ?>
     <div class="no-print mb-6 bg-white p-4 rounded-lg shadow-md">
       <form method="post" class="flex items-center gap-3">
         <input type="hidden" name="action" value="update_status">
@@ -263,6 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </span>
       </form>
     </div>
+    <?php endif; ?>
 
     <!-- Invoice -->
     <div class="max-w-full md:max-w-7xl mx-0 md:mx-2 bg-white rounded-lg shadow-md p-0 md:p-1">
@@ -418,5 +476,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </div>
+
+  <script>
+    function downloadInvoice() {
+      // Create a temporary title for the print dialog
+      const originalTitle = document.title;
+      document.title = 'Invoice_<?= htmlspecialchars($invoice['invoice_number']) ?>_<?= htmlspecialchars($invoice['listing_title']) ?>';
+      
+      // Trigger print dialog (user can save as PDF)
+      window.print();
+      
+      // Restore original title
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 100);
+    }
+  </script>
 </body>
 </html>

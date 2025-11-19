@@ -52,6 +52,50 @@ if (!empty($_SESSION['user_id'])) {
       </div>
     </div>
 
+    <!-- Invoice Notifications Section -->
+    <div id="invoiceSection" class="hidden bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur rounded-xl shadow-xl border border-blue-200 p-6 mb-8">
+      <!-- Loading state -->
+      <div id="invoiceLoading" class="text-center py-4">
+        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+        <p class="mt-2 text-sm text-gray-600">Checking for invoices...</p>
+      </div>
+
+      <!-- Invoice Alert -->
+      <div id="invoiceAlert" class="hidden">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <div class="ml-4 flex-1">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              📋 You have <span id="invoiceCount" class="text-indigo-600">0</span> pending invoice(s)
+            </h3>
+            <div id="latestInvoiceInfo" class="mb-4 p-3 bg-white rounded-lg border border-blue-200">
+              <p class="text-sm text-gray-600 mb-1">Latest Invoice:</p>
+              <p class="font-semibold text-gray-900" id="latestInvoiceListing"></p>
+              <p class="text-sm text-gray-500 mt-1">
+                Invoice #<span id="latestInvoiceNumber"></span> • 
+                <span id="latestInvoiceDate"></span> • 
+                Status: <span id="latestInvoiceStatus" class="font-semibold"></span>
+              </p>
+              <p class="text-lg font-bold text-indigo-600 mt-2">
+                Amount: Rs. <span id="latestInvoiceAmount"></span>
+              </p>
+            </div>
+            <button onclick="showInvoiceModal()" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              View All Invoices
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- My Listings Section -->
     <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-6">
       <h3 class="text-xl font-semibold text-gray-900 mb-6">My Service Listings</h3>
@@ -83,6 +127,23 @@ if (!empty($_SESSION['user_id'])) {
       </div>
     </div>
   </main>
+
+  <!-- Invoice Modal -->
+  <div id="invoiceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+        <h3 class="text-xl font-semibold text-gray-900">📋 My Invoices</h3>
+        <button onclick="closeInvoiceModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+          &times;
+        </button>
+      </div>
+      <div class="p-6">
+        <div id="invoiceListContainer">
+          <!-- Invoices will be populated here -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal for full description -->
   <div id="descriptionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -132,6 +193,120 @@ if (!empty($_SESSION['user_id'])) {
   
   <script>
     let listings = [];
+    let invoices = [];
+
+    // Load invoices
+    async function loadInvoices() {
+      try {
+        const response = await fetch('/Kaveesha/user_invoices_api.php');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load invoices');
+        }
+
+        invoices = data.invoices || [];
+        const unreadCount = data.unread_count || 0;
+        const latestInvoice = data.latest_invoice;
+
+        document.getElementById('invoiceLoading').classList.add('hidden');
+
+        // Show invoice section if there are pending invoices
+        if (unreadCount > 0 && latestInvoice) {
+          document.getElementById('invoiceSection').classList.remove('hidden');
+          document.getElementById('invoiceAlert').classList.remove('hidden');
+          document.getElementById('invoiceCount').textContent = unreadCount;
+          document.getElementById('latestInvoiceListing').textContent = latestInvoice.listing_title;
+          document.getElementById('latestInvoiceNumber').textContent = latestInvoice.invoice_number;
+          document.getElementById('latestInvoiceDate').textContent = formatDate(latestInvoice.invoice_date);
+          document.getElementById('latestInvoiceStatus').textContent = latestInvoice.status.toUpperCase();
+          document.getElementById('latestInvoiceAmount').textContent = parseFloat(latestInvoice.total_amount).toFixed(2);
+          
+          // Set status color
+          const statusColors = {
+            'sent': 'text-blue-600',
+            'overdue': 'text-red-600',
+            'paid': 'text-green-600',
+            'draft': 'text-gray-600'
+          };
+          const statusEl = document.getElementById('latestInvoiceStatus');
+          statusEl.className = 'font-semibold ' + (statusColors[latestInvoice.status] || 'text-gray-600');
+        }
+
+      } catch (err) {
+        console.error('Error loading invoices:', err);
+        document.getElementById('invoiceLoading').classList.add('hidden');
+      }
+    }
+
+    function showInvoiceModal() {
+      const modal = document.getElementById('invoiceModal');
+      const container = document.getElementById('invoiceListContainer');
+      
+      if (invoices.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500 py-8">No invoices found.</p>';
+      } else {
+        container.innerHTML = invoices.map(invoice => {
+          const statusColors = {
+            'draft': 'bg-gray-100 text-gray-800 border-gray-300',
+            'sent': 'bg-blue-100 text-blue-800 border-blue-300',
+            'paid': 'bg-green-100 text-green-800 border-green-300',
+            'overdue': 'bg-red-100 text-red-800 border-red-300'
+          };
+          const statusClass = statusColors[invoice.status] || 'bg-gray-100 text-gray-800 border-gray-300';
+          
+          return `
+            <div class="mb-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition bg-white">
+              <div class="flex justify-between items-start mb-2">
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-900 mb-1">${escapeHtml(invoice.listing_title)}</h4>
+                  <p class="text-sm text-gray-600">Invoice #${escapeHtml(invoice.invoice_number)}</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    Date: ${formatDate(invoice.invoice_date)} • Due: ${formatDate(invoice.due_date)}
+                  </p>
+                </div>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full border ${statusClass}">
+                  ${invoice.status.toUpperCase()}
+                </span>
+              </div>
+              <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                <span class="text-lg font-bold text-indigo-600">
+                  Rs. ${parseFloat(invoice.total_amount).toFixed(2)}
+                </span>
+                <a href="/Kaveesha/view_invoice.php?id=${invoice.id}" 
+                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                  View Invoice
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoiceModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close invoice modal on background click
+    document.getElementById('invoiceModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeInvoiceModal();
+      }
+    });
 
     async function loadListings() {
       const loading = document.getElementById('loading');
@@ -324,16 +499,22 @@ if (!empty($_SESSION['user_id'])) {
       }
     });
 
-    // Close modal on Escape key and arrow keys for image navigation
+    // Close modals on Escape key and arrow keys for image navigation
     document.addEventListener('keydown', function(e) {
-      const modal = document.getElementById('descriptionModal');
-      if (!modal.classList.contains('hidden')) {
+      const descModal = document.getElementById('descriptionModal');
+      const invModal = document.getElementById('invoiceModal');
+      
+      if (!descModal.classList.contains('hidden')) {
         if (e.key === 'Escape') {
           closeModal();
         } else if (e.key === 'ArrowLeft') {
           if (currentImages.length > 1) changeImage(-1);
         } else if (e.key === 'ArrowRight') {
           if (currentImages.length > 1) changeImage(1);
+        }
+      } else if (!invModal.classList.contains('hidden')) {
+        if (e.key === 'Escape') {
+          closeInvoiceModal();
         }
       }
     });
@@ -352,8 +533,32 @@ if (!empty($_SESSION['user_id'])) {
       }
     }
 
-    // Load listings on page load
-    document.addEventListener('DOMContentLoaded', loadListings);
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadInvoices();
+      loadListings();
+      
+      // Check if there's a listing_id in URL to auto-open
+      const urlParams = new URLSearchParams(window.location.search);
+      const listingId = urlParams.get('listing_id');
+      if (listingId) {
+        // Wait for listings to load, then open the modal
+        const checkListingsInterval = setInterval(() => {
+          if (listings.length > 0) {
+            clearInterval(checkListingsInterval);
+            const listingIndex = listings.findIndex(l => l.id == listingId);
+            if (listingIndex !== -1) {
+              openModal(listingIndex);
+              // Clean URL without reloading
+              window.history.replaceState({}, document.title, '/Kaveesha/dashboard.php');
+            }
+          }
+        }, 100);
+        
+        // Timeout after 5 seconds
+        setTimeout(() => clearInterval(checkListingsInterval), 5000);
+      }
+    });
   </script>
 
   <style>
