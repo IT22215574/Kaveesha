@@ -26,8 +26,8 @@ if (!empty($_SESSION['user_id'])) {
 
   <!-- Banner Section -->
   <div class="relative">
-    <div class="w-full h-64 md:h-80 lg:h-96 overflow-hidden">
-      <img src="/Kaveesha/logo/banner.jpeg" alt="Yoma Electronics Banner" class="w-full h-full object-cover">
+    <div class="w-full h-96 md:h-[450px] lg:h-[600px] overflow-hidden">
+      <img src="/Kaveesha/logo/banner.jpeg" alt="Yoma Electronics Banner" class="w-full h-full object-cover" style="object-position: center 20%;">
       <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
         <div class="text-center text-white">
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome to Yoma Electronics</h1>
