@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_login();
-// Fetch live username for greeting
+
+// Fetch user info for display
 $displayName = isset($_SESSION['user']) ? (string)$_SESSION['user'] : '';
 if (!empty($_SESSION['user_id'])) {
   try {
@@ -18,34 +19,17 @@ if (!empty($_SESSION['user_id'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Home • Yoma Electronics</title>
+  <title>My Listings • Yoma Electronics</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 to-gray-50 relative">
   <?php include __DIR__ . '/includes/user_nav.php'; ?>
 
-  <!-- Banner Section -->
-  <div class="relative">
-    <div class="w-full h-64 md:h-80 lg:h-96 overflow-hidden">
-      <img src="/Kaveesha/logo/banner.jpeg" alt="Yoma Electronics Banner" class="w-full h-full object-cover">
-      <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-        <div class="text-center text-white">
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome to Yoma Electronics</h1>
-          <p class="text-lg md:text-xl lg:text-2xl">Your trusted partner for electronic services</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Main content -->
   <main class="max-w-6xl mx-auto px-4 pt-8 pb-10">
-    <!-- Welcome Section -->
-    <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-6 mb-8">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-2xl font-semibold text-gray-900 mb-2">Welcome back, <?= htmlspecialchars($displayName) ?></h2>
-          <p class="text-gray-600">Manage your electronic service listings and track their progress</p>
-        </div>
+    <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-900">My Listings</h2>
         <div class="flex items-center gap-2">
           <span id="totalCount" class="text-sm text-gray-600"></span>
           <button onclick="loadListings()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
@@ -53,32 +37,6 @@ if (!empty($_SESSION['user_id'])) {
           </button>
         </div>
       </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-6 mb-8">
-      <h3 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a href="/Kaveesha/messages.php" class="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
-          <div class="text-2xl">💬</div>
-          <div>
-            <div class="font-medium text-green-900">Messages</div>
-            <div class="text-sm text-green-600">Check your messages</div>
-          </div>
-        </a>
-        <a href="/Kaveesha/invoices.php" class="flex items-center gap-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-          <div class="text-2xl">🧾</div>
-          <div>
-            <div class="font-medium text-purple-900">Invoices</div>
-            <div class="text-sm text-purple-600">View your invoices</div>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- My Listings Section -->
-    <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-6">
-      <h3 class="text-xl font-semibold text-gray-900 mb-6">My Service Listings</h3>
       
       <!-- Loading state -->
       <div id="loading" class="text-center py-8">
@@ -94,10 +52,10 @@ if (!empty($_SESSION['user_id'])) {
       <!-- Empty state -->
       <div id="empty" class="hidden text-center py-12">
         <div class="text-gray-400 text-6xl mb-4">📋</div>
-        <h4 class="text-lg font-semibold text-gray-700 mb-2">No service requests found</h4>
-        <p class="text-gray-600 mb-4">You don't have any service requests yet. Contact us to get started!</p>
-        <a href="/Kaveesha/messages.php" class="inline-block px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-          Send a Message
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">No listings found</h3>
+        <p class="text-gray-600 mb-4">You haven't created any listings yet.</p>
+        <a href="/Kaveesha/dashboard.php" class="inline-block px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+          Go to Dashboard
         </a>
       </div>
 
@@ -107,7 +65,7 @@ if (!empty($_SESSION['user_id'])) {
       </div>
     </div>
   </main>
-  
+
   <script>
     let listings = [];
 
@@ -185,7 +143,7 @@ if (!empty($_SESSION['user_id'])) {
           <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
             ${imageHtml}
             <div class="p-4">
-              <h4 class="font-semibold text-gray-900 mb-2 line-clamp-2">${escapeHtml(listing.title)}</h4>
+              <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${escapeHtml(listing.title)}</h3>
               <p class="text-gray-600 text-sm mb-3 line-clamp-3">${escapeHtml(listing.description || 'No description')}</p>
               <div class="flex items-center justify-between">
                 <span class="px-2 py-1 text-xs font-medium rounded-full border ${statusClass}">

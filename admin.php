@@ -73,6 +73,7 @@ if ($isAjax) {
     echo '<td class="py-2 pr-4">' . $created . '</td>';
     echo '<td class="py-2 pr-4">';
     echo '<div class="flex items-center gap-2">';
+    echo '<a href="/Kaveesha/admin_user_listings.php?user_id=' . $id . '" class="inline-block px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">Listings</a>';
     echo '<a href="/Kaveesha/admin_user_edit.php?id=' . $id . '" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Edit</a>';
     echo '<form action="/Kaveesha/admin_user_delete.php" method="post" onsubmit="return confirm(\'Delete this user? This cannot be undone.\');">';
     echo '<input type="hidden" name="id" value="' . $id . '">';
@@ -133,8 +134,9 @@ if ($isAjax) {
                 <td class="py-2 pr-4"><?= htmlspecialchars($u['created_at']) ?></td>
                 <td class="py-2 pr-4">
                   <div class="flex items-center gap-2">
+                    <a href="/Kaveesha/admin_user_listings.php?user_id=<?= (int)$u['id'] ?>" class="inline-block px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">Listings</a>
                     <a href="/Kaveesha/admin_user_edit.php?id=<?= (int)$u['id'] ?>" class="inline-block px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Edit</a>
-                    <form action="/Kaveesha/admin_user_delete.php" method="post" onsubmit="return confirm('Delete this user? This cannot be undone.');">
+                    <form action="/Kaveesha/admin_user_delete.php" method="post" onsubmit="return confirm('Delete this user? This cannot be undone.');"
                       <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
                       <?php $isSelf = isset($_SESSION['user_id']) && ((int)$_SESSION['user_id'] === (int)$u['id']); ?>
                       <button type="submit" class="px-3 py-1 rounded <?= $isSelf ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' ?>" <?= $isSelf ? 'disabled' : '' ?>>Delete</button>

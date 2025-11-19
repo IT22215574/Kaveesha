@@ -71,7 +71,7 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
   <div id="userMobileMenu" class="md:hidden hidden border-t border-gray-200">
     <div class="px-4 py-4 space-y-3">
       <div class="text-sm text-gray-500 mb-2">Signed in as <strong><?= htmlspecialchars($displayName) ?></strong><?= $mobileNumber ? ' • ' . htmlspecialchars($mobileNumber) : '' ?></div>
-      <a href="/Kaveesha/dashboard.php" class="block w-full <?= $isDashboard ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Dashboard</a>
+      <a href="/Kaveesha/dashboard.php" class="block w-full <?= $isDashboard ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Home</a>
       <a href="/Kaveesha/messages.php" class="block w-full <?= ($current === 'messages.php') ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative">
         Messages
         <span class="messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
