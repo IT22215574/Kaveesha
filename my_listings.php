@@ -133,8 +133,9 @@ if (!empty($_SESSION['user_id'])) {
         
         // Display first available image
         const imagePath = listing.image_path || listing.image_path_2 || listing.image_path_3;
-        const imageHtml = imagePath 
-          ? `<img src="/Kaveesha/uploads/${imagePath}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover">`
+        const resolvedImageSrc = imagePath ? (imagePath.startsWith('uploads/') ? `/Kaveesha/${imagePath}` : `/Kaveesha/uploads/${imagePath}`) : null;
+        const imageHtml = resolvedImageSrc 
+          ? `<img src="${resolvedImageSrc}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover">`
           : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                <span class="text-gray-400 text-4xl">📷</span>
              </div>`;

@@ -135,82 +135,116 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
       });
     }
     
-    // Update unread message count for admin with debouncing
-    let updateTimeout = null;
-    function updateAdminUnreadCount() {
-      // Debounce API calls to prevent excessive requests
-      if (updateTimeout) clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(() => {
-        fetch('/Kaveesha/messages_api.php?action=unread_count')
-          .then(response => response.json())
-          .then(data => {
-            updateAdminBadges(data.unread_count);
-          })
-          .catch(error => {
-            console.error('Error updating admin unread count:', error);
-            // Retry after delay on error
-            setTimeout(updateAdminUnreadCount, 10000);
-          });
-      }, 1000);
-    }
-    
+    // ---------- Admin Unread Count (Optimized) ----------
+    let adminLastUnread = null;
+    let adminPollingActive = false;
+    let adminPollTimer = null;
+    let adminAdaptiveDelay = 15000;
+    let adminUnchangedCycles = 0;
+    let adminSSESource = null;
+    let adminFallbackStarted = false;
+
     function updateAdminBadges(count) {
-      const badges = document.querySelectorAll('.admin-messages-badge');
-      badges.forEach(badge => {
-        if (count > 0) {
-          badge.style.display = 'flex';
-        } else {
-          badge.style.display = 'none';
-        }
+      document.querySelectorAll('.admin-messages-badge').forEach(badge => {
+        badge.style.display = count > 0 ? 'flex' : 'none';
       });
     }
-    
-    // Setup real-time updates with fallback for admin
-    let sseRetryTimeout = null;
-    let sseRetryCount = 0;
-    const maxRetries = 3;
-    
-    function setupAdminRealtimeUpdates() {
-      if (typeof(EventSource) !== "undefined" && sseRetryCount < maxRetries) {
-        const eventSource = new EventSource('/Kaveesha/messages_sse.php');
-        
-        eventSource.onopen = function() {
-          sseRetryCount = 0; // Reset retry count on successful connection
-        };
-        
-        eventSource.onmessage = function(event) {
-          try {
-            const data = JSON.parse(event.data);
-            if (data.unread_count !== undefined) {
-              updateAdminBadges(data.unread_count);
+
+    function adminScheduleNextPoll() {
+      if (!adminPollingActive) return;
+      const delay = document.hidden ? Math.max(adminAdaptiveDelay, 30000) : adminAdaptiveDelay;
+      adminPollTimer = setTimeout(adminPollUnreadCount, delay);
+    }
+
+    function adminPollUnreadCount() {
+      fetch('/Kaveesha/messages_api.php?action=unread_count', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+          const c = data.unread_count || 0;
+          updateAdminBadges(c);
+          if (adminLastUnread === c) {
+            adminUnchangedCycles++;
+            if (adminUnchangedCycles > 3 && adminAdaptiveDelay < 60000) {
+              adminAdaptiveDelay += 5000;
             }
-          } catch (e) {
-            console.error('Error parsing SSE data:', e);
-          }
-        };
-        
-        eventSource.onerror = function() {
-          eventSource.close();
-          sseRetryCount++;
-          if (sseRetryCount < maxRetries) {
-            // Exponential backoff retry
-            const retryDelay = Math.pow(2, sseRetryCount) * 1000;
-            sseRetryTimeout = setTimeout(setupAdminRealtimeUpdates, retryDelay);
           } else {
-            // Fall back to periodic polling after max retries
-            setInterval(updateAdminUnreadCount, 30000);
+            adminLastUnread = c;
+            adminUnchangedCycles = 0;
+            adminAdaptiveDelay = 10000;
           }
-        };
-      } else {
-        // No SSE support or max retries reached - use polling
-        setInterval(updateAdminUnreadCount, 30000);
+        })
+        .catch(err => {
+          console.error('Admin unread poll failed', err);
+          adminAdaptiveDelay = Math.min(adminAdaptiveDelay + 10000, 60000);
+        })
+        .finally(() => adminScheduleNextPoll());
+    }
+
+    function adminStartPollingFallback() {
+      if (adminFallbackStarted) return;
+      adminFallbackStarted = true;
+      adminStopSSE();
+      adminPollingActive = true;
+      adminAdaptiveDelay = 15000;
+      adminUnchangedCycles = 0;
+      adminPollUnreadCount();
+    }
+
+    function adminStopSSE() {
+      if (adminSSESource) {
+        adminSSESource.close();
+        adminSSESource = null;
       }
     }
-    
-    // Check for unread messages on page load and setup real-time updates
+
+    function setupAdminRealtimeUpdates() {
+      if (typeof EventSource === 'undefined') {
+        adminStartPollingFallback();
+        return;
+      }
+      adminStopSSE();
+      adminSSESource = new EventSource('/Kaveesha/messages_sse.php');
+      adminSSESource.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'closing') {
+            adminStopSSE();
+            setTimeout(setupAdminRealtimeUpdates, 2500);
+            return;
+          }
+          if (data.unread_count !== undefined) {
+            const c = data.unread_count;
+            updateAdminBadges(c);
+            adminLastUnread = c;
+            adminAdaptiveDelay = 10000;
+            adminUnchangedCycles = 0;
+          }
+        } catch(e) {
+          console.error('Admin SSE parse error', e);
+        }
+      };
+      adminSSESource.onerror = function() {
+        if (adminSSESource && adminSSESource.readyState === 2) { // CLOSED
+          adminStopSSE();
+          setTimeout(setupAdminRealtimeUpdates, 3000);
+        } else {
+          adminStartPollingFallback();
+        }
+      };
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        adminStopSSE();
+      } else if (!adminFallbackStarted) {
+        setupAdminRealtimeUpdates();
+      }
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
-      updateAdminUnreadCount(); // Initial load
       setupAdminRealtimeUpdates();
+      // Start fallback polling in parallel; SSE will stop it if stable
+      adminStartPollingFallback();
     });
     
     if (confirmBtn) confirmBtn.addEventListener('click', function(){ if (pendingHref) window.location.href = pendingHref; });

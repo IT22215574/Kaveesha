@@ -142,82 +142,130 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
       });
     }
     
-    // Update unread message count with debouncing
-    let userUpdateTimeout = null;
-    function updateUnreadCount() {
-      // Debounce API calls to prevent excessive requests
-      if (userUpdateTimeout) clearTimeout(userUpdateTimeout);
-      userUpdateTimeout = setTimeout(() => {
-        fetch('/Kaveesha/messages_api.php?action=unread_count')
-          .then(response => response.json())
-          .then(data => {
-            updateBadges(data.unread_count);
-          })
-          .catch(error => {
-            console.error('Error updating unread count:', error);
-            // Retry after delay on error
-            setTimeout(updateUnreadCount, 10000);
-          });
-      }, 1000);
-    }
-    
+    // ---------- Unread Count Logic (Optimized) ----------
+    let lastUnread = null;
+    let pollingActive = false;
+    let pollTimer = null;
+    let adaptiveDelay = 15000; // start at 15s
+    let unchangedCycles = 0;
+    let sseSource = null;
+    let fallbackStarted = false;
+
     function updateBadges(count) {
-      const badges = document.querySelectorAll('.messages-badge');
-      badges.forEach(badge => {
-        if (count > 0) {
-          badge.style.display = 'flex';
-        } else {
-          badge.style.display = 'none';
-        }
+      document.querySelectorAll('.messages-badge').forEach(badge => {
+        badge.style.display = count > 0 ? 'flex' : 'none';
       });
     }
-    
-    // Setup real-time updates with fallback
-    let userSSERetryTimeout = null;
-    let userSSERetryCount = 0;
-    const userMaxRetries = 3;
-    
-    function setupRealtimeUpdates() {
-      if (typeof(EventSource) !== "undefined" && userSSERetryCount < userMaxRetries) {
-        const eventSource = new EventSource('/Kaveesha/messages_sse.php');
-        
-        eventSource.onopen = function() {
-          userSSERetryCount = 0; // Reset retry count on successful connection
-        };
-        
-        eventSource.onmessage = function(event) {
-          try {
-            const data = JSON.parse(event.data);
-            if (data.unread_count !== undefined) {
-              updateBadges(data.unread_count);
-            }
-          } catch (e) {
-            console.error('Error parsing SSE data:', e);
-          }
-        };
-        
-        eventSource.onerror = function() {
-          eventSource.close();
-          userSSERetryCount++;
-          if (userSSERetryCount < userMaxRetries) {
-            // Exponential backoff retry
-            const retryDelay = Math.pow(2, userSSERetryCount) * 1000;
-            userSSERetryTimeout = setTimeout(setupRealtimeUpdates, retryDelay);
-          } else {
-            // Fall back to periodic polling after max retries
-            setInterval(updateUnreadCount, 30000);
-          }
-        };
+
+    function scheduleNextPoll() {
+      if (!pollingActive) return;
+      if (document.hidden) {
+        // Slow polling when tab hidden
+        pollTimer = setTimeout(pollUnreadCount, Math.max(adaptiveDelay, 30000));
       } else {
-        // No SSE support or max retries reached - use polling
-        setInterval(updateUnreadCount, 30000);
+        pollTimer = setTimeout(pollUnreadCount, adaptiveDelay);
       }
     }
-    
-    // Check for unread messages on page load and setup real-time updates
+
+    function pollUnreadCount() {
+      fetch('/Kaveesha/messages_api.php?action=unread_count', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+          const c = data.unread_count || 0;
+          updateBadges(c);
+          if (lastUnread === c) {
+            unchangedCycles++;
+            // Gradually back off up to 60s
+            if (unchangedCycles > 3 && adaptiveDelay < 60000) {
+              adaptiveDelay += 5000;
+            }
+          } else {
+            lastUnread = c;
+            unchangedCycles = 0;
+            adaptiveDelay = 10000; // speed up when change detected
+          }
+        })
+        .catch(err => {
+          console.error('Unread poll failed', err);
+          // On error, back off more aggressively
+          adaptiveDelay = Math.min(adaptiveDelay + 10000, 60000);
+        })
+        .finally(() => scheduleNextPoll());
+    }
+
+    function startPollingFallback() {
+      if (fallbackStarted) return; // ensure single fallback
+      fallbackStarted = true;
+      stopSSE();
+      pollingActive = true;
+      adaptiveDelay = 15000;
+      unchangedCycles = 0;
+      pollUnreadCount();
+    }
+
+    // ---------- SSE Real-time (Graceful) ----------
+    function stopSSE() {
+      if (sseSource) {
+        sseSource.close();
+        sseSource = null;
+      }
+    }
+
+    function setupRealtimeUpdates() {
+      if (typeof EventSource === 'undefined') {
+        startPollingFallback();
+        return;
+      }
+      stopSSE();
+      sseSource = new EventSource('/Kaveesha/messages_sse.php');
+      sseSource.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'closing') {
+            // Graceful server close: restart SSE quickly
+            stopSSE();
+            setTimeout(setupRealtimeUpdates, 2000);
+            return;
+          }
+          if (data.unread_count !== undefined) {
+            const c = data.unread_count;
+            updateBadges(c);
+            lastUnread = c;
+            // Reset adaptive state because we have a change via SSE
+            adaptiveDelay = 10000;
+            unchangedCycles = 0;
+          }
+        } catch(e) {
+          console.error('SSE parse error', e);
+        }
+      };
+      sseSource.onerror = function() {
+        // Distinguish between normal close and network error
+        if (sseSource && sseSource.readyState === 2) { // CLOSED
+          // Try to re-establish after short delay without fallback escalation
+          stopSSE();
+          setTimeout(setupRealtimeUpdates, 3000);
+        } else {
+          // Actual error -> fallback polling
+          startPollingFallback();
+        }
+      };
+    }
+
+    // Page visibility: pause SSE when hidden, resume when visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopSSE();
+      } else if (!fallbackStarted) {
+        setupRealtimeUpdates();
+      }
+    });
+
+    // Initial boot
     document.addEventListener('DOMContentLoaded', function() {
-      updateUnreadCount(); // Initial load
       setupRealtimeUpdates();
+      // Immediate badge render from initial poll (in case SSE delayed)
+      startPollingFallback(); // Start fallback polling; SSE will override and stop it if stable
     });
     if (confirmBtn) confirmBtn.addEventListener('click', function(){ if (pendingHref) window.location.href = pendingHref; });
     if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
