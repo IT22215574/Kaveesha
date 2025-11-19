@@ -28,14 +28,9 @@ if (!empty($_SESSION['user_id'])) {
   <!-- Main content -->
   <main class="max-w-6xl mx-auto px-4 pt-8 pb-10">
     <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-8">
-      <div class="flex justify-between items-center mb-6">
+      <div class="mb-6">
         <h2 class="text-2xl font-semibold text-gray-900">My Listings</h2>
-        <div class="flex items-center gap-2">
-          <span id="totalCount" class="text-sm text-gray-600"></span>
-          <button onclick="loadListings()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-            Refresh
-          </button>
-        </div>
+        <span id="totalCount" class="block mt-1 text-sm text-gray-600"></span>
       </div>
       
       <!-- Loading state -->
@@ -118,6 +113,18 @@ if (!empty($_SESSION['user_id'])) {
       }
     }
 
+    function resolveImagePath(imagePath) {
+      if (!imagePath) return null;
+      // Remove leading slashes
+      let clean = imagePath.replace(/^\/+/, '');
+      // If path already starts with uploads/, use it directly
+      if (clean.startsWith('uploads/')) {
+        return `/Kaveesha/${clean}`;
+      }
+      // Otherwise, assume it's just the filename
+      return `/Kaveesha/uploads/${clean}`;
+    }
+
     function renderListings() {
       const container = document.getElementById('listingsContainer');
       
@@ -132,13 +139,13 @@ if (!empty($_SESSION['user_id'])) {
         const statusClass = statusColors[listing.status] || 'bg-gray-100 text-gray-800 border-gray-200';
         
         // Display first available image
+        const fallbackImage = '/Kaveesha/logo/logo2.png';
         const imagePath = listing.image_path || listing.image_path_2 || listing.image_path_3;
-        const resolvedImageSrc = imagePath ? (imagePath.startsWith('uploads/') ? `/Kaveesha/${imagePath}` : `/Kaveesha/uploads/${imagePath}`) : null;
-        const imageHtml = resolvedImageSrc 
-          ? `<img src="${resolvedImageSrc}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover">`
-          : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-               <span class="text-gray-400 text-4xl">📷</span>
-             </div>`;
+        // Directly construct path - database stores as 'uploads/filename'
+        const imageSrc = imagePath ? `/Kaveesha/${imagePath}` : fallbackImage;
+        const imageHtml = imagePath
+          ? `<img src="${imageSrc}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='${fallbackImage}';">`
+          : `<img src="${fallbackImage}" alt="No image available" class="w-full h-48 object-cover opacity-70">`;
         
         return `
           <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">

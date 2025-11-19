@@ -46,33 +46,9 @@ if (!empty($_SESSION['user_id'])) {
           <h2 class="text-2xl font-semibold text-gray-900 mb-2">Welcome back, <?= htmlspecialchars($displayName) ?></h2>
           <p class="text-gray-600">Manage your electronic service listings and track their progress</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div>
           <span id="totalCount" class="text-sm text-gray-600"></span>
-          <button onclick="loadListings()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-            Refresh
-          </button>
         </div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="bg-white/90 backdrop-blur rounded-xl shadow-xl border border-gray-100 p-6 mb-8">
-      <h3 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a href="/Kaveesha/messages.php" class="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
-          <div class="text-2xl">💬</div>
-          <div>
-            <div class="font-medium text-green-900">Messages</div>
-            <div class="text-sm text-green-600">Check your messages</div>
-          </div>
-        </a>
-        <a href="/Kaveesha/invoices.php" class="flex items-center gap-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-          <div class="text-2xl">🧾</div>
-          <div>
-            <div class="font-medium text-purple-900">Invoices</div>
-            <div class="text-sm text-purple-600">View your invoices</div>
-          </div>
-        </a>
       </div>
     </div>
 
@@ -107,6 +83,52 @@ if (!empty($_SESSION['user_id'])) {
       </div>
     </div>
   </main>
+
+  <!-- Modal for full description -->
+  <div id="descriptionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+        <h3 id="modalTitle" class="text-xl font-semibold text-gray-900"></h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">
+          &times;
+        </button>
+      </div>
+      <div class="p-6">
+        <!-- Image Slider -->
+        <div id="imageSliderContainer" class="mb-4 relative">
+          <div id="modalImageSlider" class="relative rounded-lg overflow-hidden bg-gray-100"></div>
+          
+          <!-- Previous Arrow -->
+          <button id="prevImageBtn" onclick="changeImage(-1)" class="hidden absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          
+          <!-- Next Arrow -->
+          <button id="nextImageBtn" onclick="changeImage(1)" class="hidden absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+          
+          <!-- Image Counter -->
+          <div id="imageCounter" class="hidden absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+            <span id="currentImageNum">1</span> / <span id="totalImages">1</span>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <h4 class="text-sm font-semibold text-gray-700 mb-2">Description:</h4>
+          <p id="modalDescription" class="text-gray-600 whitespace-pre-wrap"></p>
+        </div>
+        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+          <span id="modalStatus" class="px-3 py-1 text-sm font-medium rounded-full border"></span>
+          <span id="modalDate" class="text-sm text-gray-500"></span>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <script>
     let listings = [];
@@ -163,7 +185,7 @@ if (!empty($_SESSION['user_id'])) {
     function renderListings() {
       const container = document.getElementById('listingsContainer');
       
-      container.innerHTML = listings.map(listing => {
+      container.innerHTML = listings.map((listing, index) => {
         const statusColors = {
           1: 'bg-yellow-100 text-yellow-800 border-yellow-200',
           2: 'bg-red-100 text-red-800 border-red-200',
@@ -175,9 +197,10 @@ if (!empty($_SESSION['user_id'])) {
         
         // Display first available image
         const imagePath = listing.image_path || listing.image_path_2 || listing.image_path_3;
+        // Database stores paths as 'uploads/filename', so just prepend /Kaveesha/
         const imageHtml = imagePath 
-          ? `<img src="/Kaveesha/uploads/${imagePath}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover">`
-          : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+          ? `<img src="/Kaveesha/${imagePath}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity" onerror="this.onerror=null;this.src='/Kaveesha/logo/logo2.png';" onclick="openModal(${index})">`
+          : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors" onclick="openModal(${index})">
                <span class="text-gray-400 text-4xl">📷</span>
              </div>`;
         
@@ -186,8 +209,7 @@ if (!empty($_SESSION['user_id'])) {
             ${imageHtml}
             <div class="p-4">
               <h4 class="font-semibold text-gray-900 mb-2 line-clamp-2">${escapeHtml(listing.title)}</h4>
-              <p class="text-gray-600 text-sm mb-3 line-clamp-3">${escapeHtml(listing.description || 'No description')}</p>
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between mt-3">
                 <span class="px-2 py-1 text-xs font-medium rounded-full border ${statusClass}">
                   ${escapeHtml(listing.status_text)}
                 </span>
@@ -200,6 +222,121 @@ if (!empty($_SESSION['user_id'])) {
         `;
       }).join('');
     }
+
+    let currentImageIndex = 0;
+    let currentImages = [];
+
+    function openModal(index) {
+      const listing = listings[index];
+      const modal = document.getElementById('descriptionModal');
+      
+      // Set modal content
+      document.getElementById('modalTitle').textContent = listing.title;
+      document.getElementById('modalDescription').textContent = listing.description || 'No description available';
+      
+      // Gather all available images
+      currentImages = [];
+      if (listing.image_path) currentImages.push(listing.image_path);
+      if (listing.image_path_2) currentImages.push(listing.image_path_2);
+      if (listing.image_path_3) currentImages.push(listing.image_path_3);
+      
+      // Reset to first image
+      currentImageIndex = 0;
+      
+      // Setup image slider
+      if (currentImages.length > 0) {
+        displayCurrentImage();
+        
+        // Show/hide navigation arrows and counter
+        const prevBtn = document.getElementById('prevImageBtn');
+        const nextBtn = document.getElementById('nextImageBtn');
+        const counter = document.getElementById('imageCounter');
+        
+        if (currentImages.length > 1) {
+          prevBtn.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+          counter.classList.remove('hidden');
+          document.getElementById('totalImages').textContent = currentImages.length;
+        } else {
+          prevBtn.classList.add('hidden');
+          nextBtn.classList.add('hidden');
+          counter.classList.add('hidden');
+        }
+      } else {
+        document.getElementById('modalImageSlider').innerHTML = '<div class="w-full h-64 flex items-center justify-center text-gray-400"><span class="text-6xl">📷</span></div>';
+        document.getElementById('prevImageBtn').classList.add('hidden');
+        document.getElementById('nextImageBtn').classList.add('hidden');
+        document.getElementById('imageCounter').classList.add('hidden');
+      }
+      
+      // Set status
+      const statusColors = {
+        1: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+        2: 'bg-red-100 text-red-800 border-red-200',
+        3: 'bg-blue-100 text-blue-800 border-blue-200',
+        4: 'bg-green-100 text-green-800 border-green-200'
+      };
+      const statusClass = statusColors[listing.status] || 'bg-gray-100 text-gray-800 border-gray-200';
+      const modalStatus = document.getElementById('modalStatus');
+      modalStatus.textContent = listing.status_text;
+      modalStatus.className = `px-3 py-1 text-sm font-medium rounded-full border ${statusClass}`;
+      
+      // Set date
+      document.getElementById('modalDate').textContent = formatDate(listing.created_at);
+      
+      // Show modal
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function displayCurrentImage() {
+      const slider = document.getElementById('modalImageSlider');
+      const imagePath = currentImages[currentImageIndex];
+      
+      slider.innerHTML = `<img src="/Kaveesha/${imagePath}" alt="Image ${currentImageIndex + 1}" class="w-full h-auto max-h-96 object-contain" onerror="this.src='/Kaveesha/logo/logo2.png';">`;
+      
+      // Update counter
+      document.getElementById('currentImageNum').textContent = currentImageIndex + 1;
+    }
+
+    function changeImage(direction) {
+      currentImageIndex += direction;
+      
+      // Wrap around
+      if (currentImageIndex < 0) {
+        currentImageIndex = currentImages.length - 1;
+      } else if (currentImageIndex >= currentImages.length) {
+        currentImageIndex = 0;
+      }
+      
+      displayCurrentImage();
+    }
+
+    function closeModal() {
+      document.getElementById('descriptionModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal on background click
+    document.getElementById('descriptionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // Close modal on Escape key and arrow keys for image navigation
+    document.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('descriptionModal');
+      if (!modal.classList.contains('hidden')) {
+        if (e.key === 'Escape') {
+          closeModal();
+        } else if (e.key === 'ArrowLeft') {
+          if (currentImages.length > 1) changeImage(-1);
+        } else if (e.key === 'ArrowRight') {
+          if (currentImages.length > 1) changeImage(1);
+        }
+      }
+    });
 
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -227,11 +364,18 @@ if (!empty($_SESSION['user_id'])) {
       overflow: hidden;
     }
     
-    .line-clamp-3 {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    /* Smooth modal animation */
+    #descriptionModal:not(.hidden) {
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
   </style>
 </body>

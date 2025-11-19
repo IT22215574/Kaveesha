@@ -46,9 +46,6 @@ try {
         </div>
         <div class="flex items-center gap-4">
           <span id="totalCount" class="text-sm text-gray-600"></span>
-          <button onclick="loadListings()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-            Refresh
-          </button>
           <a href="/Kaveesha/add_listing.php?user_id=<?= $userId ?>" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
             Add New Listing
           </a>
