@@ -3,6 +3,7 @@
 $current = basename($_SERVER['PHP_SELF']);
 $isUsers = in_array($current, ['admin.php', 'admin_users.php'], true);
 $isCreate = ($current === 'admin_create_user.php');
+$isStatistics = ($current === 'admin_statistics.php');
 
 if (!function_exists('nav_link_classes')) {
     function nav_link_classes($active) {
@@ -51,6 +52,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
       <div class="flex items-center space-x-4">
         <a href="/Kaveesha/admin.php" class="<?= nav_link_classes($isUsers) ?>" <?= $isUsers ? 'style="' . nav_link_style($isUsers) . '"' : '' ?>>Users</a>
         <a href="/Kaveesha/admin_create_user.php" class="<?= nav_link_classes($isCreate) ?>" <?= $isCreate ? 'style="' . nav_link_style($isCreate) . '"' : '' ?>>Create User</a>
+        <a href="/Kaveesha/admin_statistics.php" class="<?= nav_link_classes($isStatistics) ?>" <?= $isStatistics ? 'style="' . nav_link_style($isStatistics) . '"' : '' ?>>Statistics</a>
         <a href="/Kaveesha/admin_messages.php" class="<?= nav_link_classes($current === 'admin_messages.php') ?> relative" <?= ($current === 'admin_messages.php') ? 'style="' . nav_link_style(true) . '"' : '' ?>>
           Messages
           <span class="admin-messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
@@ -75,6 +77,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
     <div class="px-4 py-4 space-y-3">
       <a href="/Kaveesha/admin.php" class="block w-full <?= $isUsers ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isUsers ? 'style="background-color: #692f69;"' : '' ?>>Users</a>
       <a href="/Kaveesha/admin_create_user.php" class="block w-full <?= $isCreate ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isCreate ? 'style="background-color: #692f69;"' : '' ?>>Create User</a>
+      <a href="/Kaveesha/admin_statistics.php" class="block w-full <?= $isStatistics ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isStatistics ? 'style="background-color: #692f69;"' : '' ?>>Statistics</a>
       <a href="/Kaveesha/admin_messages.php" class="block w-full <?= ($current === 'admin_messages.php') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative" <?= ($current === 'admin_messages.php') ? 'style="background-color: #692f69;"' : '' ?>>
         Messages
         <span class="admin-messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>

@@ -3,7 +3,7 @@ require_once __DIR__ . '/config.php';
 require_login();
 
 // Check if user is admin
-$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+$isAdmin = !empty($_SESSION['is_admin']);
 
 $invoiceId = (int)($_GET['id'] ?? 0);
 if ($invoiceId <= 0) {
