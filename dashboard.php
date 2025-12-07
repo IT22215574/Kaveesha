@@ -21,7 +21,7 @@ if (!empty($_SESSION['user_id'])) {
   <title>Home • Yoma Electronics</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-gray-50 relative">
+<body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 relative">
   <?php include __DIR__ . '/includes/user_nav.php'; ?>
 
   <!-- Banner Section -->
@@ -53,10 +53,10 @@ if (!empty($_SESSION['user_id'])) {
     </div>
 
     <!-- Invoice Notifications Section -->
-    <div id="invoiceSection" class="hidden bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur rounded-xl shadow-xl border border-blue-200 p-6 mb-8">
+    <div id="invoiceSection" class="hidden bg-gradient-to-r from-purple-50 to-pink-50 backdrop-blur rounded-xl shadow-xl border border-purple-200 p-6 mb-8">
       <!-- Loading state -->
       <div id="invoiceLoading" class="text-center py-4">
-        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2" style="border-bottom-color: #692f69;"></div>
         <p class="mt-2 text-sm text-gray-600">Checking for invoices...</p>
       </div>
 
@@ -70,7 +70,7 @@ if (!empty($_SESSION['user_id'])) {
           </div>
           <div class="ml-4 flex-1">
             <h3 class="text-lg font-semibold text-gray-900 mb-2">
-              📋 You have <span id="invoiceCount" class="text-indigo-600">0</span> pending invoice(s)
+              📋 You have <span id="invoiceCount" style="color: #692f69;">0</span> pending invoice(s)
             </h3>
             <div id="latestInvoiceInfo" class="mb-4 p-3 bg-white rounded-lg border border-blue-200">
               <p class="text-sm text-gray-600 mb-1">Latest Invoice:</p>
@@ -80,11 +80,11 @@ if (!empty($_SESSION['user_id'])) {
                 <span id="latestInvoiceDate"></span> • 
                 Status: <span id="latestInvoiceStatus" class="font-semibold"></span>
               </p>
-              <p class="text-lg font-bold text-indigo-600 mt-2">
+              <p class="text-lg font-bold mt-2" style="color: #692f69;">
                 Amount: Rs. <span id="latestInvoiceAmount"></span>
               </p>
             </div>
-            <button onclick="showInvoiceModal()" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md">
+            <button onclick="showInvoiceModal()" class="inline-flex items-center px-4 py-2 text-white rounded-lg transition shadow-md" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -102,7 +102,7 @@ if (!empty($_SESSION['user_id'])) {
       
       <!-- Loading state -->
       <div id="loading" class="text-center py-8">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style="border-bottom-color: #692f69;"></div>
         <p class="mt-2 text-gray-600">Loading your listings...</p>
       </div>
 
@@ -116,7 +116,7 @@ if (!empty($_SESSION['user_id'])) {
         <div class="text-gray-400 text-6xl mb-4">📋</div>
         <h4 class="text-lg font-semibold text-gray-700 mb-2">No service requests found</h4>
         <p class="text-gray-600 mb-4">You don't have any service requests yet. Contact us to get started!</p>
-        <a href="/Kaveesha/messages.php" class="inline-block px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+        <a href="/Kaveesha/messages.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           Send a Message
         </a>
       </div>
@@ -275,11 +275,11 @@ if (!empty($_SESSION['user_id'])) {
                 </span>
               </div>
               <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-                <span class="text-lg font-bold text-indigo-600">
+                <span class="text-lg font-bold" style="color: #692f69;">
                   Rs. ${parseFloat(invoice.total_amount).toFixed(2)}
                 </span>
                 <a href="/Kaveesha/view_invoice.php?id=${invoice.id}" 
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition">
+                   class="inline-flex items-center px-4 py-2 text-white text-sm rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>

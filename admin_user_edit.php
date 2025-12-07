@@ -73,14 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="id" value="<?= (int)$user['id'] ?>">
         <div>
           <label class="block text-sm font-medium text-gray-700">Name</label>
-          <input name="username" value="<?= htmlspecialchars($user['username']) ?>" required class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input name="username" value="<?= htmlspecialchars($user['username']) ?>" required style="--tw-ring-color: #692f69;" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Mobile number</label>
-          <input name="mobile" type="tel" inputmode="numeric" pattern="\d{10}" maxlength="10" oninput="this.value=this.value.replace(/\D+/g,'').slice(0,10)" title="Enter exactly 10 digits" value="<?= htmlspecialchars($user['mobile_number']) ?>" required class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input name="mobile" type="tel" inputmode="numeric" pattern="\d{10}" maxlength="10" oninput="this.value=this.value.replace(/\D+/g,'').slice(0,10)" title="Enter exactly 10 digits" value="<?= htmlspecialchars($user['mobile_number']) ?>" required style="--tw-ring-color: #692f69;" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2" />
         </div>
         <div class="flex items-end">
-          <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700">Save</button>
+          <button type="submit" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'" class="w-full py-2 px-4 text-white rounded">Save</button>
         </div>
       </form>
     </section>

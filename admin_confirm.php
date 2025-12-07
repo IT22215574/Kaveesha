@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Confirm Admin • Kaveesha</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-gray-50 flex items-center justify-center relative">
+<body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 flex items-center justify-center relative">
   <div class="max-w-md w-full bg-white/90 backdrop-blur p-8 rounded-xl shadow-xl border border-gray-100">
     <h1 class="text-2xl font-semibold text-gray-900 mb-1">Admin confirmation</h1>
     <p class="text-sm text-gray-600 mb-6">For security, please <?php echo $hasPassword ? 'enter your admin password' : 'create an admin password'; ?> to access the admin area.</p>
@@ -117,10 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="action" value="verify" />
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700">Admin password</label>
-          <input id="password" name="password" type="password" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input id="password" name="password" type="password" required style="--tw-ring-color: #692f69; border-color: #e5e7eb;" class="mt-1 block w-full px-3 py-2.5 rounded-lg border placeholder-gray-400 focus:outline-none focus:ring-2" onfocus="this.style.borderColor='#692f69'" onblur="this.style.borderColor='#e5e7eb'" />
         </div>
         <div>
-          <button type="submit" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+          <button type="submit" style="background-color: #692f69; --tw-ring-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg text-white font-medium shadow focus:outline-none focus-visible:ring-2">
             Confirm and continue
           </button>
         </div>
@@ -130,14 +130,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="action" value="set" />
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700">Create admin password</label>
-          <input id="password" name="password" type="password" minlength="6" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input id="password" name="password" type="password" minlength="6" required style="--tw-ring-color: #692f69; border-color: #e5e7eb;" class="mt-1 block w-full px-3 py-2.5 rounded-lg border placeholder-gray-400 focus:outline-none focus:ring-2" onfocus="this.style.borderColor='#692f69'" onblur="this.style.borderColor='#e5e7eb'" />
         </div>
         <div>
           <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm password</label>
-          <input id="confirm_password" name="confirm_password" type="password" minlength="6" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input id="confirm_password" name="confirm_password" type="password" minlength="6" required style="--tw-ring-color: #692f69; border-color: #e5e7eb;" class="mt-1 block w-full px-3 py-2.5 rounded-lg border placeholder-gray-400 focus:outline-none focus:ring-2" onfocus="this.style.borderColor='#692f69'" onblur="this.style.borderColor='#e5e7eb'" />
         </div>
         <div>
-          <button type="submit" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+          <button type="submit" style="background-color: #692f69; --tw-ring-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg text-white font-medium shadow focus:outline-none focus-visible:ring-2">
             Set password and continue
           </button>
         </div>

@@ -9,7 +9,7 @@ if (!function_exists('user_nav_link_classes')) {
     function user_nav_link_classes($active) {
         $base = 'text-sm px-3 py-1 rounded transition-colors';
         return $active
-            ? $base . ' bg-indigo-600 text-white'
+            ? $base . ' text-white' . ' style="background-color: #692f69;"'
             : $base . ' text-gray-700 hover:bg-gray-100';
     }
 }
@@ -43,9 +43,9 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
 ?>
 <nav class="bg-white shadow">
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-    <a href="/Kaveesha/dashboard.php" class="flex items-center space-x-2 text-lg font-semibold text-indigo-700 hover:text-indigo-900">
+    <a href="/Kaveesha/dashboard.php" class="flex items-center space-x-2 text-lg font-semibold hover:opacity-80">
       <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-24 w-auto">
-      <span>Yoma Electronics</span>
+      <span style="color: #692f69;">Yoma Electronics</span>
     </a>
 
     <!-- Desktop nav -->
@@ -56,14 +56,14 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
         <span class="messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
       </a>
       <?php if (!empty($_SESSION['is_admin'])): ?>
-        <a href="/Kaveesha/admin.php" class="text-sm bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600 transition-colors">Admin Panel</a>
+        <a href="/Kaveesha/admin.php" class="text-sm text-white px-3 py-1 rounded transition-colors" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">Admin Panel</a>
       <?php endif; ?>
       <span class="text-sm text-gray-600 hidden lg:inline">Signed in as <strong><?= htmlspecialchars($displayName) ?></strong></span>
     <a href="/Kaveesha/logout.php" class="logout-link text-sm bg-red-500 text-white px-3 py-1 rounded">Logout</a>
     </div>
 
     <!-- Mobile hamburger -->
-    <button id="userNavToggle" class="md:hidden inline-flex items-center justify-center p-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-controls="userMobileMenu" aria-expanded="false" aria-label="Open menu">
+    <button id="userNavToggle" class="md:hidden inline-flex items-center justify-center p-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2" style="--tw-ring-color: #692f69;" aria-controls="userMobileMenu" aria-expanded="false" aria-label="Open menu">
       <svg class="h-6 w-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
@@ -74,13 +74,13 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
   <div id="userMobileMenu" class="md:hidden hidden border-t border-gray-200">
     <div class="px-4 py-4 space-y-3">
       <div class="text-sm text-gray-500 mb-2">Signed in as <strong><?= htmlspecialchars($displayName) ?></strong><?= $mobileNumber ? ' • ' . htmlspecialchars($mobileNumber) : '' ?></div>
-      <a href="/Kaveesha/dashboard.php" class="block w-full <?= $isDashboard ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Home</a>
-      <a href="/Kaveesha/messages.php" class="block w-full <?= ($current === 'messages.php') ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative">
+      <a href="/Kaveesha/dashboard.php" class="block w-full <?= $isDashboard ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isDashboard ? 'style="background-color: #692f69;"' : '' ?>>Home</a>
+      <a href="/Kaveesha/messages.php" class="block w-full <?= ($current === 'messages.php') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative" <?= ($current === 'messages.php') ? 'style="background-color: #692f69;"' : '' ?>>
         Messages
         <span class="messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
       </a>
       <?php if (!empty($_SESSION['is_admin'])): ?>
-        <a href="/Kaveesha/admin.php" class="block w-full bg-indigo-500 text-white px-3 py-2 rounded hover:bg-indigo-600">Admin Panel</a>
+        <a href="/Kaveesha/admin.php" class="block w-full text-white px-3 py-2 rounded" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">Admin Panel</a>
       <?php endif; ?>
       <div class="pt-2 mt-2 border-t border-gray-200">
         <a href="/Kaveesha/logout.php" class="logout-link block text-center bg-red-500 text-white px-3 py-2 rounded">Logout</a>

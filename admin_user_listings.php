@@ -57,7 +57,7 @@ try {
       
       <!-- Loading state -->
       <div id="loading" class="text-center py-8">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-b-2" style="border-bottom-color: #692f69"></div>
         <p class="mt-2 text-gray-600">Loading listings...</p>
       </div>
 
@@ -190,7 +190,7 @@ try {
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="flex space-x-2">
-                <a href="/Kaveesha/add_listing.php?user_id=${userId}&listing_id=${listing.id}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                <a href="/Kaveesha/add_listing.php?user_id=${userId}&listing_id=${listing.id}" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">Edit</a>
                 <a href="/Kaveesha/invoices.php?listing_id=${listing.id}" class="text-green-600 hover:text-green-900">Invoices</a>
               </div>
             </td>

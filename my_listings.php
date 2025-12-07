@@ -22,7 +22,7 @@ if (!empty($_SESSION['user_id'])) {
   <title>My Listings • Yoma Electronics</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-gray-50 relative">
+<body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 relative">
   <?php include __DIR__ . '/includes/user_nav.php'; ?>
 
   <!-- Main content -->
@@ -35,7 +35,7 @@ if (!empty($_SESSION['user_id'])) {
       
       <!-- Loading state -->
       <div id="loading" class="text-center py-8">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-b-2" style="border-bottom-color: #692f69"></div>
         <p class="mt-2 text-gray-600">Loading your listings...</p>
       </div>
 
@@ -49,7 +49,7 @@ if (!empty($_SESSION['user_id'])) {
         <div class="text-gray-400 text-6xl mb-4">📋</div>
         <h3 class="text-lg font-semibold text-gray-700 mb-2">No listings found</h3>
         <p class="text-gray-600 mb-4">You haven't created any listings yet.</p>
-        <a href="/Kaveesha/dashboard.php" class="inline-block px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+        <a href="/Kaveesha/dashboard.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           Go to Dashboard
         </a>
       </div>

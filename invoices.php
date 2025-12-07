@@ -109,12 +109,12 @@ $stats = $statsStmt->fetch();
             <input type="text" id="search" name="search" 
                    value="<?= htmlspecialchars($searchQuery) ?>"
                    placeholder="Invoice number, listing title, or customer name..."
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
           <div>
             <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
             <select id="status" name="status" 
-                    class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    class="mt-1 block rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
               <option value="">All Statuses</option>
               <option value="draft" <?= $statusFilter === 'draft' ? 'selected' : '' ?>>Draft</option>
               <option value="sent" <?= $statusFilter === 'sent' ? 'selected' : '' ?>>Sent</option>
@@ -194,7 +194,7 @@ $stats = $statsStmt->fetch();
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex gap-2">
                       <a href="/Kaveesha/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
-                         class="text-indigo-600 hover:text-indigo-900">View</a>
+                         style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">View</a>
                       <a href="/Kaveesha/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
                          class="text-green-600 hover:text-green-900">Edit</a>
                     </div>

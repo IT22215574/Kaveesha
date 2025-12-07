@@ -70,14 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Name</label>
-          <input name="username" required class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input name="username" required style="--tw-ring-color: #692f69;" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Mobile number</label>
-          <input name="mobile" type="tel" inputmode="numeric" pattern="\d{10}" maxlength="10" oninput="this.value=this.value.replace(/\D+/g,'').slice(0,10)" title="Enter exactly 10 digits" placeholder="e.g., 0771234567" required class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input name="mobile" type="tel" inputmode="numeric" pattern="\d{10}" maxlength="10" oninput="this.value=this.value.replace(/\D+/g,'').slice(0,10)" title="Enter exactly 10 digits" placeholder="e.g., 0771234567" required style="--tw-ring-color: #692f69;" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2" />
         </div>
         <div class="flex items-end">
-          <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700">Create</button>
+          <button type="submit" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'" class="w-full py-2 px-4 text-white rounded">Create</button>
         </div>
       </form>
     </section>

@@ -222,20 +222,20 @@ if ($invoice) {
             <label for="invoice_number" class="block text-sm font-medium text-gray-700">Invoice Number</label>
             <input type="text" id="invoice_number" name="invoice_number" 
                    value="<?= htmlspecialchars($invoiceData['invoice_number'] ?? generateInvoiceNumber()) ?>"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69"
                    <?= $invoice ? 'readonly' : '' ?>>
           </div>
           <div>
             <label for="invoice_date" class="block text-sm font-medium text-gray-700">Invoice Date</label>
             <input type="date" id="invoice_date" name="invoice_date" 
                    value="<?= $invoiceData['invoice_date'] ?? date('Y-m-d') ?>"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
           <div>
             <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
             <input type="date" id="due_date" name="due_date" 
                    value="<?= $invoiceData['due_date'] ?? date('Y-m-d', strtotime('+7 days')) ?>"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
         </div>
 
@@ -248,22 +248,22 @@ if ($invoice) {
                   <div class="md:col-span-2">
                     <input type="text" name="item_description[]" placeholder="Description" 
                            value="<?= htmlspecialchars($item['description']) ?>"
-                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                   </div>
                   <div>
                     <input type="number" name="item_quantity[]" placeholder="Qty" min="1" 
                            value="<?= $item['quantity'] ?>"
-                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                   </div>
                   <div>
                     <input type="number" name="item_price[]" placeholder="Unit Price" min="0" step="0.01" 
                            value="<?= number_format($item['unit_price'], 2, '.', '') ?>"
-                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                   </div>
                   <div>
                     <input type="number" name="item_discount[]" placeholder="Discount/Unit" min="0" step="0.01" 
                            value="<?= number_format($item['discount_amount'] ?? 0, 2, '.', '') ?>"
-                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                   </div>
                   <div class="flex items-center">
                     <span class="item-total text-sm font-medium">Rs. <?= number_format($item['total_price'], 2) ?></span>
@@ -279,19 +279,19 @@ if ($invoice) {
               <div class="invoice-item grid grid-cols-1 md:grid-cols-6 gap-3 mb-3 p-3 border rounded-lg">
                 <div class="md:col-span-2">
                   <input type="text" name="item_description[]" placeholder="Description" 
-                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                 </div>
                 <div>
                   <input type="number" name="item_quantity[]" placeholder="Qty" min="1"
-                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                 </div>
                 <div>
                   <input type="number" name="item_price[]" placeholder="Unit Price" min="0" step="0.01" 
-                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                 </div>
                 <div>
                   <input type="number" name="item_discount[]" placeholder="Discount/Unit" min="0" step="0.01"
-                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
                 </div>
                 <div class="flex items-center">
                   <span class="item-total text-sm font-medium">Rs. 0.00</span>
@@ -313,7 +313,7 @@ if ($invoice) {
           <div>
             <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
             <textarea id="notes" name="notes" rows="4" 
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69"
                       placeholder="Additional notes or terms..."><?= htmlspecialchars($invoiceData['notes'] ?? '') ?></textarea>
           </div>
           
@@ -327,7 +327,7 @@ if ($invoice) {
                 <span>Service Charge:</span>
                 <input type="number" name="service_charge" id="service_charge" min="0" step="0.01" 
                        value="<?= isset($invoiceData) ? number_format($invoiceData['service_charge'], 2, '.', '') : '0' ?>"
-                       class="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                       class="w-24 rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
               </div>
               <div class="flex justify-between">
                 <span>Total Discount:</span>
@@ -337,7 +337,7 @@ if ($invoice) {
                 <span>Tax Rate (%):</span>
                 <input type="number" name="tax_rate" id="tax_rate" min="0" max="100" step="0.01" 
                        value="<?= isset($invoiceData) ? number_format(($invoiceData['tax_amount'] / max($invoiceData['subtotal'], 0.01)) * 100, 2) : '0' ?>"
-                       class="w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                       class="w-20 rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
               </div>
               <div class="flex justify-between">
                 <span>Tax Amount:</span>
@@ -365,7 +365,7 @@ if ($invoice) {
           </a>
           
           <?php if ($invoice): ?>
-            <a href="/Kaveesha/view_invoice.php?id=<?= $invoice['id'] ?>" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            <a href="/Kaveesha/view_invoice.php?id=<?= $invoice['id'] ?>" class="px-6 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
               View Invoice
             </a>
           <?php endif; ?>
@@ -417,19 +417,19 @@ if ($invoice) {
         <div class="invoice-item grid grid-cols-1 md:grid-cols-6 gap-3 mb-3 p-3 border rounded-lg">
           <div class="md:col-span-2">
             <input type="text" name="item_description[]" placeholder="Description" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
           <div>
             <input type="number" name="item_quantity[]" placeholder="Qty" min="1"
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
           <div>
             <input type="number" name="item_price[]" placeholder="Unit Price" min="0" step="0.01" 
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
           <div>
             <input type="number" name="item_discount[]" placeholder="Discount/Unit" min="0" step="0.01"
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="w-full rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           </div>
           <div class="flex items-center">
             <span class="item-total text-sm font-medium">Rs. 0.00</span>

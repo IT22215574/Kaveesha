@@ -54,10 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Login • Kaveesha</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-gray-50 flex items-center justify-center relative">
+<body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 flex items-center justify-center relative">
   <!-- Brand top-left -->
   <div class="fixed top-4 left-4">
-    <a href="/Kaveesha/index.php" class="inline-flex items-center gap-2 text-indigo-700 hover:text-indigo-900 font-bold tracking-tight">
+    <a href="/Kaveesha/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
       <span class="text-xl">Yoma Electronics</span>
     </a>
   </div>
@@ -72,11 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="" method="post" class="space-y-5">
       <div>
         <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile number</label>
-        <input id="mobile" name="mobile" type="tel" inputmode="numeric" pattern="[0-9\s+\-()]{7,}" placeholder="e.g., 0712345678" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+        <input id="mobile" name="mobile" type="tel" inputmode="numeric" pattern="[0-9\s+\-()]{7,}" placeholder="e.g., 0712345678" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2" style="--tw-ring-color: #692f69; --tw-border-opacity: 1;" onfocus="this.style.borderColor='#692f69'" onblur="this.style.borderColor=''" />
         <p class="mt-1 text-xs text-gray-400">We’ll never share your number.</p>
       </div>
       <div>
-        <button type="submit" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+        <button type="submit" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg text-white font-medium shadow focus:outline-none focus-visible:ring-2" style="background-color: #692f69; --tw-ring-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           Sign in
         </button>
       </div>

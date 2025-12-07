@@ -65,9 +65,9 @@ if ($isAjax) {
     $isSelf = isset($_SESSION['user_id']) && ((int)$_SESSION['user_id'] === $id);
     // Make entire row clickable via data-href (progressive enhancement) and provide a direct anchor in username cell.
     $listingHref = '/Kaveesha/add_listing.php?user_id=' . $id;
-    echo '<tr class="border-b last:border-0 cursor-pointer hover:bg-indigo-50" data-href="' . $listingHref . '">';
-    echo '<td class="py-2 pr-4"><a href="' . $listingHref . '" class="text-indigo-700 hover:underline" title="Add listing for user #' . $id . '">' . $id . '</a></td>';
-    echo '<td class="py-2 pr-4"><a href="' . $listingHref . '" class="text-indigo-700 hover:underline" title="Add listing for ' . $username . '">' . $username . '</a></td>';
+    echo '<tr class="border-b last:border-0 cursor-pointer hover:bg-purple-50" data-href="' . $listingHref . '">';
+    echo '<td class="py-2 pr-4"><a href="' . $listingHref . '" style="color: #692f69;" class="hover:underline" title="Add listing for user #' . $id . '">' . $id . '</a></td>';
+    echo '<td class="py-2 pr-4"><a href="' . $listingHref . '" style="color: #692f69;" class="hover:underline" title="Add listing for ' . $username . '">' . $username . '</a></td>';
     echo '<td class="py-2 pr-4">' . $mobile . '</td>';
     echo '<td class="py-2 pr-4">' . $role . '</td>';
     echo '<td class="py-2 pr-4">' . $created . '</td>';
@@ -109,7 +109,7 @@ if ($isAjax) {
       <h2 class="text-xl font-semibold mb-4">Users</h2>
       <form id="userSearchForm" method="get" class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="q">Search by name or mobile</label>
-        <input id="q" name="q" value="<?= htmlspecialchars($q) ?>" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type a name or 10-digit mobile..." autocomplete="off" />
+        <input id="q" name="q" value="<?= htmlspecialchars($q) ?>" style="--tw-ring-color: #692f69;" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2" placeholder="Type a name or 10-digit mobile..." autocomplete="off" />
       </form>
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
@@ -126,9 +126,9 @@ if ($isAjax) {
           <tbody id="usersTbody">
             <?php foreach ($users as $u): ?>
               <?php $listingHref = '/Kaveesha/add_listing.php?user_id=' . (int)$u['id']; ?>
-              <tr class="border-b last:border-0 cursor-pointer hover:bg-indigo-50" data-href="<?= $listingHref ?>">
-                <td class="py-2 pr-4"><a href="<?= $listingHref ?>" class="text-indigo-700 hover:underline" title="Add listing for user #<?= (int)$u['id'] ?>"><?= (int)$u['id'] ?></a></td>
-                <td class="py-2 pr-4"><a href="<?= $listingHref ?>" class="text-indigo-700 hover:underline" title="Add listing for <?= htmlspecialchars($u['username']) ?>"><?= htmlspecialchars($u['username']) ?></a></td>
+              <tr class="border-b last:border-0 cursor-pointer hover:bg-purple-50" data-href="<?= $listingHref ?>">
+                <td class="py-2 pr-4"><a href="<?= $listingHref ?>" style="color: #692f69;" class="hover:underline" title="Add listing for user #<?= (int)$u['id'] ?>"><?= (int)$u['id'] ?></a></td>
+                <td class="py-2 pr-4"><a href="<?= $listingHref ?>" style="color: #692f69;" class="hover:underline" title="Add listing for <?= htmlspecialchars($u['username']) ?>"><?= htmlspecialchars($u['username']) ?></a></td>
                 <td class="py-2 pr-4"><?= htmlspecialchars($u['mobile_number']) ?></td>
                 <td class="py-2 pr-4"><?= !empty($u['is_admin']) ? 'Admin' : 'User' ?></td>
                 <td class="py-2 pr-4"><?= htmlspecialchars($u['created_at']) ?></td>

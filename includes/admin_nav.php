@@ -8,7 +8,7 @@ if (!function_exists('nav_link_classes')) {
     function nav_link_classes($active) {
         $base = 'text-sm px-3 py-1 rounded transition-colors';
         return $active
-            ? $base . ' bg-indigo-600 text-white'
+            ? $base . ' text-white' . ' style="background-color: #692f69;"'
             : $base . ' text-gray-700 hover:bg-gray-100';
     }
 }
@@ -37,7 +37,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   <!-- Admin name + role (live from DB) -->
   <div class="flex items-center space-x-2 text-lg font-semibold">
     <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-24 w-auto">
-    <span><?= htmlspecialchars($adminName) ?> — Yoma Electronics</span>
+    <span style="color: #692f69;"><?= htmlspecialchars($adminName) ?> — Yoma Electronics</span>
   </div>
 
     <!-- Desktop nav -->
@@ -57,7 +57,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
     </div>
 
     <!-- Mobile hamburger -->
-    <button id="adminNavToggle" class="md:hidden inline-flex items-center justify-center p-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-controls="adminMobileMenu" aria-expanded="false" aria-label="Open menu">
+    <button id="adminNavToggle" class="md:hidden inline-flex items-center justify-center p-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2" style="--tw-ring-color: #692f69;" aria-controls="adminMobileMenu" aria-expanded="false" aria-label="Open menu">
       <svg class="h-6 w-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
@@ -67,9 +67,9 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   <!-- Mobile menu -->
   <div id="adminMobileMenu" class="md:hidden hidden border-t border-gray-200">
     <div class="px-4 py-4 space-y-3">
-      <a href="/Kaveesha/admin.php" class="block w-full <?= $isUsers ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Users</a>
-      <a href="/Kaveesha/admin_create_user.php" class="block w-full <?= $isCreate ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded">Create User</a>
-      <a href="/Kaveesha/admin_messages.php" class="block w-full <?= ($current === 'admin_messages.php') ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative">
+      <a href="/Kaveesha/admin.php" class="block w-full <?= $isUsers ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isUsers ? 'style="background-color: #692f69;"' : '' ?>>Users</a>
+      <a href="/Kaveesha/admin_create_user.php" class="block w-full <?= $isCreate ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isCreate ? 'style="background-color: #692f69;"' : '' ?>>Create User</a>
+      <a href="/Kaveesha/admin_messages.php" class="block w-full <?= ($current === 'admin_messages.php') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative" <?= ($current === 'admin_messages.php') ? 'style="background-color: #692f69;"' : '' ?>>
         Messages
         <span class="admin-messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
       </a>

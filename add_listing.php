@@ -998,7 +998,7 @@ foreach ($listings as $lTok) {
   <?php include __DIR__ . '/includes/admin_nav.php'; ?>
 
   <main class="container mx-auto p-6 space-y-6">
-    <a href="/Kaveesha/admin.php" class="inline-flex items-center text-indigo-700 hover:underline">&larr; Back to Users</a>
+    <a href="/Kaveesha/admin.php" class="inline-flex items-center hover:underline" style="color: #692f69;">&larr; Back to Users</a>
 
     <section class="bg-white rounded shadow p-6">
       <div class="flex items-center justify-between">
@@ -1006,7 +1006,7 @@ foreach ($listings as $lTok) {
           <h1 class="text-2xl font-semibold">Listings</h1>
           <p class="text-gray-600">For user <span class="font-medium">#<?= (int)$user['id'] ?> — <?= htmlspecialchars($user['username']) ?></span> (<?= htmlspecialchars($user['mobile_number']) ?>)</p>
         </div>
-        <button onclick="openModal('createModal')" class="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">
+        <button onclick="openModal('createModal')" class="inline-flex items-center gap-2 px-3 py-2 text-white rounded" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           <span class="text-lg">＋</span> <span>Add listing</span>
         </button>
       </div>
@@ -1076,7 +1076,7 @@ foreach ($listings as $lTok) {
                     <p class="mt-2 text-gray-700 whitespace-pre-line"><?= nl2br(htmlspecialchars($l['description'])) ?></p>
                   <?php endif; ?>
                   <div class="mt-3 flex flex-wrap gap-2">
-                    <button type="button" onclick="toggleEditForm(<?= (int)$l['id'] ?>)" class="px-3 py-1 rounded border border-indigo-600 text-indigo-700 hover:bg-indigo-50">Edit</button>
+                    <button type="button" onclick="toggleEditForm(<?= (int)$l['id'] ?>)" class="px-3 py-1 rounded border hover:bg-purple-50" style="border-color: #692f69; color: #692f69;">Edit</button>
                     <form method="post" onsubmit="return confirm('Delete this listing? This cannot be undone.');">
                       <input type="hidden" name="action" value="delete" />
                       <input type="hidden" name="listing_id" value="<?= (int)$l['id'] ?>" />
@@ -1105,15 +1105,15 @@ foreach ($listings as $lTok) {
                       <input type="hidden" name="token" value="<?= htmlspecialchars($updateTokens[(int)$l['id']]) ?>" />
                       <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">Title *</label>
-                        <input name="title" required maxlength="191" value="<?= htmlspecialchars($l['title']) ?>" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input name="title" required maxlength="191" value="<?= htmlspecialchars($l['title']) ?>" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69" />
                       </div>
                       <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea name="description" rows="4" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"><?= htmlspecialchars($l['description']) ?></textarea>
+                        <textarea name="description" rows="4" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69"><?= htmlspecialchars($l['description']) ?></textarea>
                       </div>
                       <div>
                         <label class="block text-sm font-medium text-gray-700">Status</label>
-                        <select name="status" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <select name="status" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69">
                           <option value="1" <?= $l['status'] == 1 ? 'selected' : '' ?>>Not Finished</option>
                           <option value="2" <?= $l['status'] == 2 ? 'selected' : '' ?>>Stopped</option>
                           <option value="3" <?= $l['status'] == 3 ? 'selected' : '' ?>>Finished & Pending Payments</option>
@@ -1156,7 +1156,7 @@ foreach ($listings as $lTok) {
                         </div>
                       </div>
                       <div class="sm:col-span-2 flex gap-2">
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">Save changes</button>
+                        <button type="submit" class="px-4 py-2 text-white rounded" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">Save changes</button>
                         <button type="button" onclick="closeEditForm(<?= (int)$l['id'] ?>)" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Close</button>
                       </div>
                     </form>
@@ -1181,15 +1181,15 @@ foreach ($listings as $lTok) {
               <input type="hidden" name="token" value="<?= htmlspecialchars($createToken) ?>" />
               <div>
                 <label class="block text-sm font-medium text-gray-700">Title <span class="text-red-600">*</span></label>
-                <input name="title" required maxlength="191" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., Samsung 55\" 4K TV" />
+                <input name="title" required maxlength="191" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69" placeholder="e.g., Samsung 55\" 4K TV" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" rows="5" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Details about the product..."></textarea>
+                <textarea name="description" rows="5" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69" placeholder="Details about the product..."></textarea>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Status</label>
-                <select name="status" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select name="status" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69">
                   <option value="1" selected>Not Finished</option>
                   <option value="2">Stopped</option>
                   <option value="3">Finished & Pending Payments</option>
@@ -1219,7 +1219,7 @@ foreach ($listings as $lTok) {
                 </div>
               </div>
               <div class="pt-2 flex gap-2">
-                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">Save Listing</button>
+                <button type="submit" class="px-4 py-2 text-white rounded" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">Save Listing</button>
                 <button type="button" onclick="closeModal('createModal')" class="px-4 py-2 border rounded">Cancel</button>
               </div>
             </form>

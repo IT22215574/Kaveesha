@@ -233,18 +233,18 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Invoice Notification (User only) -->
     <?php if (!$isAdmin): ?>
-    <div class="no-print mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg shadow-md">
+    <div class="no-print mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 p-4 rounded-lg shadow-md" style="border-left-color: #692f69;">
       <div class="flex items-start">
         <div class="flex-shrink-0">
-          <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-6 w-6" style="color: #692f69;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
         <div class="ml-3 flex-1">
-          <p class="text-sm font-medium text-indigo-900">
+          <p class="text-sm font-medium" style="color: #5a1a5a;">
             📋 You have received an invoice for: <span class="font-bold"><?= htmlspecialchars($invoice['listing_title']) ?></span>
           </p>
-          <a href="/Kaveesha/dashboard.php?listing_id=<?= (int)$invoice['listing_id'] ?>" class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800 font-semibold">
+          <a href="/Kaveesha/dashboard.php?listing_id=<?= (int)$invoice['listing_id'] ?>" class="mt-2 inline-flex items-center text-sm font-semibold" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -274,7 +274,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($invoice['status'] === 'draft' || $invoice['status'] === 'sent'): ?>
           <form method="post" class="inline">
             <input type="hidden" name="action" value="send_invoice">
-            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            <button type="submit" class="px-4 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
               <?= $invoice['status'] === 'draft' ? 'Send to Customer' : 'Resend to Customer' ?>
             </button>
           </form>
@@ -298,7 +298,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="post" class="flex items-center gap-3">
         <input type="hidden" name="action" value="update_status">
         <label class="font-medium">Status:</label>
-        <select name="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select name="status" class="rounded-md border-gray-300 shadow-sm  focus:ring-2" style="--tw-ring-color: #692f69">
           <option value="draft" <?= $invoice['status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
           <option value="sent" <?= $invoice['status'] === 'sent' ? 'selected' : '' ?>>Sent</option>
           <option value="paid" <?= $invoice['status'] === 'paid' ? 'selected' : '' ?>>Paid</option>
