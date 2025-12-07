@@ -9,8 +9,14 @@ if (!function_exists('user_nav_link_classes')) {
     function user_nav_link_classes($active) {
         $base = 'text-sm px-3 py-1 rounded transition-colors';
         return $active
-            ? $base . ' text-white' . ' style="background-color: #692f69;"'
+            ? $base . ' text-white'
             : $base . ' text-gray-700 hover:bg-gray-100';
+    }
+}
+
+if (!function_exists('user_nav_link_style')) {
+    function user_nav_link_style($active) {
+        return $active ? 'background-color: #692f69;' : '';
     }
 }
 
@@ -50,8 +56,8 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
 
     <!-- Desktop nav -->
     <div class="hidden md:flex items-center space-x-6">
-      <a href="/Kaveesha/dashboard.php" class="<?= user_nav_link_classes($isDashboard) ?>">Home</a>
-      <a href="/Kaveesha/messages.php" class="<?= user_nav_link_classes($current === 'messages.php') ?> relative">
+      <a href="/Kaveesha/dashboard.php" class="<?= user_nav_link_classes($isDashboard) ?>" <?= $isDashboard ? 'style="' . user_nav_link_style($isDashboard) . '"' : '' ?>>Home</a>
+      <a href="/Kaveesha/messages.php" class="<?= user_nav_link_classes($current === 'messages.php') ?> relative" <?= ($current === 'messages.php') ? 'style="' . user_nav_link_style(true) . '"' : '' ?>>
         Messages
         <span class="messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
       </a>
@@ -109,17 +115,23 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
     // Mobile menu toggle
     const btn = document.getElementById('userNavToggle');
     const menu = document.getElementById('userMobileMenu');
+    
+    function toggleMobileMenu() {
+      if (!menu) return;
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+      } else {
+        menu.classList.add('hidden');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      }
+    }
+    
     if (btn && menu) {
-      btn.addEventListener('click', function(){
-        const isHidden = menu.classList.contains('hidden');
-        if (isHidden) {
-          menu.classList.remove('hidden');
-          btn.setAttribute('aria-expanded', 'true');
-        } else {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
-        }
-      });
+      // Remove any existing listener before adding new one
+      btn.removeEventListener('click', toggleMobileMenu);
+      btn.addEventListener('click', toggleMobileMenu);
     }
 
     // Logout confirm modal logic
@@ -136,12 +148,17 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
       if (modal) modal.classList.add('hidden');
       pendingHref = null;
     }
+    function handleLogoutClick(e) {
+      e.preventDefault();
+      const href = e.currentTarget.getAttribute('href');
+      if (href) openModal(href);
+    }
+    
     function bindLogoutLinks(){
       document.querySelectorAll('a.logout-link').forEach(function(a){
-        a.addEventListener('click', function(e){
-          e.preventDefault();
-          openModal(a.getAttribute('href'));
-        });
+        // Remove existing listener before adding to prevent duplicates
+        a.removeEventListener('click', handleLogoutClick);
+        a.addEventListener('click', handleLogoutClick);
       });
     }
     
@@ -264,15 +281,52 @@ if (!empty($_SESSION['user_id']) && (empty($_SESSION['cached_username']) || empt
       }
     });
 
-    // Initial boot
-    document.addEventListener('DOMContentLoaded', function() {
+    function handleConfirmLogout() {
+      if (pendingHref) window.location.href = pendingHref;
+    }
+    
+    function handleModalBackdropClick(e) {
+      if (e.target === modal) closeModal();
+    }
+    
+    // Cleanup function
+    function cleanup() {
+      stopSSE();
+      if (pollTimer) clearTimeout(pollTimer);
+      pollingActive = false;
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
+    
+    // Initialize on DOM ready or immediately if already loaded
+    function init() {
       setupRealtimeUpdates();
-      // Immediate badge render from initial poll (in case SSE delayed)
-      startPollingFallback(); // Start fallback polling; SSE will override and stop it if stable
-    });
-    if (confirmBtn) confirmBtn.addEventListener('click', function(){ if (pendingHref) window.location.href = pendingHref; });
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-    if (modal) modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
-    bindLogoutLinks();
+      startPollingFallback();
+      
+      // Bind modal handlers
+      if (confirmBtn) {
+        confirmBtn.removeEventListener('click', handleConfirmLogout);
+        confirmBtn.addEventListener('click', handleConfirmLogout);
+      }
+      if (cancelBtn) {
+        cancelBtn.removeEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+      }
+      if (modal) {
+        modal.removeEventListener('click', handleModalBackdropClick);
+        modal.addEventListener('click', handleModalBackdropClick);
+      }
+      
+      // Bind logout links
+      bindLogoutLinks();
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   })();
   </script>

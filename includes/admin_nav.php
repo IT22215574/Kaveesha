@@ -8,8 +8,14 @@ if (!function_exists('nav_link_classes')) {
     function nav_link_classes($active) {
         $base = 'text-sm px-3 py-1 rounded transition-colors';
         return $active
-            ? $base . ' text-white' . ' style="background-color: #692f69;"'
+            ? $base . ' text-white'
             : $base . ' text-gray-700 hover:bg-gray-100';
+    }
+}
+
+if (!function_exists('nav_link_style')) {
+    function nav_link_style($active) {
+        return $active ? 'background-color: #692f69;' : '';
     }
 }
 
@@ -43,9 +49,9 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
     <!-- Desktop nav -->
     <div class="hidden md:flex items-center space-x-8">
       <div class="flex items-center space-x-4">
-        <a href="/Kaveesha/admin.php" class="<?= nav_link_classes($isUsers) ?>">Users</a>
-        <a href="/Kaveesha/admin_create_user.php" class="<?= nav_link_classes($isCreate) ?>">Create User</a>
-        <a href="/Kaveesha/admin_messages.php" class="<?= nav_link_classes($current === 'admin_messages.php') ?> relative">
+        <a href="/Kaveesha/admin.php" class="<?= nav_link_classes($isUsers) ?>" <?= $isUsers ? 'style="' . nav_link_style($isUsers) . '"' : '' ?>>Users</a>
+        <a href="/Kaveesha/admin_create_user.php" class="<?= nav_link_classes($isCreate) ?>" <?= $isCreate ? 'style="' . nav_link_style($isCreate) . '"' : '' ?>>Create User</a>
+        <a href="/Kaveesha/admin_messages.php" class="<?= nav_link_classes($current === 'admin_messages.php') ?> relative" <?= ($current === 'admin_messages.php') ? 'style="' . nav_link_style(true) . '"' : '' ?>>
           Messages
           <span class="admin-messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
         </a>
@@ -101,17 +107,23 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
     // Mobile menu toggle
     const btn = document.getElementById('adminNavToggle');
     const menu = document.getElementById('adminMobileMenu');
+    
+    function toggleMobileMenu() {
+      if (!menu) return;
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+      } else {
+        menu.classList.add('hidden');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      }
+    }
+    
     if (btn && menu) {
-      btn.addEventListener('click', function(){
-        const isHidden = menu.classList.contains('hidden');
-        if (isHidden) {
-          menu.classList.remove('hidden');
-          btn.setAttribute('aria-expanded', 'true');
-        } else {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
-        }
-      });
+      // Remove any existing listener before adding new one
+      btn.removeEventListener('click', toggleMobileMenu);
+      btn.addEventListener('click', toggleMobileMenu);
     }
 
     // Logout confirm modal logic
@@ -128,13 +140,17 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
       if (modal) modal.classList.add('hidden');
       pendingHref = null;
     }
+    function handleLogoutClick(e) {
+      e.preventDefault();
+      const href = e.currentTarget.getAttribute('href');
+      if (href) openModal(href);
+    }
+    
     function bindLogoutLinks(){
       document.querySelectorAll('a.logout-link').forEach(function(a){
-        a.addEventListener('click', function(e){
-          // If JS fails to load, normal navigation happens. Here we intercept.
-          e.preventDefault();
-          openModal(a.getAttribute('href'));
-        });
+        // Remove existing listener before adding to prevent duplicates
+        a.removeEventListener('click', handleLogoutClick);
+        a.addEventListener('click', handleLogoutClick);
       });
     }
     
@@ -244,17 +260,52 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
       }
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-      setupAdminRealtimeUpdates();
-      // Start fallback polling in parallel; SSE will stop it if stable
-      adminStartPollingFallback();
-    });
+    function handleConfirmLogout() {
+      if (pendingHref) window.location.href = pendingHref;
+    }
     
-    if (confirmBtn) confirmBtn.addEventListener('click', function(){ if (pendingHref) window.location.href = pendingHref; });
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-    // Close when clicking backdrop
-    if (modal) modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
-    // Bind on DOM ready (script is at bottom so DOM exists)
-    bindLogoutLinks();
+    function handleModalBackdropClick(e) {
+      if (e.target === modal) closeModal();
+    }
+    
+    // Cleanup function
+    function cleanup() {
+      adminStopSSE();
+      if (adminPollTimer) clearTimeout(adminPollTimer);
+      adminPollingActive = false;
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
+    
+    // Initialize on DOM ready or immediately if already loaded
+    function init() {
+      setupAdminRealtimeUpdates();
+      adminStartPollingFallback();
+      
+      // Bind modal handlers
+      if (confirmBtn) {
+        confirmBtn.removeEventListener('click', handleConfirmLogout);
+        confirmBtn.addEventListener('click', handleConfirmLogout);
+      }
+      if (cancelBtn) {
+        cancelBtn.removeEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+      }
+      if (modal) {
+        modal.removeEventListener('click', handleModalBackdropClick);
+        modal.addEventListener('click', handleModalBackdropClick);
+      }
+      
+      // Bind logout links
+      bindLogoutLinks();
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   })();
   </script>
