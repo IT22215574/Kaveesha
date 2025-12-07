@@ -46,8 +46,8 @@ $listingsStats = db()->query("
 // 2. Fetch revenue statistics from invoices
 $revenueStats = db()->query("
     SELECT 
-        SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END) as total_revenue,
-        SUM(CASE WHEN status IN ('draft', 'sent', 'overdue') THEN total_amount ELSE 0 END) as pending_payments,
+        COALESCE(SUM(CASE WHEN status = 'paid' THEN total_amount ELSE 0 END), 0) as total_revenue,
+        COALESCE(SUM(CASE WHEN status IN ('draft', 'sent', 'overdue') THEN total_amount ELSE 0 END), 0) as pending_payments,
         COUNT(CASE WHEN status = 'paid' THEN 1 END) as paid_invoices,
         COUNT(CASE WHEN status IN ('draft', 'sent', 'overdue') THEN 1 END) as pending_invoices
     FROM invoices
@@ -118,6 +118,32 @@ $topUsers = db()->query("
     LIMIT 10
 ")->fetchAll(PDO::FETCH_ASSOC);
 
+// 6. Invoice status breakdown for verification
+$invoiceBreakdown = db()->query("
+    SELECT 
+        status,
+        COUNT(*) as count,
+        COALESCE(SUM(total_amount), 0) as total_amount
+    FROM invoices
+    WHERE 1=1 $dateFilter
+    GROUP BY status
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// 7. Debug: Check all invoices to verify status values
+$allInvoices = db()->query("
+    SELECT 
+        i.id,
+        i.invoice_number,
+        i.status,
+        i.total_amount,
+        l.title as listing_title,
+        l.status as listing_status
+    FROM invoices i
+    JOIN listings l ON i.listing_id = l.id
+    ORDER BY i.created_at DESC
+    LIMIT 20
+")->fetchAll(PDO::FETCH_ASSOC);
+
 // Format numbers
 $totalRevenue = number_format((float)($revenueStats['total_revenue'] ?? 0), 2);
 $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0), 2);
@@ -135,6 +161,14 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
   <?php include __DIR__ . '/includes/admin_nav.php'; ?>
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <!-- Flash Message -->
+    <?php if (!empty($_SESSION['flash'])): ?>
+      <div class="bg-green-100 text-green-800 px-4 py-3 rounded-lg shadow">
+        <?= htmlspecialchars($_SESSION['flash']) ?>
+        <?php unset($_SESSION['flash']); ?>
+      </div>
+    <?php endif; ?>
+
     <!-- Header -->
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-gray-900">Statistics Dashboard</h1>
@@ -240,6 +274,97 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
       </div>
       <?php endif; ?>
     </div>
+
+    <!-- Invoice Status Breakdown (Debug Info) -->
+    <?php if (!empty($invoiceBreakdown)): ?>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Invoice Status Breakdown</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <?php 
+        $statusColors = [
+          'draft' => 'bg-gray-100 text-gray-800',
+          'sent' => 'bg-blue-100 text-blue-800',
+          'paid' => 'bg-green-100 text-green-800',
+          'overdue' => 'bg-red-100 text-red-800'
+        ];
+        foreach ($invoiceBreakdown as $breakdown): 
+          $status = $breakdown['status'];
+          $colorClass = $statusColors[$status] ?? 'bg-gray-100 text-gray-800';
+        ?>
+        <div class="<?= $colorClass ?> rounded-lg p-4">
+          <p class="text-xs font-medium uppercase opacity-75"><?= htmlspecialchars($status) ?></p>
+          <p class="text-2xl font-bold mt-1"><?= number_format((int)$breakdown['count']) ?></p>
+          <p class="text-xs mt-1">LKR <?= number_format((float)$breakdown['total_amount'], 2) ?></p>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Recent Invoices Debug Table -->
+    <?php if (!empty($allInvoices)): ?>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Invoices (Debug)</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b">
+              <th class="py-2 px-3 text-left font-semibold text-gray-700">Invoice #</th>
+              <th class="py-2 px-3 text-left font-semibold text-gray-700">Listing</th>
+              <th class="py-2 px-3 text-left font-semibold text-gray-700">Invoice Status</th>
+              <th class="py-2 px-3 text-left font-semibold text-gray-700">Listing Status</th>
+              <th class="py-2 px-3 text-right font-semibold text-gray-700">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($allInvoices as $inv): 
+              $listingStatuses = [1 => 'Not Finished', 2 => 'Stopped', 3 => 'Pending Payment', 4 => 'Completed & Paid'];
+            ?>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="py-2 px-3">
+                <a href="/Kaveesha/view_invoice.php?id=<?= (int)$inv['id'] ?>" class="text-blue-600 hover:underline">
+                  <?= htmlspecialchars($inv['invoice_number']) ?>
+                </a>
+              </td>
+              <td class="py-2 px-3"><?= htmlspecialchars($inv['listing_title']) ?></td>
+              <td class="py-2 px-3">
+                <span class="px-2 py-1 text-xs rounded <?php 
+                  switch($inv['status']) {
+                    case 'paid': echo 'bg-green-100 text-green-800'; break;
+                    case 'sent': echo 'bg-blue-100 text-blue-800'; break;
+                    case 'draft': echo 'bg-gray-100 text-gray-800'; break;
+                    case 'overdue': echo 'bg-red-100 text-red-800'; break;
+                    default: echo 'bg-yellow-100 text-yellow-800';
+                  }
+                ?>">
+                  <?= htmlspecialchars($inv['status']) ?>
+                </span>
+              </td>
+              <td class="py-2 px-3">
+                <span class="px-2 py-1 text-xs rounded <?php 
+                  switch((int)$inv['listing_status']) {
+                    case 4: echo 'bg-green-100 text-green-800'; break;
+                    case 3: echo 'bg-yellow-100 text-yellow-800'; break;
+                    case 2: echo 'bg-red-100 text-red-800'; break;
+                    default: echo 'bg-blue-100 text-blue-800';
+                  }
+                ?>">
+                  <?= $listingStatuses[(int)$inv['listing_status']] ?? 'Unknown' ?>
+                </span>
+              </td>
+              <td class="py-2 px-3 text-right font-semibold">LKR <?= number_format((float)$inv['total_amount'], 2) ?></td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+        <p class="text-sm text-gray-600 mt-4">
+          <strong>Note:</strong> Only invoices with status = "paid" are counted in Total Revenue. 
+          If you marked a listing as "Completed & Received Payment" but the invoice status is still "draft" or "sent", 
+          you need to update the invoice status to "paid" in the View Invoice page.
+        </p>
+      </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Top Users by Revenue -->
     <?php if (!empty($topUsers)): ?>
