@@ -265,14 +265,6 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
           <p class="text-sm mt-1 opacity-75"><?= number_format((int)($revenueStats['pending_invoices'] ?? 0)) ?> pending invoices</p>
         </div>
       </div>
-
-      <!-- Revenue Chart -->
-      <?php if (!empty($revenueByPeriod)): ?>
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Revenue Trend</h3>
-        <canvas id="revenueChart" height="200"></canvas>
-      </div>
-      <?php endif; ?>
     </div>
 
     <!-- Invoice Status Breakdown (Debug Info) -->
@@ -496,44 +488,6 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
   </main>
 
   <script>
-    // Revenue Trend Chart
-    <?php if (!empty($revenueByPeriod)): ?>
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
-      type: 'line',
-      data: {
-        labels: <?= json_encode(array_reverse(array_column($revenueByPeriod, 'period'))) ?>,
-        datasets: [{
-          label: 'Revenue (LKR)',
-          data: <?= json_encode(array_reverse(array_column($revenueByPeriod, 'revenue'))) ?>,
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return 'LKR ' + value.toLocaleString();
-              }
-            }
-          }
-        }
-      }
-    });
-    <?php endif; ?>
-
     // Status Distribution Pie Chart
     const statusCtx = document.getElementById('statusChart').getContext('2d');
     new Chart(statusCtx, {

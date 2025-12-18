@@ -323,6 +323,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $stmt = db()->prepare('UPDATE listings SET status = ? WHERE id = ?');
       $stmt->execute([$status, $listingId]);
       
+      // If status is set to 4 (Completed & Received Payment), automatically mark the invoice as paid
+      if ($status === 4) {
+        $updateInvoice = db()->prepare('UPDATE invoices SET status = "paid" WHERE listing_id = ? AND status != "paid"');
+        $updateInvoice->execute([$listingId]);
+      }
+      
       // Return JSON response for AJAX request
       if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
         header('Content-Type: application/json');

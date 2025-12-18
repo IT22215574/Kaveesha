@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Login • Kaveesha</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 flex items-center justify-center relative">
+<body class="min-h-screen flex items-center justify-center relative" style="background-image: url('/Kaveesha/logo/logo2.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
   <!-- Brand top-left -->
   <div class="fixed top-4 left-4">
     <a href="/Kaveesha/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
