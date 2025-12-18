@@ -24,7 +24,7 @@ try {
                 l.created_at,
                 CASE 
                     WHEN l.status = 1 THEN "Not Finished"
-                    WHEN l.status = 2 THEN "Stopped"
+                    WHEN l.status = 2 THEN "Returned"
                     WHEN l.status = 3 THEN "Finished & Pending Payment"
                     WHEN l.status = 4 THEN "Completed & Received Payment"
                     ELSE "Unknown"

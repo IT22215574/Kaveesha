@@ -38,7 +38,7 @@ This feature allows users to view their listings and admins to view listings for
 
 ## Status Legend:
 - **Status 1 (Yellow)**: Not Finished
-- **Status 2 (Red)**: Stopped  
+- **Status 2 (Red)**: Returned 
 - **Status 3 (Blue)**: Finished & Pending Payment
 - **Status 4 (Green)**: Completed & Received Payment
 

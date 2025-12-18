@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `user_id` INT UNSIGNED NOT NULL,
   `title` VARCHAR(191) NOT NULL,
   `description` TEXT NULL,
-  `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1=not finished, 2=stopped, 3=finished & pending payments, 4=completed & received payments',
+  `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1=not finished, 2=Returned, 3=finished & pending payments, 4=completed & received payments',
   `image_path` VARCHAR(255) NULL,
   `image_path_2` VARCHAR(255) NULL,
   `image_path_3` VARCHAR(255) NULL,

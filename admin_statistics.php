@@ -36,7 +36,7 @@ $listingsStats = db()->query("
     SELECT 
         COUNT(*) as total_listings,
         SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as not_finished,
-        SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as stopped,
+        SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as Returned,
         SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) as pending_payment,
         SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) as completed
     FROM listings
@@ -87,7 +87,7 @@ $userStats = db()->query("
         u.mobile_number,
         COUNT(l.id) as total_listings,
         SUM(CASE WHEN l.status = 1 THEN 1 ELSE 0 END) as not_finished,
-        SUM(CASE WHEN l.status = 2 THEN 1 ELSE 0 END) as stopped,
+        SUM(CASE WHEN l.status = 2 THEN 1 ELSE 0 END) as Returned,
         SUM(CASE WHEN l.status = 3 THEN 1 ELSE 0 END) as pending_payment,
         SUM(CASE WHEN l.status = 4 THEN 1 ELSE 0 END) as completed,
         COALESCE(SUM(CASE WHEN i.status = 'paid' THEN i.total_amount ELSE 0 END), 0) as total_revenue,
@@ -233,12 +233,12 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
         </div>
       </div>
 
-      <!-- Stopped -->
+      <!-- Returned-->
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-gray-600">Stopped</p>
-            <p class="text-3xl font-bold text-red-600"><?= number_format((int)($listingsStats['stopped'] ?? 0)) ?></p>
+            <p class="text-sm font-medium text-gray-600">Returned</p>
+            <p class="text-3xl font-bold text-red-600"><?= number_format((int)($listingsStats['Returned'] ?? 0)) ?></p>
           </div>
           <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,7 +310,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
           </thead>
           <tbody>
             <?php foreach ($allInvoices as $inv): 
-              $listingStatuses = [1 => 'Not Finished', 2 => 'Stopped', 3 => 'Pending Payment', 4 => 'Completed & Paid'];
+              $listingStatuses = [1 => 'Not Finished', 2 => 'Returned', 3 => 'Pending Payment', 4 => 'Completed & Paid'];
             ?>
             <tr class="border-b hover:bg-gray-50">
               <td class="py-2 px-3">
@@ -411,7 +411,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
               <th class="py-3 px-4 text-left font-semibold text-gray-700">Mobile</th>
               <th class="py-3 px-4 text-center font-semibold text-gray-700">Total</th>
               <th class="py-3 px-4 text-center font-semibold text-gray-700">In Progress</th>
-              <th class="py-3 px-4 text-center font-semibold text-gray-700">Stopped</th>
+              <th class="py-3 px-4 text-center font-semibold text-gray-700">Returned</th>
               <th class="py-3 px-4 text-center font-semibold text-gray-700">Pending Pay</th>
               <th class="py-3 px-4 text-center font-semibold text-gray-700">Completed</th>
               <th class="py-3 px-4 text-right font-semibold text-gray-700">Revenue</th>
@@ -435,7 +435,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
               </td>
               <td class="py-3 px-4 text-center">
                 <span class="inline-block px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-semibold">
-                  <?= number_format((int)$user['stopped']) ?>
+                  <?= number_format((int)$user['Returned']) ?>
                 </span>
               </td>
               <td class="py-3 px-4 text-center">
@@ -462,7 +462,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
               <td colspan="2" class="py-3 px-4 text-left">TOTALS</td>
               <td class="py-3 px-4 text-center"><?= number_format(array_sum(array_column($userStats, 'total_listings'))) ?></td>
               <td class="py-3 px-4 text-center"><?= number_format(array_sum(array_column($userStats, 'not_finished'))) ?></td>
-              <td class="py-3 px-4 text-center"><?= number_format(array_sum(array_column($userStats, 'stopped'))) ?></td>
+              <td class="py-3 px-4 text-center"><?= number_format(array_sum(array_column($userStats, 'Returned'))) ?></td>
               <td class="py-3 px-4 text-center"><?= number_format(array_sum(array_column($userStats, 'pending_payment'))) ?></td>
               <td class="py-3 px-4 text-center"><?= number_format(array_sum(array_column($userStats, 'completed'))) ?></td>
               <td class="py-3 px-4 text-right text-green-600">
@@ -493,11 +493,11 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
     new Chart(statusCtx, {
       type: 'doughnut',
       data: {
-        labels: ['In Progress', 'Stopped', 'Pending Payment', 'Completed'],
+        labels: ['In Progress', 'Returned', 'Pending Payment', 'Completed'],
         datasets: [{
           data: [
             <?= (int)($listingsStats['not_finished'] ?? 0) ?>,
-            <?= (int)($listingsStats['stopped'] ?? 0) ?>,
+            <?= (int)($listingsStats['Returned'] ?? 0) ?>,
             <?= (int)($listingsStats['pending_payment'] ?? 0) ?>,
             <?= (int)($listingsStats['completed'] ?? 0) ?>
           ],

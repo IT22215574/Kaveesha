@@ -198,7 +198,7 @@ if ($invoice) {
           <p class="text-gray-600">Customer: <?= htmlspecialchars($listing['username']) ?> (<?= htmlspecialchars($listing['mobile_number']) ?>)</p>
           <p class="text-gray-600">Status: 
             <?php 
-            $statusLabels = [1 => 'Not Finished', 2 => 'Stopped', 3 => 'Finished & Pending Payments', 4 => 'Completed & Received Payments'];
+            $statusLabels = [1 => 'Not Finished', 2 => 'Returned', 3 => 'Finished & Pending Payments', 4 => 'Completed & Received Payments'];
             echo $statusLabels[$listing['status']] ?? 'Unknown';
             ?>
           </p>

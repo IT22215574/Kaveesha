@@ -34,7 +34,7 @@ function move_uploaded_image_and_get_path($file, $listingId, $imageIndex = 0) {
       UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
       UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder on the server.',
       UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
-      UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.'
+      UPLOAD_ERR_EXTENSION => 'A PHP extension Returnedthe file upload.'
     ];
     // Only throw for actual errors (not NO_FILE case handled by caller)
     if ($err !== UPLOAD_ERR_NO_FILE) {
@@ -407,7 +407,7 @@ function consume_token($token, $scope, $id = null) {
 function get_status_info($status) {
   $statuses = [
     1 => ['text' => 'Not Finished', 'color' => 'bg-blue-100 text-blue-800', 'badge_color' => 'bg-blue-500'],
-    2 => ['text' => 'Stopped', 'color' => 'bg-red-100 text-red-800', 'badge_color' => 'bg-red-500'],
+    2 => ['text' => 'Returned', 'color' => 'bg-red-100 text-red-800', 'badge_color' => 'bg-red-500'],
     3 => ['text' => 'Finished & Pending Payments', 'color' => 'bg-amber-100 text-amber-800', 'badge_color' => 'bg-amber-500'],
     4 => ['text' => 'Completed & Received Payments', 'color' => 'bg-green-100 text-green-800', 'badge_color' => 'bg-green-500']
   ];
@@ -1071,7 +1071,7 @@ foreach ($listings as $lTok) {
                         <input type="hidden" name="listing_id" value="<?= (int)$l['id'] ?>" />
                         <select name="status" class="text-sm px-2 py-1 border rounded <?= $statusInfo['color'] ?>" onchange="updateStatus(this.form)" style="min-width: 180px;">
                           <option value="1" <?= $l['status'] == 1 ? 'selected' : '' ?>>Not Finished</option>
-                          <option value="2" <?= $l['status'] == 2 ? 'selected' : '' ?>>Stopped</option>
+                          <option value="2" <?= $l['status'] == 2 ? 'selected' : '' ?>>Returned</option>
                           <option value="3" <?= $l['status'] == 3 ? 'selected' : '' ?>>Finished & Pending Payments</option>
                           <option value="4" <?= $l['status'] == 4 ? 'selected' : '' ?>>Completed & Received Payments</option>
                         </select>
@@ -1121,7 +1121,7 @@ foreach ($listings as $lTok) {
                         <label class="block text-sm font-medium text-gray-700">Status</label>
                         <select name="status" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69">
                           <option value="1" <?= $l['status'] == 1 ? 'selected' : '' ?>>Not Finished</option>
-                          <option value="2" <?= $l['status'] == 2 ? 'selected' : '' ?>>Stopped</option>
+                          <option value="2" <?= $l['status'] == 2 ? 'selected' : '' ?>>Returned</option>
                           <option value="3" <?= $l['status'] == 3 ? 'selected' : '' ?>>Finished & Pending Payments</option>
                           <option value="4" <?= $l['status'] == 4 ? 'selected' : '' ?>>Completed & Received Payments</option>
                         </select>
@@ -1197,7 +1197,7 @@ foreach ($listings as $lTok) {
                 <label class="block text-sm font-medium text-gray-700">Status</label>
                 <select name="status" class="mt-1 block w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-2" style="--tw-ring-color: #692f69">
                   <option value="1" selected>Not Finished</option>
-                  <option value="2">Stopped</option>
+                  <option value="2">Returned</option>
                   <option value="3">Finished & Pending Payments</option>
                   <option value="4">Completed & Received Payments</option>
                 </select>
