@@ -57,7 +57,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
           Messages
           <span class="admin-messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
         </a>
-        <a href="/Kaveesha/admin_consent_form.php" class="<?= nav_link_classes($current === 'admin_consent_form.php') ?>" <?= ($current === 'admin_consent_form.php') ? 'style="' . nav_link_style(true) . '"' : '' ?>>Consent Form</a>
+        <!-- Consent Form link removed -->
       </div>
       <div class="flex items-center space-x-4">
         <a href="/Kaveesha/dashboard.php" class="text-sm bg-gray-200 text-gray-800 px-3 py-1 rounded">Dashboard</a>
@@ -83,7 +83,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
         Messages
         <span class="admin-messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
       </a>
-      <a href="/Kaveesha/admin_consent_form.php" class="block w-full <?= ($current === 'admin_consent_form.php') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= ($current === 'admin_consent_form.php') ? 'style="background-color: #692f69;"' : '' ?>>Consent Form</a>
+      <!-- Consent Form link removed -->
       <div class="pt-2 mt-2 border-t border-gray-200 flex items-center space-x-2">
         <a href="/Kaveesha/dashboard.php" class="flex-1 text-center bg-gray-200 text-gray-800 px-3 py-2 rounded">Dashboard</a>
         <a href="/Kaveesha/logout.php" class="logout-link flex-1 text-center bg-red-500 text-white px-3 py-2 rounded">Logout</a>

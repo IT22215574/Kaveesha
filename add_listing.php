@@ -130,8 +130,7 @@ if (!empty($_SESSION['new_listing_id'])) {
 }
 
 // Check if consent form exists
-$consentFormPath = __DIR__ . '/forms/consent_form.pdf';
-$consentFormExists = file_exists($consentFormPath);
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $action = isset($_POST['action']) ? (string)$_POST['action'] : '';
@@ -1043,19 +1042,7 @@ foreach ($listings as $lTok) {
               <h3 class="text-lg font-semibold text-blue-900">Consent Form Ready</h3>
               <p class="text-sm text-blue-700 mt-1">Listing #<?= (int)$newListingId ?> has been created. Download the consent form for this customer.</p>
               <div class="mt-3 flex gap-2">
-                <a href="/Kaveesha/admin_print_consent.php" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                  </svg>
-                  Download Consent Form
-                </a>
-                <a href="/Kaveesha/admin_print_consent.php" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                  </svg>
-                  View Form
-                </a>
+                <!-- Consent form links removed -->
               </div>
             </div>
           </div>
@@ -1070,12 +1057,7 @@ foreach ($listings as $lTok) {
               <h3 class="text-lg font-semibold text-yellow-900">Consent Form Not Available</h3>
               <p class="text-sm text-yellow-700 mt-1">Listing #<?= (int)$newListingId ?> has been created, but no consent form template is uploaded.</p>
               <div class="mt-3">
-                <a href="/Kaveesha/admin_consent_form.php" class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                  </svg>
-                  Upload Consent Form
-                </a>
+                <!-- Upload Consent Form link removed -->
               </div>
             </div>
           </div>
