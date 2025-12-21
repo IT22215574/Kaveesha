@@ -8,7 +8,7 @@ $isAdmin = !empty($_SESSION['is_admin']);
 $invoiceId = (int)($_GET['id'] ?? 0);
 if ($invoiceId <= 0) {
     $_SESSION['flash'] = 'Invalid invoice ID.';
-    $redirectUrl = $isAdmin ? '/Kaveesha/invoices.php' : '/Kaveesha/dashboard.php';
+    $redirectUrl = $isAdmin ? '/invoices.php' : '/dashboard.php';
     header('Location: ' . $redirectUrl);
     exit;
 }
@@ -27,7 +27,7 @@ $invoice = $stmt->fetch();
 
 if (!$invoice) {
     $_SESSION['flash'] = 'Invoice not found.';
-    $redirectUrl = $isAdmin ? '/Kaveesha/invoices.php' : '/Kaveesha/dashboard.php';
+    $redirectUrl = $isAdmin ? '/invoices.php' : '/dashboard.php';
     header('Location: ' . $redirectUrl);
     exit;
 }
@@ -35,7 +35,7 @@ if (!$invoice) {
 // If not admin, verify the invoice belongs to the logged-in user
 if (!$isAdmin && $invoice['user_id'] != $_SESSION['user_id']) {
     $_SESSION['flash'] = 'You do not have permission to view this invoice.';
-    header('Location: /Kaveesha/dashboard.php');
+    header('Location: /dashboard.php');
     exit;
 }
 
@@ -56,7 +56,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = db()->prepare('UPDATE invoices SET status = ? WHERE id = ?');
             $stmt->execute([$status, $invoiceId]);
             $_SESSION['flash'] = 'Invoice status updated to ' . ucfirst($status);
-            header('Location: /Kaveesha/view_invoice.php?id=' . $invoiceId);
+            header('Location: /view_invoice.php?id=' . $invoiceId);
             exit;
         }
     } elseif ($action === 'send_invoice') {
@@ -64,7 +64,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare('UPDATE invoices SET status = "sent" WHERE id = ?');
         $stmt->execute([$invoiceId]);
         $_SESSION['flash'] = 'Invoice marked as sent! (In a production system, an email would be sent to ' . htmlspecialchars($invoice['username']) . ')';
-        header('Location: /Kaveesha/view_invoice.php?id=' . $invoiceId);
+        header('Location: /view_invoice.php?id=' . $invoiceId);
         exit;
     }
 }
@@ -244,7 +244,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
           <p class="text-sm font-medium" style="color: #5a1a5a;">
             📋 You have received an invoice for: <span class="font-bold"><?= htmlspecialchars($invoice['listing_title']) ?></span>
           </p>
-          <a href="/Kaveesha/dashboard.php?listing_id=<?= (int)$invoice['listing_id'] ?>" class="mt-2 inline-flex items-center text-sm font-semibold" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
+          <a href="/dashboard.php?listing_id=<?= (int)$invoice['listing_id'] ?>" class="mt-2 inline-flex items-center text-sm font-semibold" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -263,11 +263,11 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
       </button>
       
       <?php if ($isAdmin): ?>
-        <a href="/Kaveesha/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
+        <a href="/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
           Edit Invoice
         </a>
-        <a href="/Kaveesha/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+        <a href="/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
           Back to Invoices
         </a>
         
@@ -286,7 +286,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
           </svg>
           Download Invoice
         </button>
-        <a href="/Kaveesha/dashboard.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+        <a href="/dashboard.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
           Back to Dashboard
         </a>
       <?php endif; ?>
@@ -329,7 +329,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Logo at top-left -->
         <div class="flex justify-start">
           <div class="flex-shrink-0">
-            <img src="/Kaveesha/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
+            <img src="/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
           </div>
         </div>
         <!-- Text content below logo in parallel columns -->

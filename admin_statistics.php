@@ -314,7 +314,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
             ?>
             <tr class="border-b hover:bg-gray-50">
               <td class="py-2 px-3">
-                <a href="/Kaveesha/view_invoice.php?id=<?= (int)$inv['id'] ?>" class="text-blue-600 hover:underline">
+                <a href="/view_invoice.php?id=<?= (int)$inv['id'] ?>" class="text-blue-600 hover:underline">
                   <?= htmlspecialchars($inv['invoice_number']) ?>
                 </a>
               </td>
@@ -422,7 +422,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
             <?php foreach ($userStats as $user): ?>
             <tr class="border-b hover:bg-gray-50">
               <td class="py-3 px-4">
-                <a href="/Kaveesha/admin_user_listings.php?user_id=<?= (int)$user['id'] ?>" class="font-medium hover:underline" style="color: #692f69;">
+                <a href="/admin_user_listings.php?user_id=<?= (int)$user['id'] ?>" class="font-medium hover:underline" style="color: #692f69;">
                   <?= htmlspecialchars($user['username']) ?>
                 </a>
               </td>

@@ -3,18 +3,18 @@ require_once __DIR__ . '/config.php';
 
 // Only allow logged-in admins to access this page
 if (empty($_SESSION['user'])) {
-  header('Location: /Kaveesha/login.php');
+  header('Location: /login.php');
   exit;
 }
 if (empty($_SESSION['is_admin'])) {
   // Not an admin -> normal users shouldn't be here
-  header('Location: /Kaveesha/dashboard.php');
+  header('Location: /dashboard.php');
   exit;
 }
 
 // If already confirmed, go to admin area
 if (!empty($_SESSION['is_admin_confirmed'])) {
-  header('Location: /Kaveesha/admin.php');
+  header('Location: /admin.php');
   exit;
 }
 
@@ -33,7 +33,7 @@ if ($adminId > 0) {
 if (!$admin) {
   // Fallback: if session says admin but record not found, force logout
   $_SESSION['flash'] = 'Your session is invalid. Please sign in again.';
-  header('Location: /Kaveesha/logout.php');
+  header('Location: /logout.php');
   exit;
 }
 
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $upd->execute([$hash, $adminId]);
         $_SESSION['is_admin_confirmed'] = true;
         $_SESSION['flash'] = 'Admin password set and confirmation successful.';
-        header('Location: /Kaveesha/admin.php');
+        header('Location: /admin.php');
         exit;
       } catch (Throwable $e) {
         $flash = 'Failed to set password. Please try again.';
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $hash = $row ? (string)$row['password_hash'] : '';
           if ($hash && password_verify($p, $hash)) {
             $_SESSION['is_admin_confirmed'] = true;
-            header('Location: /Kaveesha/admin.php');
+            header('Location: /admin.php');
             exit;
           } else {
             $flash = 'Incorrect password. Please try again.';
@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div class="mt-6 text-center">
-      <a href="/Kaveesha/logout.php" class="text-sm text-gray-500 hover:text-gray-700">Not you? Sign out</a>
+      <a href="/logout.php" class="text-sm text-gray-500 hover:text-gray-700">Not you? Sign out</a>
     </div>
   </div>
 </body>

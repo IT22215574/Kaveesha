@@ -101,7 +101,7 @@ function delete_image_if_safe($imagePath) {
 $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 if ($userId <= 0) {
   $_SESSION['flash'] = 'Invalid user selection.';
-  header('Location: /Kaveesha/admin.php');
+  header('Location: /admin.php');
   exit;
 }
 
@@ -111,7 +111,7 @@ $stmt->execute([$userId]);
 $user = $stmt->fetch();
 if (!$user) {
   $_SESSION['flash'] = 'User not found.';
-  header('Location: /Kaveesha/admin.php');
+  header('Location: /admin.php');
   exit;
 }
 
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'create')) {
         $_SESSION['flash'] = 'This form was already submitted or has expired.';
-        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+        header('Location: /add_listing.php?user_id=' . $userId);
         exit;
       }
       $title = isset($_POST['title']) ? trim((string)$_POST['title']) : '';
@@ -174,14 +174,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       $_SESSION['flash'] = 'Listing added successfully.';
       $_SESSION['new_listing_id'] = $newId;
-      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+      header('Location: /add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'update') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'update', $listingId)) {
         $_SESSION['flash'] = 'This form was already submitted or has expired.';
-        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+        header('Location: /add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0) throw new RuntimeException('Invalid listing.');
@@ -233,14 +233,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       $_SESSION['flash'] = 'Listing updated.';
-      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+      header('Location: /add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'delete') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'delete', $listingId)) {
         $_SESSION['flash'] = 'This action was already performed or has expired.';
-        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+        header('Location: /add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0) throw new RuntimeException('Invalid listing.');
@@ -254,14 +254,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       delete_image_if_safe($existing['image_path_2'] ?? null);
       delete_image_if_safe($existing['image_path_3'] ?? null);
       $_SESSION['flash'] = 'Listing deleted.';
-      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+      header('Location: /add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'delete_image') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'delete_image', $listingId)) {
         $_SESSION['flash'] = 'This action was already performed or has expired.';
-        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+        header('Location: /add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0) throw new RuntimeException('Invalid listing.');
@@ -283,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       $_SESSION['flash'] = 'All images removed.';
-      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+      header('Location: /add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'delete_single_image') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
@@ -291,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'delete_single_image', $listingId . '_' . $imageIndex)) {
         $_SESSION['flash'] = 'This action was already performed or has expired.';
-        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+        header('Location: /add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0 || $imageIndex < 1 || $imageIndex > 3) throw new RuntimeException('Invalid request.');
@@ -320,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       $_SESSION['flash'] = $message;
-      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+      header('Location: /add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'update_status') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
@@ -347,7 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
       }
       $_SESSION['flash'] = 'Status updated successfully.';
-      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
+      header('Location: /add_listing.php?user_id=' . $userId);
       exit;
     }
   } catch (PDOException $e) {
@@ -1015,7 +1015,7 @@ foreach ($listings as $lTok) {
   <?php include __DIR__ . '/includes/admin_nav.php'; ?>
 
   <main class="container mx-auto p-6 space-y-6">
-    <a href="/Kaveesha/admin.php" class="inline-flex items-center hover:underline" style="color: #692f69;">&larr; Back to Users</a>
+    <a href="/admin.php" class="inline-flex items-center hover:underline" style="color: #692f69;">&larr; Back to Users</a>
 
     <section class="bg-white rounded shadow p-6">
       <div class="flex items-center justify-between">
@@ -1042,7 +1042,7 @@ foreach ($listings as $lTok) {
               <h3 class="text-lg font-semibold text-blue-900">Consent Form Ready</h3>
               <p class="text-sm text-blue-700 mt-1">Listing #<?= (int)$newListingId ?> has been created. Download the consent form for this customer.</p>
               <div class="mt-3 flex gap-2">
-                <a href="/Kaveesha/consent_form_pdf.php?listing_id=<?= (int)$newListingId ?>" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition-colors">
+                <a href="/consent_form_pdf.php?listing_id=<?= (int)$newListingId ?>" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition-colors">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                   </svg>
@@ -1090,7 +1090,7 @@ foreach ($listings as $lTok) {
                       <?php for ($i = 0; $i < 3; $i++): ?>
                         <div class="relative">
                           <?php if (!empty($images[$i])): ?>
-                            <img src="/Kaveesha/<?= htmlspecialchars($images[$i]) ?>" alt="Image <?= $i + 1 ?>" class="w-full h-16 object-cover rounded border" />
+                            <img src="/<?= htmlspecialchars($images[$i]) ?>" alt="Image <?= $i + 1 ?>" class="w-full h-16 object-cover rounded border" />
                             <div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"><?= $i + 1 ?></div>
                           <?php else: ?>
                             <div class="w-full h-16 bg-gray-100 border border-dashed rounded flex items-center justify-center text-xs text-gray-400"><?= $i + 1 ?></div>
@@ -1150,7 +1150,7 @@ foreach ($listings as $lTok) {
                     <?php endif; ?>
                   </div>
                   <div class="mt-3 flex justify-end items-center space-x-2">
-                    <a href="/Kaveesha/consent_form_pdf.php?listing_id=<?= (int)$l['id'] ?>" target="_blank" class="px-4 py-2 text-sm rounded bg-purple-700 text-white hover:bg-purple-800 inline-block font-medium">Download Consent Form</a>
+                    <a href="/consent_form_pdf.php?listing_id=<?= (int)$l['id'] ?>" target="_blank" class="px-4 py-2 text-sm rounded bg-purple-700 text-white hover:bg-purple-800 inline-block font-medium">Download Consent Form</a>
                     <a href="create_invoice.php?listing_id=<?= (int)$l['id'] ?>" class="px-4 py-2 text-sm rounded bg-green-600 text-white hover:bg-green-700 inline-block font-medium">Invoice</a>
                   </div>
                   <div id="edit-<?= (int)$l['id'] ?>" class="mt-4 hidden">
@@ -1190,7 +1190,7 @@ foreach ($listings as $lTok) {
                               <label class="block text-xs font-medium text-gray-600 mb-1">Image <?= $imgIndex + 1 ?></label>
                               <?php if (!empty($currentImages[$imgIndex])): ?>
                                 <div class="relative mb-2">
-                                  <img src="/Kaveesha/<?= htmlspecialchars($currentImages[$imgIndex]) ?>" alt="Current image <?= $imgIndex + 1 ?>" class="w-full h-20 object-cover rounded border" />
+                                  <img src="/<?= htmlspecialchars($currentImages[$imgIndex]) ?>" alt="Current image <?= $imgIndex + 1 ?>" class="w-full h-20 object-cover rounded border" />
                                   <div class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">Current</div>
                                 </div>
                               <?php endif; ?>

@@ -49,7 +49,7 @@ if (!empty($_SESSION['user_id'])) {
         <div class="text-gray-400 text-6xl mb-4">📋</div>
         <h3 class="text-lg font-semibold text-gray-700 mb-2">No listings found</h3>
         <p class="text-gray-600 mb-4">You haven't created any listings yet.</p>
-        <a href="/Kaveesha/dashboard.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
+        <a href="/dashboard.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           Go to Dashboard
         </a>
       </div>
@@ -78,7 +78,7 @@ if (!empty($_SESSION['user_id'])) {
       container.classList.add('hidden');
 
       try {
-        const response = await fetch('/Kaveesha/user_listings_api.php');
+        const response = await fetch('/user_listings_api.php');
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -119,10 +119,10 @@ if (!empty($_SESSION['user_id'])) {
       let clean = imagePath.replace(/^\/+/, '');
       // If path already starts with uploads/, use it directly
       if (clean.startsWith('uploads/')) {
-        return `/Kaveesha/${clean}`;
+        return `/${clean}`;
       }
       // Otherwise, assume it's just the filename
-      return `/Kaveesha/uploads/${clean}`;
+      return `/uploads/${clean}`;
     }
 
     function renderListings() {
@@ -139,10 +139,10 @@ if (!empty($_SESSION['user_id'])) {
         const statusClass = statusColors[listing.status] || 'bg-gray-100 text-gray-800 border-gray-200';
         
         // Display first available image
-        const fallbackImage = '/Kaveesha/logo/logo2.png';
+        const fallbackImage = '/logo/logo2.png';
         const imagePath = listing.image_path || listing.image_path_2 || listing.image_path_3;
         // Directly construct path - database stores as 'uploads/filename'
-        const imageSrc = imagePath ? `/Kaveesha/${imagePath}` : fallbackImage;
+        const imageSrc = imagePath ? `/${imagePath}` : fallbackImage;
         const imageHtml = imagePath
           ? `<img src="${imageSrc}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='${fallbackImage}';">`
           : `<img src="${fallbackImage}" alt="No image available" class="w-full h-48 object-cover opacity-70">`;

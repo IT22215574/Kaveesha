@@ -11,7 +11,7 @@ Setup
 	- Open phpMyAdmin (http://localhost/phpmyadmin/) and run `setup.sql` from this folder, or use the MySQL CLI.
 3. Adjust DB credentials in `config.php` if needed (defaults: host 127.0.0.1, db `Electronice`, user `root`, empty password).
 4. Start Apache in XAMPP.
-5. Open http://localhost/Kaveesha/ in your browser.
+5. Open http://localhost/ in your browser.
 
 Credentials (demo)
 - Username: `MC YOMA electronic`
@@ -33,7 +33,7 @@ Notes
 	- Admin: name `MC YOMA electronic`, mobile `0775604833` (admin privileges)
 	- Regular user: name `Demo User`, mobile `0712345678`
 - Login is by mobile number only (no password) per project requirement.
-- Admin can access `http://localhost/Kaveesha/admin.php` to create users by name and mobile number.
+- Admin can access `http://localhost/admin.php` to create users by name and mobile number.
 
 New: Listings (optional)
 - The admin Users table now allows clicking a user (ID or Name) to open `add_listing.php?user_id=...`.

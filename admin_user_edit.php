@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if ($id <= 0) {
     $_SESSION['flash'] = 'Invalid user.';
-    header('Location: /Kaveesha/admin.php');
+    header('Location: /admin.php');
     exit;
 }
 
@@ -19,7 +19,7 @@ $stmt->execute([$id]);
 $user = $stmt->fetch();
 if (!$user) {
     $_SESSION['flash'] = 'User not found.';
-    header('Location: /Kaveesha/admin.php');
+    header('Location: /admin.php');
     exit;
 }
 
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $stmt = db()->prepare('UPDATE users SET username = ?, mobile_number = ? WHERE id = ?');
       $stmt->execute([$name, $mobileDigits, $id]);
             $_SESSION['flash'] = 'User updated successfully.';
-            header('Location: /Kaveesha/admin.php');
+            header('Location: /admin.php');
             exit;
         } catch (PDOException $e) {
             if ((int)$e->errorInfo[1] === 1062) { // duplicate entry

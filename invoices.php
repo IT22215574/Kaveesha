@@ -126,7 +126,7 @@ $stats = $statsStmt->fetch();
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               Search
             </button>
-            <a href="/Kaveesha/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+            <a href="/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
               Reset
             </a>
           </div>
@@ -154,7 +154,7 @@ $stats = $statsStmt->fetch();
               <tr>
                 <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                   No invoices found. <?php if ($searchQuery || $statusFilter): ?>
-                    <a href="/Kaveesha/invoices.php" class="text-blue-600 underline">Clear filters</a>
+                    <a href="/invoices.php" class="text-blue-600 underline">Clear filters</a>
                   <?php endif; ?>
                 </td>
               </tr>
@@ -193,9 +193,9 @@ $stats = $statsStmt->fetch();
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex gap-2">
-                      <a href="/Kaveesha/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
+                      <a href="/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
                          style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">View</a>
-                      <a href="/Kaveesha/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
+                      <a href="/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
                          class="text-green-600 hover:text-green-900">Edit</a>
                     </div>
                   </td>
