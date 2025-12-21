@@ -38,11 +38,25 @@ $safeDate = htmlspecialchars($date, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 $safeTitle = htmlspecialchars($listingTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
 $html = "<h2 style=\"text-align:center; color:#692f69;\">Consent Form</h2>";
-$html .= "<p><strong>Listing ID:</strong> " . (int)$listingId . "</p>";
-$html .= "<p><strong>Listing Title:</strong> " . $safeTitle . "</p>";
-$html .= "<p><strong>Date:</strong> " . $safeDate . "</p>";
+$html .= "<p><strong>Job Number:</strong> " . (int)$listingId . "</p>";
+$html .= "<p><strong>Customer Details</strong> " . "</p>";
 $html .= "<p><strong>Name:</strong> " . $safeName . "</p>";
-$html .= "<br><p>I, <strong>" . $safeName . "</strong>, hereby give my consent to Yoma Electronics for the processing of my personal data for the purposes described in the company policy. I understand that my data will be handled confidentially and in accordance with applicable laws.</p>";
+$html .= "<p><strong>Mobile Number:</strong> " . htmlspecialchars($row['mobile_number'] ?? '________________', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</p>";
+$html .= "<p><strong>Address:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
+
+$html .= "<p><strong>Item Details</strong> " . "</p>";
+
+$html .= "<p><strong>Listing Title:</strong> " . $safeTitle . "</p>";
+$html .= "<p><strong>Serial Number:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
+$html .= "<p><strong>Nature of fault:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
+$html .= "<p><strong>Cause of fault:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
+$html .= "<p><strong>Describe:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
+$html .= "<p><strong>Date:</strong> " . $safeDate . "</p>";
+$html .= "<p><strong>Date of repair:20_ _ _/_ _ _/_ _ _</strong> " . "</p>";
+
+$html .= "<br><p>I, <strong>" . $safeName . "</strong>, hereby give my consent to Yoma Electronics
+ for the processing of my personal data for the purposes described in the company policy. I understand that 
+ my data will be handled confidentially and in accordance with applicable laws.</p>";
 $html .= "<br><p>Signature: ____________________________</p><p>Date: _______________________________</p>";
 
 // Generate PDF
