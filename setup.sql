@@ -23,7 +23,7 @@ CREATE TABLE `users` (
 -- 3) Seed users
 -- Admin user (mobile-only login): password column is unused and may be NULL
 INSERT INTO `users` (`username`, `mobile_number`, `password_hash`, `is_admin`) VALUES
-('yoma electronics', '0775604833', NULL, 1),
+('MC YOMA electronic', '0775604833', NULL, 1),
 ('Demo User', '0712345678', NULL, 0);
 
 -- 4) Create listings table (optional new feature)

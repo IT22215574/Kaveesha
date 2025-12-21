@@ -18,7 +18,7 @@ if (!empty($_SESSION['user_id'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Home • Yoma Electronics</title>
+  <title>Home • MC YOMA electronic</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 relative">
@@ -27,10 +27,10 @@ if (!empty($_SESSION['user_id'])) {
   <!-- Banner Section -->
   <div class="relative">
     <div class="w-full h-96 md:h-[450px] lg:h-[600px] overflow-hidden">
-      <img src="/Kaveesha/logo/banner.jpeg" alt="Yoma Electronics Banner" class="w-full h-full object-cover" style="object-position: center 20%;">
+      <img src="/Kaveesha/logo/banner.jpeg" alt="MC YOMA electronic Banner" class="w-full h-full object-cover" style="object-position: center 20%;">
       <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
         <div class="text-center text-white">
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome to Yoma Electronics</h1>
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome to MC YOMA electronic</h1>
           <p class="text-lg md:text-xl lg:text-2xl">Your trusted partner for electronic services</p>
         </div>
       </div>

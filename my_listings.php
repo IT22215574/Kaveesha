@@ -19,7 +19,7 @@ if (!empty($_SESSION['user_id'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Listings • Yoma Electronics</title>
+  <title>My Listings • MC YOMA electronic</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-purple-50 to-gray-50 relative">

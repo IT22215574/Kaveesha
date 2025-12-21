@@ -43,8 +43,8 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
   <!-- Admin name + role (live from DB) -->
   <div class="flex items-center space-x-2 text-lg font-semibold">
-    <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-24 w-auto">
-    <span style="color: #692f69;"><?= htmlspecialchars($adminName) ?> — Yoma Electronics</span>
+    <img src="/Kaveesha/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-24 w-auto">
+    <span style="color: #692f69;"><?= htmlspecialchars($adminName) ?> — MC YOMA electronic</span>
   </div>
 
     <!-- Desktop nav -->

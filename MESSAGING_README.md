@@ -1,7 +1,7 @@
 # Messaging System Setup and Usage
 
 ## Overview
-This messaging system provides a chat interface between customers and admin (Yoma Electronics). It includes:
+This messaging system provides a chat interface between customers and admin (MC YOMA electronic). It includes:
 
 - Messaging between users and admin
 - Unread message notifications with red badges

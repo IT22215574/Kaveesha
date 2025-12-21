@@ -153,7 +153,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Statistics • Yoma Electronics</title>
+  <title>Statistics • MC YOMA electronic</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>

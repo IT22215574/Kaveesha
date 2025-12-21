@@ -329,14 +329,14 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Logo at top-left -->
         <div class="flex justify-start">
           <div class="flex-shrink-0">
-            <img src="/Kaveesha/logo/logo1.png" alt="Yoma Electronics Logo" class="h-56 w-auto">
+            <img src="/Kaveesha/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
           </div>
         </div>
         <!-- Text content below logo in parallel columns -->
         <div class="flex justify-between items-start">
           <div>
             <h1 class="text-3xl font-bold text-gray-900">INVOICE</h1>
-            <p class="text-gray-600">Yoma Electronics</p>
+            <p class="text-gray-600">MC YOMA electronic</p>
             <p class="text-gray-600">Mobile: 0775604833</p>
           </div>
           <div class="text-right">

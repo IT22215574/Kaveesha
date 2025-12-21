@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Brand top-left -->
   <div class="fixed top-4 left-4">
     <a href="/Kaveesha/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
-      <span class="text-xl">Yoma Electronics</span>
+      <span class="text-xl">MC YOMA electronic</span>
     </a>
   </div>
 

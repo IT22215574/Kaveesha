@@ -48,7 +48,7 @@ $pageTitle = 'Messages';
                 <!-- Header -->
                 <div class="text-white p-6" style="background: linear-gradient(to right, #692f69, #8b4f8b);">
                     <h1 class="text-2xl font-bold">Messages</h1>
-                    <p class="mt-1" style="color: #e8d4e8;">Chat with Yoma Electronics support</p>
+                    <p class="mt-1" style="color: #e8d4e8;">Chat with MC YOMA electronic support</p>
                 </div>
                 
                 <!-- Chat Container -->

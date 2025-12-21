@@ -54,15 +54,15 @@ $html .= "<p><strong>Describe:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
 $html .= "<p><strong>Date:</strong> " . $safeDate . "</p>";
 $html .= "<p><strong>Date of repair:20_ _ _/_ _ _/_ _ _</strong> " . "</p>";
 
-$html .= "<br><p>I, <strong>" . $safeName . "</strong>, hereby give my consent to Yoma Electronics
+$html .= "<br><p>I, <strong>" . $safeName . "</strong>, hereby give my consent to MC YOMA electronic
  for the processing of my personal data for the purposes described in the company policy. I understand that 
  my data will be handled confidentially and in accordance with applicable laws.</p>";
 $html .= "<br><p>Signature: ____________________________</p><p>Date: _______________________________</p>";
 
 // Generate PDF
 $pdf = new \TCPDF();
-$pdf->SetCreator('Yoma Electronics');
-$pdf->SetAuthor('Yoma Electronics');
+$pdf->SetCreator('MC YOMA electronic');
+$pdf->SetAuthor('MC YOMA electronic');
 $pdf->SetTitle('Consent Form - Listing ' . (int)$listingId);
 $pdf->SetMargins(20, 20, 20);
 $pdf->AddPage();

@@ -14,7 +14,7 @@ Setup
 5. Open http://localhost/Kaveesha/ in your browser.
 
 Credentials (demo)
-- Username: `yoma electronics`
+- Username: `MC YOMA electronic`
 - Password: `password`
 
 Files
@@ -30,7 +30,7 @@ Files
 
 Notes
 - Seed users created by `setup.sql`:
-	- Admin: name `yoma electronics`, mobile `0775604833` (admin privileges)
+	- Admin: name `MC YOMA electronic`, mobile `0775604833` (admin privileges)
 	- Regular user: name `Demo User`, mobile `0712345678`
 - Login is by mobile number only (no password) per project requirement.
 - Admin can access `http://localhost/Kaveesha/admin.php` to create users by name and mobile number.
