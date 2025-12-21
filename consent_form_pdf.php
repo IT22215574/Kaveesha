@@ -54,6 +54,7 @@ $html .= "<p><strong>Describe:_ _ _ _ _ _ _ _ _ _ _ _ _ _</strong> " . "</p>";
 $html .= "<p><strong>Date:</strong> " . $safeDate . "</p>";
 $html .= "<p><strong>Date of repair:20_ _ _/_ _ _/_ _ _</strong> " . "</p>";
 
+$html .= "<p><strong> Cosensus statement</strong> " . "</p>";
 $html .= "<br><p>I, <strong>" . $safeName . "</strong>, hereby give my consent to MC YOMA electronic
  for the processing of my personal data for the purposes described in the company policy. I understand that 
  my data will be handled confidentially and in accordance with applicable laws.</p>";
