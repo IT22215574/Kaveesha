@@ -1032,7 +1032,7 @@ foreach ($listings as $lTok) {
         <div class="mt-4 p-3 bg-green-100 text-green-700 rounded"><?= htmlspecialchars($sessionFlash) ?></div>
       <?php endif; ?>
 
-      <?php if ($newListingId && $consentFormExists): ?>
+      <?php if ($newListingId): ?>
         <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
           <div class="flex items-start">
             <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1042,7 +1042,12 @@ foreach ($listings as $lTok) {
               <h3 class="text-lg font-semibold text-blue-900">Consent Form Ready</h3>
               <p class="text-sm text-blue-700 mt-1">Listing #<?= (int)$newListingId ?> has been created. Download the consent form for this customer.</p>
               <div class="mt-3 flex gap-2">
-                <!-- Consent form links removed -->
+                <a href="/Kaveesha/consent_form_pdf.php?listing_id=<?= (int)$newListingId ?>" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                  </svg>
+                  Download Consent Form (PDF)
+                </a>
               </div>
             </div>
           </div>
@@ -1144,7 +1149,8 @@ foreach ($listings as $lTok) {
                       </div>
                     <?php endif; ?>
                   </div>
-                  <div class="mt-3 flex justify-end">
+                  <div class="mt-3 flex justify-end items-center space-x-2">
+                    <a href="/Kaveesha/consent_form_pdf.php?listing_id=<?= (int)$l['id'] ?>" target="_blank" class="px-4 py-2 text-sm rounded bg-purple-700 text-white hover:bg-purple-800 inline-block font-medium">Download Consent Form</a>
                     <a href="create_invoice.php?listing_id=<?= (int)$l['id'] ?>" class="px-4 py-2 text-sm rounded bg-green-600 text-white hover:bg-green-700 inline-block font-medium">Invoice</a>
                   </div>
                   <div id="edit-<?= (int)$l['id'] ?>" class="mt-4 hidden">

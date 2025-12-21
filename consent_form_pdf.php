@@ -1,36 +1,60 @@
 <?php
-// consent_form_pdf.php
-// Generates a consent form PDF dynamically from HTML with placeholders for fields
+require_once __DIR__ . '/config.php';
+require_admin();
+require_once __DIR__ . '/vendor/autoload.php'; // TCPDF
 
-require_once __DIR__ . '/vendor/autoload.php'; // TCPDF autoload
+// Expect listing_id parameter
+$listingId = isset($_GET['listing_id']) ? (int)$_GET['listing_id'] : 0;
+if ($listingId <= 0) {
+	http_response_code(400);
+	echo 'Invalid listing id';
+	exit;
+}
 
-// Example: Replace these with real data from your app or form
-$customerName = isset($_GET['name']) ? $_GET['name'] : '________________';
-$date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-$address = isset($_GET['address']) ? $_GET['address'] : '________________';
+// Fetch listing and user info
+try {
+	$stmt = db()->prepare('SELECT l.id, l.title, l.created_at, u.id AS user_id, u.username, u.mobile_number FROM listings l LEFT JOIN users u ON l.user_id = u.id WHERE l.id = ? LIMIT 1');
+	$stmt->execute([$listingId]);
+	$row = $stmt->fetch();
+} catch (Throwable $e) {
+	http_response_code(500);
+	echo 'Database error';
+	exit;
+}
 
-// HTML template for the consent form (customize as needed)
-$html = <<<EOD
-<h2 style="text-align:center; color:#692f69;">Consent Form</h2>
-<p>Date: <strong>{$date}</strong></p>
-<p>Name: <strong>{$customerName}</strong></p>
-<p>Address: <strong>{$address}</strong></p>
-<br>
-<p>I, <strong>{$customerName}</strong>, hereby give my consent to Yoma Electronics for the processing of my personal data for the purposes described in the company policy. I understand that my data will be handled confidentially and in accordance with applicable laws.</p>
-<br>
-<p>Signature: ____________________________</p>
-<p>Date: _______________________________</p>
-EOD;
+if (!$row) {
+	http_response_code(404);
+	echo 'Listing not found';
+	exit;
+}
 
-// Create new TCPDF instance
+$customerName = $row['username'] ?: '________________';
+$date = $row['created_at'] ?: date('Y-m-d');
+$listingTitle = $row['title'] ?: '';
+
+// Build HTML template
+$safeName = htmlspecialchars($customerName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$safeDate = htmlspecialchars($date, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$safeTitle = htmlspecialchars($listingTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+$html = "<h2 style=\"text-align:center; color:#692f69;\">Consent Form</h2>";
+$html .= "<p><strong>Listing ID:</strong> " . (int)$listingId . "</p>";
+$html .= "<p><strong>Listing Title:</strong> " . $safeTitle . "</p>";
+$html .= "<p><strong>Date:</strong> " . $safeDate . "</p>";
+$html .= "<p><strong>Name:</strong> " . $safeName . "</p>";
+$html .= "<br><p>I, <strong>" . $safeName . "</strong>, hereby give my consent to Yoma Electronics for the processing of my personal data for the purposes described in the company policy. I understand that my data will be handled confidentially and in accordance with applicable laws.</p>";
+$html .= "<br><p>Signature: ____________________________</p><p>Date: _______________________________</p>";
+
+// Generate PDF
 $pdf = new \TCPDF();
 $pdf->SetCreator('Yoma Electronics');
 $pdf->SetAuthor('Yoma Electronics');
-$pdf->SetTitle('Consent Form');
+$pdf->SetTitle('Consent Form - Listing ' . (int)$listingId);
 $pdf->SetMargins(20, 20, 20);
 $pdf->AddPage();
 $pdf->writeHTML($html, true, false, true, false, '');
 
-// Output PDF for download
-$pdf->Output('consent_form.pdf', 'D'); // 'D' for download, 'I' for inline
+// Send download
+$filename = 'consent_form_listing_' . (int)$listingId . '.pdf';
+$pdf->Output($filename, 'D');
 exit;
