@@ -2,13 +2,12 @@
 // config.php — shared configuration with DB-backed authentication
 session_start();
 
-// Database configuration
-// Adjust these to your local MySQL credentials if needed
-define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
-define('DB_PORT', getenv('DB_PORT') ?: '3306');
-define('DB_NAME', getenv('DB_NAME') ?: 'Electronice');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: ''); // XAMPP default often has empty password for root
+// Database configuration (hosted/production)
+define('DB_HOST', 'localhost'); // or your remote DB host
+define('DB_PORT', '3306');
+define('DB_NAME', 'u983239990_electronics');
+define('DB_USER', 'u983239990_Yoma');
+define('DB_PASS', 'Admin@Yoma2025');
 
 // PDO singleton
 function db() {
