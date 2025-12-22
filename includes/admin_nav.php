@@ -43,7 +43,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
   <!-- Admin name + role (live from DB) -->
   <div class="flex items-center space-x-2 text-lg font-semibold">
-    <img src="/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-24 w-auto">
+    <img src="logo/logo1.png" alt="MC YOMA electronic Logo" class="h-24 w-auto">
     <span style="color: #692f69;"><?= htmlspecialchars($adminName) ?> — MC YOMA electronic</span>
   </div>
 
@@ -181,7 +181,7 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
     }
 
     function adminPollUnreadCount() {
-      fetch('/messages_api.php?action=unread_count', { cache: 'no-store' })
+      fetch('messages_api.php?action=unread_count', { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
           const c = data.unread_count || 0;

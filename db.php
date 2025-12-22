@@ -2,9 +2,9 @@
 // db.php - Database connection for hosted web application
 // Update these variables with your actual database credentials
 $DB_HOST = 'localhost'; // or your remote DB host
-$DB_NAME = 'u983239990_electronics';
-$DB_USER = 'u983239990_Yoma';
-$DB_PASS = 'Admin@Yoma2025';
+$DB_NAME = 'Electronice';
+$DB_USER = 'root';
+$DB_PASS = '';
 $DB_CHARSET = 'utf8mb4';
 
 $dsn = "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=$DB_CHARSET";
