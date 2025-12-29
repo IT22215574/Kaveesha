@@ -9,6 +9,7 @@ define('DB_NAME', 'Electronice');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+
 // PDO singleton
 function db() {
     static $pdo = null;
