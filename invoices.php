@@ -193,7 +193,7 @@ $stats = $statsStmt->fetch();
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex gap-2">
-                      <a href="/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
+                       <a href="/Kaveesha/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
                          style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">View</a>
                       <a href="/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
                          class="text-green-600 hover:text-green-900">Edit</a>

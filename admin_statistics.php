@@ -314,7 +314,7 @@ $pendingPayments = number_format((float)($revenueStats['pending_payments'] ?? 0)
             ?>
             <tr class="border-b hover:bg-gray-50">
               <td class="py-2 px-3">
-                <a href="/view_invoice.php?id=<?= (int)$inv['id'] ?>" class="text-blue-600 hover:underline">
+                <a href="/Kaveesha/view_invoice.php?id=<?= (int)$inv['id'] ?>" class="text-blue-600 hover:underline">
                   <?= htmlspecialchars($inv['invoice_number']) ?>
                 </a>
               </td>

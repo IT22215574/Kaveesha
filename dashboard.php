@@ -293,7 +293,7 @@ if (!empty($_SESSION['user_id'])) {
                 <span class="text-lg font-bold" style="color: #692f69;">
                   Rs. ${parseFloat(invoice.total_amount).toFixed(2)}
                 </span>
-                <a href="/view_invoice.php?id=${invoice.id}" 
+                 <a href="/Kaveesha/view_invoice.php?id=${invoice.id}" 
                    class="inline-flex items-center px-4 py-2 text-white text-sm rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>

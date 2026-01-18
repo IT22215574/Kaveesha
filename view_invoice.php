@@ -329,7 +329,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Logo at top-left -->
         <div class="flex justify-start">
           <div class="flex-shrink-0">
-            <img src="/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
+            <img src="/Kaveesha/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
           </div>
         </div>
         <!-- Text content below logo in parallel columns -->
