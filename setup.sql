@@ -1,4 +1,4 @@
--- setup.sql — initialize MySQL database and users table for Kaveesha app
+-- setup.sql — initialize MySQL database and users table for mctronicservice app
 -- Run this in phpMyAdmin or the MySQL CLI
 
 -- 1) Create database

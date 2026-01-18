@@ -447,7 +447,7 @@ foreach ($listings as $lTok) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>User Listings • Admin • Kaveesha</title>
+  <title>User Listings • Admin </title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .container { max-width: 56rem; }

@@ -1,9 +1,9 @@
-# Kaveesha — PHP + Tailwind demo
+# mctronicservice — PHP + Tailwind demo
 
 A minimal PHP project with a Tailwind-styled login page and classic embedded PHP handling the form submit in the same file. Authentication uses a MySQL users table.
 
 Placement
-- Put this folder in your XAMPP `htdocs` directory (already created here): `/Applications/XAMPP/xamppfiles/htdocs/Kaveesha`.
+- Put this folder in your XAMPP `htdocs` directory (already created here): `/Applications/XAMPP/xamppfiles/htdocs/mctronicservice`.
 
 Setup
 1. Start MySQL in XAMPP.

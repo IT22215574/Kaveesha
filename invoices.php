@@ -56,7 +56,7 @@ $stats = $statsStmt->fetch();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoices • Admin • Kaveesha</title>
+  <title>Invoices • Admin • mctronicservice</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">

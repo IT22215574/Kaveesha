@@ -174,7 +174,7 @@ if ($invoice) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= $invoice ? 'Edit' : 'Create' ?> Invoice • Admin • Kaveesha</title>
+  <title><?= $invoice ? 'Edit' : 'Create' ?> Invoice • Admin • mctronicservice</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
