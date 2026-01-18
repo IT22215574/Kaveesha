@@ -1090,7 +1090,7 @@ foreach ($listings as $lTok) {
                       <?php for ($i = 0; $i < 3; $i++): ?>
                         <div class="relative">
                           <?php if (!empty($images[$i])): ?>
-                            <img src="/<?= htmlspecialchars($images[$i]) ?>" alt="Image <?= $i + 1 ?>" class="w-full h-16 object-cover rounded border" />
+                            <img src="/Kaveesha/<?= htmlspecialchars($images[$i]) ?>" alt="Image <?= $i + 1 ?>" class="w-full h-16 object-cover rounded border" />
                             <div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"><?= $i + 1 ?></div>
                           <?php else: ?>
                             <div class="w-full h-16 bg-gray-100 border border-dashed rounded flex items-center justify-center text-xs text-gray-400"><?= $i + 1 ?></div>
@@ -1190,7 +1190,7 @@ foreach ($listings as $lTok) {
                               <label class="block text-xs font-medium text-gray-600 mb-1">Image <?= $imgIndex + 1 ?></label>
                               <?php if (!empty($currentImages[$imgIndex])): ?>
                                 <div class="relative mb-2">
-                                  <img src="/<?= htmlspecialchars($currentImages[$imgIndex]) ?>" alt="Current image <?= $imgIndex + 1 ?>" class="w-full h-20 object-cover rounded border" />
+                                  <img src="/Kaveesha/<?= htmlspecialchars($currentImages[$imgIndex]) ?>" alt="Current image <?= $imgIndex + 1 ?>" class="w-full h-20 object-cover rounded border" />
                                   <div class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full px-1">Current</div>
                                 </div>
                               <?php endif; ?>

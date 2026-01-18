@@ -52,7 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login • mctronicservice</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="/Kaveesha/logo/logo1.png">
+  <script src="https://cdn.tailwindcss.com"></link>
 </head>
 <body class="min-h-screen flex items-center justify-center relative" style="background-image: url('/Kaveesha/logo/logo2.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
   <!-- Brand top-left -->
