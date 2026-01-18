@@ -28,7 +28,6 @@ if (!empty($_SESSION['user_id'])) {
   <div class="relative">
     <div class="w-full h-96 md:h-[450px] lg:h-[600px] overflow-hidden">
       <img src="/Kaveesha/logo/banner.jpeg" alt="MC YOMA electronic Banner" class="w-full h-full object-cover" style="object-position: center 20%;">
-        <img src="/mctronicservice/logo/banner.jpeg" alt="MC YOMA electronic Banner" class="w-full h-full object-cover" style="object-position: center 20%;">">
       <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
         <div class="text-center text-white">
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome to MC YOMA electronic</h1>
@@ -118,7 +117,6 @@ if (!empty($_SESSION['user_id'])) {
         <h4 class="text-lg font-semibold text-gray-700 mb-2">No service requests found</h4>
         <p class="text-gray-600 mb-4">You don't have any service requests yet. Contact us to get started!</p>
         <a href="/Kaveesha/messages.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
-            <a href="/mctronicservice/messages.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           Send a Message
         </a>
       </div>
@@ -194,6 +192,21 @@ if (!empty($_SESSION['user_id'])) {
   </div>
   
   <script>
+    const APP_BASE = '/Kaveesha';
+
+    function toAppUrl(path) {
+      if (!path) return '';
+      const raw = String(path);
+      if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+      if (raw.startsWith(APP_BASE + '/')) return raw;
+
+      const trimmed = raw.replace(/^\/+/, '');
+      if (trimmed.startsWith('Kaveesha/') || trimmed.startsWith('kaveesha/')) {
+        return '/' + trimmed;
+      }
+      return `${APP_BASE}/${trimmed}`;
+    }
+
     let listings = [];
     let invoices = [];
 
@@ -374,9 +387,9 @@ if (!empty($_SESSION['user_id'])) {
         
         // Display first available image
         const imagePath = listing.image_path || listing.image_path_2 || listing.image_path_3;
-        // Database stores paths as 'uploads/filename', so just prepend /
+        // Database stores paths as 'uploads/filename'
         const imageHtml = imagePath 
-          ? `<img src="/mctronicservice/${imagePath}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity" onerror="this.onerror=null;this.src='/mctronicservice/logo/logo2.png';" onclick="openModal(${index})">`
+          ? `<img src="${toAppUrl(imagePath)}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity" onerror="this.onerror=null;this.src='${toAppUrl('logo/logo2.png')}';" onclick="openModal(${index})">`
           : `<div class="w-full h-48 bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors" onclick="openModal(${index})">
                <span class="text-gray-400 text-4xl">📷</span>
              </div>`;
@@ -470,7 +483,7 @@ if (!empty($_SESSION['user_id'])) {
       const slider = document.getElementById('modalImageSlider');
       const imagePath = currentImages[currentImageIndex];
       
-      slider.innerHTML = `<img src="${imagePath}" alt="Image ${currentImageIndex + 1}" class="w-full h-auto max-h-96 object-contain" onerror="this.src='logo/logo2.png';">`;
+      slider.innerHTML = `<img src="${toAppUrl(imagePath)}" alt="Image ${currentImageIndex + 1}" class="w-full h-auto max-h-96 object-contain" onerror="this.src='${toAppUrl('logo/logo2.png')}';">`;
       
       // Update counter
       document.getElementById('currentImageNum').textContent = currentImageIndex + 1;

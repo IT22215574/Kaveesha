@@ -62,6 +62,21 @@ if (!empty($_SESSION['user_id'])) {
   </main>
 
   <script>
+    const APP_BASE = '/Kaveesha';
+
+    function toAppUrl(path) {
+      if (!path) return null;
+      const raw = String(path);
+      if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+      if (raw.startsWith(APP_BASE + '/')) return raw;
+
+      const trimmed = raw.replace(/^\/+/, '');
+      if (trimmed.startsWith('Kaveesha/') || trimmed.startsWith('kaveesha/')) {
+        return '/' + trimmed;
+      }
+      return `${APP_BASE}/${trimmed}`;
+    }
+
     let listings = [];
 
     async function loadListings() {
@@ -119,10 +134,10 @@ if (!empty($_SESSION['user_id'])) {
       let clean = imagePath.replace(/^\/+/, '');
       // If path already starts with uploads/, use it directly
       if (clean.startsWith('uploads/')) {
-        return `/${clean}`;
+        return toAppUrl(clean);
       }
       // Otherwise, assume it's just the filename
-      return `/uploads/${clean}`;
+      return toAppUrl(`uploads/${clean}`);
     }
 
     function renderListings() {
@@ -139,10 +154,10 @@ if (!empty($_SESSION['user_id'])) {
         const statusClass = statusColors[listing.status] || 'bg-gray-100 text-gray-800 border-gray-200';
         
         // Display first available image
-        const fallbackImage = '/logo/logo2.png';
+        const fallbackImage = toAppUrl('logo/logo2.png');
         const imagePath = listing.image_path || listing.image_path_2 || listing.image_path_3;
-        // Directly construct path - database stores as 'uploads/filename'
-        const imageSrc = imagePath ? `/${imagePath}` : fallbackImage;
+        // Database stores as 'uploads/filename'
+        const imageSrc = imagePath ? toAppUrl(imagePath) : fallbackImage;
         const imageHtml = imagePath
           ? `<img src="${imageSrc}" alt="${escapeHtml(listing.title)}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='${fallbackImage}';">`
           : `<img src="${fallbackImage}" alt="No image available" class="w-full h-48 object-cover opacity-70">`;
