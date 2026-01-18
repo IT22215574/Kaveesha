@@ -3,18 +3,18 @@ require_once __DIR__ . '/config.php';
 
 // Only allow logged-in admins to access this page
 if (empty($_SESSION['user'])) {
-  header('Location: /login.php');
+  header('Location: /Kaveesha/login.php');
   exit;
 }
 if (empty($_SESSION['is_admin'])) {
   // Not an admin -> normal users shouldn't be here
-  header('Location: /dashboard.php');
+  header('Location: /Kaveesha/dashboard.php');
   exit;
 }
 
 // If already confirmed, go to admin area
 if (!empty($_SESSION['is_admin_confirmed'])) {
-  header('Location: /admin.php');
+  header('Location: /Kaveesha/admin.php');
   exit;
 }
 
@@ -33,7 +33,7 @@ if ($adminId > 0) {
 if (!$admin) {
   // Fallback: if session says admin but record not found, force logout
   $_SESSION['flash'] = 'Your session is invalid. Please sign in again.';
-  header('Location: /logout.php');
+  header('Location: /Kaveesha/logout.php');
   exit;
 }
 
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $upd->execute([$hash, $adminId]);
         $_SESSION['is_admin_confirmed'] = true;
         $_SESSION['flash'] = 'Admin password set and confirmation successful.';
-        header('Location: /admin.php');
+        header('Location: /Kaveesha/admin.php');
         exit;
       } catch (Throwable $e) {
         $flash = 'Failed to set password. Please try again.';
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $hash = $row ? (string)$row['password_hash'] : '';
           if ($hash && password_verify($p, $hash)) {
             $_SESSION['is_admin_confirmed'] = true;
-            header('Location: /admin.php');
+            header('Location: /Kaveesha/admin.php');
             exit;
           } else {
             $flash = 'Incorrect password. Please try again.';

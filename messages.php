@@ -86,7 +86,7 @@ $pageTitle = 'Messages';
         </div>
     </div>
 
-    <script src="/assets/js/chat_client.js"></script>
+    <script src="/Kaveesha/assets/js/chat_client.js"></script>
     <script>
         const currentUserId = <?= json_encode($_SESSION['user_id']) ?>;
         const messagesList = document.getElementById('messagesList');

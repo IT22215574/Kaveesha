@@ -6,7 +6,7 @@ require_admin();
 $listingId = (int)($_GET['listing_id'] ?? 0);
 if ($listingId <= 0) {
     $_SESSION['flash'] = 'Invalid listing ID.';
-    header('Location: /add_listing.php');
+    header('Location: /Kaveesha/add_listing.php');
     exit;
 }
 
@@ -19,7 +19,7 @@ $listing = $stmt->fetch();
 
 if (!$listing) {
     $_SESSION['flash'] = 'Listing not found.';
-    header('Location: /add_listing.php');
+    header('Location: /Kaveesha/add_listing.php');
     exit;
 }
 
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             db()->commit();
             
             // Redirect to view invoice
-            header('Location: /view_invoice.php?id=' . $invoiceId);
+            header('Location: /Kaveesha/view_invoice.php?id=' . $invoiceId);
             exit;
             
         } catch (Exception $e) {

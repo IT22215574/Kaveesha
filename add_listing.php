@@ -101,7 +101,7 @@ function delete_image_if_safe($imagePath) {
 $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 if ($userId <= 0) {
   $_SESSION['flash'] = 'Invalid user selection.';
-  header('Location: /admin.php');
+  header('Location: /Kaveesha/admin.php');
   exit;
 }
 
@@ -111,7 +111,7 @@ $stmt->execute([$userId]);
 $user = $stmt->fetch();
 if (!$user) {
   $_SESSION['flash'] = 'User not found.';
-  header('Location: /admin.php');
+  header('Location: /Kaveesha/admin.php');
   exit;
 }
 
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'create')) {
         $_SESSION['flash'] = 'This form was already submitted or has expired.';
-        header('Location: /add_listing.php?user_id=' . $userId);
+        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
         exit;
       }
       $title = isset($_POST['title']) ? trim((string)$_POST['title']) : '';
@@ -174,14 +174,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       $_SESSION['flash'] = 'Listing added successfully.';
       $_SESSION['new_listing_id'] = $newId;
-      header('Location: /add_listing.php?user_id=' . $userId);
+      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'update') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'update', $listingId)) {
         $_SESSION['flash'] = 'This form was already submitted or has expired.';
-        header('Location: /add_listing.php?user_id=' . $userId);
+        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0) throw new RuntimeException('Invalid listing.');
@@ -233,14 +233,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       $_SESSION['flash'] = 'Listing updated.';
-      header('Location: /add_listing.php?user_id=' . $userId);
+      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'delete') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'delete', $listingId)) {
         $_SESSION['flash'] = 'This action was already performed or has expired.';
-        header('Location: /add_listing.php?user_id=' . $userId);
+        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0) throw new RuntimeException('Invalid listing.');
@@ -254,14 +254,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       delete_image_if_safe($existing['image_path_2'] ?? null);
       delete_image_if_safe($existing['image_path_3'] ?? null);
       $_SESSION['flash'] = 'Listing deleted.';
-      header('Location: /add_listing.php?user_id=' . $userId);
+      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'delete_image') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'delete_image', $listingId)) {
         $_SESSION['flash'] = 'This action was already performed or has expired.';
-        header('Location: /add_listing.php?user_id=' . $userId);
+        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0) throw new RuntimeException('Invalid listing.');
@@ -283,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       $_SESSION['flash'] = 'All images removed.';
-      header('Location: /add_listing.php?user_id=' . $userId);
+      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'delete_single_image') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
@@ -291,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $token = $_POST['token'] ?? '';
       if (!consume_token($token, 'delete_single_image', $listingId . '_' . $imageIndex)) {
         $_SESSION['flash'] = 'This action was already performed or has expired.';
-        header('Location: /add_listing.php?user_id=' . $userId);
+        header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
         exit;
       }
       if ($listingId <= 0 || $imageIndex < 1 || $imageIndex > 3) throw new RuntimeException('Invalid request.');
@@ -320,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       
       $_SESSION['flash'] = $message;
-      header('Location: /add_listing.php?user_id=' . $userId);
+      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     } elseif ($action === 'update_status') {
       $listingId = isset($_POST['listing_id']) ? (int)$_POST['listing_id'] : 0;
@@ -347,7 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
       }
       $_SESSION['flash'] = 'Status updated successfully.';
-      header('Location: /add_listing.php?user_id=' . $userId);
+      header('Location: /Kaveesha/add_listing.php?user_id=' . $userId);
       exit;
     }
   } catch (PDOException $e) {

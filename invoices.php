@@ -126,7 +126,7 @@ $stats = $statsStmt->fetch();
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               Search
             </button>
-            <a href="/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+            <a href="/Kaveesha/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
               Reset
             </a>
           </div>

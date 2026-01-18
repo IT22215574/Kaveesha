@@ -43,25 +43,25 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
   <!-- Admin name + role (live from DB) -->
   <div class="flex items-center space-x-2 text-lg font-semibold">
-    <img src="logo/logo1.png" alt="MC YOMA electronic Logo" class="h-24 w-auto">
+    <img src="/Kaveesha/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-24 w-auto">
     <span style="color: #692f69;"><?= htmlspecialchars($adminName) ?> — MC YOMA electronic</span>
   </div>
 
     <!-- Desktop nav -->
     <div class="hidden md:flex items-center space-x-8">
       <div class="flex items-center space-x-4">
-        <a href="/admin.php" class="<?= nav_link_classes($isUsers) ?>" <?= $isUsers ? 'style="' . nav_link_style($isUsers) . '"' : '' ?>>Users</a>
-        <a href="/admin_create_user.php" class="<?= nav_link_classes($isCreate) ?>" <?= $isCreate ? 'style="' . nav_link_style($isCreate) . '"' : '' ?>>Create User</a>
-        <a href="/admin_statistics.php" class="<?= nav_link_classes($isStatistics) ?>" <?= $isStatistics ? 'style="' . nav_link_style($isStatistics) . '"' : '' ?>>Statistics</a>
-        <a href="/admin_messages.php" class="<?= nav_link_classes($current === 'admin_messages.php') ?> relative" <?= ($current === 'admin_messages.php') ? 'style="' . nav_link_style(true) . '"' : '' ?>>
+        <a href="/Kaveesha/admin.php" class="<?= nav_link_classes($isUsers) ?>" <?= $isUsers ? 'style="' . nav_link_style($isUsers) . '"' : '' ?>>Users</a>
+        <a href="/Kaveesha/admin_create_user.php" class="<?= nav_link_classes($isCreate) ?>" <?= $isCreate ? 'style="' . nav_link_style($isCreate) . '"' : '' ?>>Create User</a>
+        <a href="/Kaveesha/admin_statistics.php" class="<?= nav_link_classes($isStatistics) ?>" <?= $isStatistics ? 'style="' . nav_link_style($isStatistics) . '"' : '' ?>>Statistics</a>
+        <a href="/Kaveesha/admin_messages.php" class="<?= nav_link_classes($current === 'admin_messages.php') ?> relative" <?= ($current === 'admin_messages.php') ? 'style="' . nav_link_style(true) . '"' : '' ?>>
           Messages
           <span class="admin-messages-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
         </a>
         <!-- Consent Form link removed -->
       </div>
       <div class="flex items-center space-x-4">
-        <a href="/dashboard.php" class="text-sm bg-gray-200 text-gray-800 px-3 py-1 rounded">Dashboard</a>
-        <a href="/logout.php" class="logout-link text-sm bg-red-500 text-white px-3 py-1 rounded">Logout</a>
+        <a href="/Kaveesha/dashboard.php" class="text-sm bg-gray-200 text-gray-800 px-3 py-1 rounded">Dashboard</a>
+        <a href="/Kaveesha/logout.php" class="logout-link text-sm bg-red-500 text-white px-3 py-1 rounded">Logout</a>
       </div>
     </div>
 
@@ -76,17 +76,17 @@ if (!empty($_SESSION['user_id']) && empty($_SESSION['cached_username'])) {
   <!-- Mobile menu -->
   <div id="adminMobileMenu" class="md:hidden hidden border-t border-gray-200">
     <div class="px-4 py-4 space-y-3">
-      <a href="/admin.php" class="block w-full <?= $isUsers ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isUsers ? 'style="background-color: #692f69;"' : '' ?>>Users</a>
-      <a href="/admin_create_user.php" class="block w-full <?= $isCreate ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isCreate ? 'style="background-color: #692f69;"' : '' ?>>Create User</a>
-      <a href="/admin_statistics.php" class="block w-full <?= $isStatistics ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isStatistics ? 'style="background-color: #692f69;"' : '' ?>>Statistics</a>
-      <a href="/admin_messages.php" class="block w-full <?= ($current === 'admin_messages.php') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative" <?= ($current === 'admin_messages.php') ? 'style="background-color: #692f69;"' : '' ?>>
+      <a href="/Kaveesha/admin.php" class="block w-full <?= $isUsers ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isUsers ? 'style="background-color: #692f69;"' : '' ?>>Users</a>
+      <a href="/Kaveesha/admin_create_user.php" class="block w-full <?= $isCreate ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isCreate ? 'style="background-color: #692f69;"' : '' ?>>Create User</a>
+      <a href="/Kaveesha/admin_statistics.php" class="block w-full <?= $isStatistics ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded" <?= $isStatistics ? 'style="background-color: #692f69;"' : '' ?>>Statistics</a>
+      <a href="/Kaveesha/admin_messages.php" class="block w-full <?= ($current === 'admin_messages.php') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' ?> px-3 py-2 rounded relative" <?= ($current === 'admin_messages.php') ? 'style="background-color: #692f69;"' : '' ?>>
         Messages
         <span class="admin-messages-badge absolute top-0 right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style="display: none;"></span>
       </a>
       <!-- Consent Form link removed -->
       <div class="pt-2 mt-2 border-t border-gray-200 flex items-center space-x-2">
-        <a href="/dashboard.php" class="flex-1 text-center bg-gray-200 text-gray-800 px-3 py-2 rounded">Dashboard</a>
-        <a href="/logout.php" class="logout-link flex-1 text-center bg-red-500 text-white px-3 py-2 rounded">Logout</a>
+        <a href="/Kaveesha/dashboard.php" class="flex-1 text-center bg-gray-200 text-gray-800 px-3 py-2 rounded">Dashboard</a>
+        <a href="/Kaveesha/logout.php" class="logout-link flex-1 text-center bg-red-500 text-white px-3 py-2 rounded">Logout</a>
       </div>
     </div>
   </div>
