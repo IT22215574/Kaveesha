@@ -82,6 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
       </div>
     </form>
+    
+    <!-- No account yet link -->
+    <div class="mt-4 text-center">
+      <p class="text-sm text-gray-600">
+        No account yet? 
+        <a href="/Kaveesha/register_request.php" class="font-medium" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
+          Request an account
+        </a>
+      </p>
+    </div>
   </div>
 </body>
 </html>
