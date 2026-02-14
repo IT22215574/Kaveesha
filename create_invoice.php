@@ -35,9 +35,12 @@ function generateInvoiceNumber() {
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
+  // When submitting via JS (form.submit()), the clicked button name/value is NOT included.
+  // We use submit_action to preserve intent for the "Send Invoice" flow.
+  $action = $_POST['submit_action'] ?? ($_POST['action'] ?? '');
+  $action = is_string($action) ? trim($action) : '';
     
-    if ($action === 'create' || $action === 'update') {
+  if ($action === 'create' || $action === 'update' || $action === 'send') {
         try {
             db()->beginTransaction();
             
@@ -78,8 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $taxAmount = $subtotal * ($taxRate / 100);
             $totalAmount = $subtotal + $serviceCharge + $taxAmount;
+            $shouldSend = ($action === 'send');
             
-            if ($action === 'create') {
+            // For "send", create or update depending on whether an invoice already exists.
+            $mode = ($action === 'create' || $action === 'update') ? $action : ($invoice ? 'update' : 'create');
+
+            if ($mode === 'create') {
                 // Check if there's an existing invoice for this listing - delete it
                 $checkExisting = db()->prepare('SELECT id FROM invoices WHERE listing_id = ?');
                 $checkExisting->execute([$listingId]);
@@ -97,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Create new invoice
                 $stmt = db()->prepare('INSERT INTO invoices (listing_id, user_id, invoice_number, invoice_date, due_date, subtotal, discount_amount, service_charge, tax_amount, total_amount, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $status = ($action === 'send') ? 'sent' : 'draft';
+                $status = $shouldSend ? 'sent' : 'draft';
                 $stmt->execute([$listingId, $listing['user_id'], $invoiceNumber, $invoiceDate, $dueDate, $subtotal, $totalDiscount, $serviceCharge, $taxAmount, $totalAmount, $notes, $status]);
                 $invoiceId = db()->lastInsertId();
                 
@@ -105,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 // Update existing invoice
                 $invoiceId = $invoice['id'];
-                $status = ($action === 'send') ? 'sent' : $invoice['status'];
+                $status = $shouldSend ? 'sent' : $invoice['status'];
                 $stmt = db()->prepare('UPDATE invoices SET invoice_date = ?, due_date = ?, subtotal = ?, discount_amount = ?, service_charge = ?, tax_amount = ?, total_amount = ?, notes = ?, status = ? WHERE id = ?');
                 $stmt->execute([$invoiceDate, $dueDate, $subtotal, $totalDiscount, $serviceCharge, $taxAmount, $totalAmount, $notes, $status, $invoiceId]);
                 
@@ -125,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Handle send action
-            if ($action === 'send' || $status === 'sent') {
+            if ($status === 'sent') {
                 if ($oldInvoice ?? false) {
                     $_SESSION['flash'] = 'Old invoice replaced and new invoice sent to customer successfully!';
                 } else {
@@ -142,15 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (Exception $e) {
             db()->rollBack();
             $_SESSION['flash'] = 'Error: ' . $e->getMessage();
-        }
-    } elseif ($action === 'send') {
-        // Mark invoice as sent
-        if ($invoice) {
-            $stmt = db()->prepare('UPDATE invoices SET status = "sent" WHERE id = ?');
-            $stmt->execute([$invoice['id']]);
-            $_SESSION['flash'] = 'Invoice marked as sent!';
-            header('Location: /view_invoice.php?id=' . $invoice['id']);
-            exit;
         }
     }
 }
@@ -209,13 +207,13 @@ if ($invoice) {
         <div class="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
           <p class="text-yellow-800">
             <strong>Note:</strong> This invoice has been sent (Status: <?= ucfirst($invoiceData['status']) ?>). 
-            <a href="/view_invoice.php?id=<?= $invoice['id'] ?>" class="text-blue-600 underline">View Invoice</a>
+            <a href="/Kaveesha/view_invoice.php?id=<?= $invoice['id'] ?>" class="text-blue-600 underline">View Invoice</a>
           </p>
         </div>
       <?php endif; ?>
 
       <form method="post" class="space-y-6">
-        <input type="hidden" name="action" value="<?= $invoice ? 'update' : 'create' ?>">
+        <input type="hidden" id="submit_action" name="submit_action" value="">
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -365,7 +363,7 @@ if ($invoice) {
           </a>
           
           <?php if ($invoice): ?>
-            <a href="/view_invoice.php?id=<?= $invoice['id'] ?>" class="px-6 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
+            <a href="/Kaveesha/view_invoice.php?id=<?= $invoice['id'] ?>" class="px-6 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
               View Invoice
             </a>
           <?php endif; ?>
@@ -582,7 +580,10 @@ if ($invoice) {
           paymentOkBtn.addEventListener('click', function() {
             hidePaymentNotice();
             hasUnsavedChanges = false;
-            button.closest('form').submit();
+            const form = button.closest('form');
+            const submitActionInput = document.getElementById('submit_action');
+            if (submitActionInput) submitActionInput.value = 'send';
+            form.submit();
           }, { once: true });
         });
       });
