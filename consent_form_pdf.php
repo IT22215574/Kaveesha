@@ -191,7 +191,7 @@ $html .= '</div>';
 
 $html .= '<div class="signature-section">';
 $html .= '<div class="field-row"><span class="field-label">Signature: </span><span class="field-value" style="min-width: 200px;"></span></div>';
-$html .= '<div class="field-row"><span class="field-label">Date: </span><span class="field-value" style="min-width: 200px;"></span></div>';
+$html .= '<div class="field-row"><span class="field-label">Date: ' . $safeDate . '</span><span class="field-value" style="min-width: 200px;"></span></div>';
 $html .= '</div>';
 
 $html .= '</body></html>';
