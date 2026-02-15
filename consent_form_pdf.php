@@ -40,6 +40,12 @@ $safeName = htmlspecialchars($customerName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'
 $safeDate = htmlspecialchars($date, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 $safeTitle = htmlspecialchars($listingTitle, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
+// Calculate deadline date (3 months from received date)
+$dateObj = new DateTime($date);
+$dateObj->add(new DateInterval('P3M'));
+$deadlineDate = $dateObj->format('Y/m/d');
+$safeDeadlineDate = htmlspecialchars($deadlineDate, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
 // Logo paths
 $logoPath1 = __DIR__ . '/logo/logo1.png';
 $logoPath2 = __DIR__ . '/logo/logo2.png';
@@ -173,7 +179,7 @@ $html .= '<hr class="divider" />';
 $html .= '<div class="section-header">Cosensus statement</div>';
 $html .= '<div class="consent-text">';
 $html .= 'ඉහත සඳහන් උපාංගය අලුත්වැඩියා කිරීම සඳහා MCYoma electronic වෙත ඉදිරිපත් කර ඇත. ';
-$html .= 'MCYoma electronic විසින් ලැබුණු දින <strong>' . $safeDate . '</strong> සිට මාස 3ක් ඇතුලත (20......../............/...........) එය නැවත ලබා ගැනීම ඔබේ වගකීමක් වන අතර, මෙම කාල සීමාව තුළ ';
+$html .= 'MCYoma electronic විසින් ලැබුණු දින <strong>' . $safeDate . '</strong> සිට මාස 3ක් ඇතුලත (<strong>' . $safeDeadlineDate . '</strong>) එය නැවත ලබා ගැනීම ඔබේ වගකීමක් වන අතර, මෙම කාල සීමාව තුළ ';
 $html .= 'එය ලබා නොගත්හොත්, එය අතහැර දැමූ ලෙස සලකනු ලබන අතර එය MCYoma electronic ';
 $html .= 'වෙතින් ලබා ගත නොහැකි බවට ඔබ එකඟ විය යුතුයි. ඔබ ලබා දෙන අයිතමය පරීක්ෂා කර ';
 $html .= 'දෝෂ හඳුනා ගැනීමට දින 4 - 7 අතර කාලයක් ගත වන බවත්, එම කාලය තුළ කිසිදු කරදරකාරී ';
