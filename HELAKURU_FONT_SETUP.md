@@ -1,12 +1,28 @@
-# Adding Helakuru Sinhala Font to Consent Form
+# Sinhala Font Configuration for Consent Forms
 
 ## Overview
-The consent form PDF now properly supports Sinhala text using the **Abhaya Libre** font, which is already built into TCPDF. The Sinhala text should display correctly without any additional setup.
+The consent form PDF now has **enhanced Unicode support** for proper Sinhala text rendering. The system automatically uses the best available font with the following improvements:
 
-For an even better appearance, you can optionally install the Helakuru font by following the steps below.
+✅ **Unicode font subsetting** - Ensures all Sinhala characters are included  
+✅ **FreeSans default** - Excellent Unicode coverage including full Sinhala support  
+✅ **Larger font size** (12pt) - Better readability for Sinhala text  
+✅ **Proper UTF-8 encoding** - Correct handling of Unicode characters  
+✅ **CSS text rendering** - Optimized layout and spacing
 
-## Default Font (No Setup Required)
-The system now uses **Abhaya Libre** by default, which provides excellent Sinhala Unicode support. Your consent forms should display Sinhala text correctly right away.
+## Current Default Setup (Works Immediately)
+The system now uses **FreeSans** by default, which provides excellent Unicode coverage including complete Sinhala character support. Your consent forms should display properly without any additional configuration.
+
+### Test Your Fonts
+You can check which fonts are available by visiting:
+```
+http://localhost/Kaveesha/test_sinhala_fonts.php
+```
+
+This diagnostic page shows:
+- Which fonts are installed
+- Which font is currently being used
+- Font availability status
+- Sample Sinhala text rendering
 
 ## Optional: Install Helakuru Font for Better Appearance
 
@@ -91,16 +107,37 @@ The system will automatically detect these filenames:
 ## Technical Details
 
 ### How It Works
-1. The consent form checks for Helakuru font files at runtime
-2. If found, it uses Helakuru for the best Sinhala rendering
-3. If not found, it uses **Abhaya Libre** (built-in, excellent Sinhala support)
-4. This ensures PDFs always generate with proper Sinhala text display
+1. **UTF-8 encoding** is enforced with `mb_internal_encoding('UTF-8')`
+2. **Font subsetting** is enabled to embed all required Unicode characters
+3. The system checks for custom fonts (Helakuru, FM-Abhaya, Noto Sans)
+4. If no custom fonts found, uses **FreeSans** (excellent Unicode + Sinhala support)
+5. Font size set to **12pt** for optimal Sinhala text readability
+6. CSS styles added for proper text layout and spacing
+7. All text is properly HTML-escaped while preserving UTF-8 encoding
 
-### Font Priority
-1. `helakuru` (if installed - best appearance)
-2. `fmabhaya` (if installed)
-3. `abhayalibre` (default - built-in, excellent Sinhala support)
-4. `notosanssinhala` (if installed)
+### Technical Improvements
+- **Unicode Subsetting**: `$pdf->setFontSubsetting(true)` ensures all Sinhala characters are embedded
+- **Larger Font**: 12pt instead of 11pt for better readability
+- **UTF-8 Internal Encoding**: Forces proper multibyte character handling
+- **CSS Styling**: Adds line-height and justification for better text flow
+- **Better Default**: FreeSans has 807KB character map vs smaller fonts
+
+### Font Priority (Automatic Selection)
+The system checks for fonts in this order and uses the first one found:
+
+1. **Helakuru** (if installed) - Premium Sinhala appearance
+2. **FM-Abhaya** (if installed) - High-quality Sinhala rendering  
+3. **Noto Sans Sinhala** (if installed) - Modern, clean Google font
+4. **FreeSans** (built-in, DEFAULT) - Excellent Unicode + Sinhala support
+5. **DejaVu Sans** (built-in) - Comprehensive Unicode coverage
+6. **Abhaya Libre** (built-in) - Sinhala-specific font
+
+### What's New
+- ✨ **Font subsetting enabled** - All required Unicode characters are embedded
+- 📏 **Font size increased** to 12pt (from 11pt) for better readability
+- 🎨 **CSS styling added** - Improved text layout and spacing
+- 🔤 **UTF-8 encoding enforced** - Proper Unicode character handling
+- 🔄 **Better font fallback** - Prioritizes FreeSans for best Unicode coverage
 
 ### Testing Different Fonts
 To test with a specific font, you can manually edit `consent_form_pdf.php`:
@@ -108,11 +145,28 @@ To test with a specific font, you can manually edit `consent_form_pdf.php`:
 $pdf->SetFont('your-font-name', '', 11, '', true);
 ```
 
+## Quick Start
+
+### Just Generate the PDF ✅
+No setup needed! Simply:
+1. Go to admin panel
+2. Generate a consent form
+3. Sinhala text should display correctly using FreeSans
+
+### Check Your Configuration
+Visit: `http://localhost/Kaveesha/test_sinhala_fonts.php`
+
+This shows:
+- Which font is currently being used
+- Which fonts are available
+- Font installation status
+- Sample Sinhala text
+
 ## Notes
-- **Abhaya Libre** is already installed and provides excellent Sinhala support
-- The consent form will now display Sinhala text properly without any setup
-- Helakuru font is optional and only needed if you prefer its specific style
-- Font installation (if done) only needs to be done once
-- All future consent forms will use the best available font
-- The original consent form content remains unchanged
-- Font changes don't require server restart
+- ✅ **FreeSans** is pre-installed with excellent Unicode/Sinhala support
+- ✅ **No setup required** - works immediately with proper Sinhala rendering
+- ✅ **Automatic font selection** - uses the best available font
+- ✅ **Font size optimized** at 12pt for better Sinhala text readability
+- ✅ **Unicode subsetting enabled** - all characters properly embedded
+- 💡 **Custom fonts optional** - only install if you want a specific style (Helakuru)
+- 🔄 **No server restart needed** - changes take effect immediately
