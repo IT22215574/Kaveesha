@@ -8,7 +8,7 @@ $isAdmin = !empty($_SESSION['is_admin']);
 $invoiceId = (int)($_GET['id'] ?? 0);
 if ($invoiceId <= 0) {
     $_SESSION['flash'] = 'Invalid invoice ID.';
-    $redirectUrl = $isAdmin ? '/Kaveesha/invoices.php' : '/Kaveesha/dashboard.php';
+    $redirectUrl = $isAdmin ? '/invoices.php' : '/dashboard.php';
     header('Location: ' . $redirectUrl);
     exit;
 }
@@ -27,7 +27,7 @@ $invoice = $stmt->fetch();
 
 if (!$invoice) {
     $_SESSION['flash'] = 'Invoice not found.';
-    $redirectUrl = $isAdmin ? '/Kaveesha/invoices.php' : '/Kaveesha/dashboard.php';
+    $redirectUrl = $isAdmin ? '/invoices.php' : '/dashboard.php';
     header('Location: ' . $redirectUrl);
     exit;
 }
@@ -35,7 +35,7 @@ if (!$invoice) {
 // If not admin, verify the invoice belongs to the logged-in user
 if (!$isAdmin && $invoice['user_id'] != $_SESSION['user_id']) {
     $_SESSION['flash'] = 'You do not have permission to view this invoice.';
-    header('Location: /Kaveesha/dashboard.php');
+    header('Location: /dashboard.php');
     exit;
 }
 
@@ -56,7 +56,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = db()->prepare('UPDATE invoices SET status = ? WHERE id = ?');
             $stmt->execute([$status, $invoiceId]);
             $_SESSION['flash'] = 'Invoice status updated to ' . ucfirst($status);
-            header('Location: /Kaveesha/view_invoice.php?id=' . $invoiceId);
+            header('Location: /view_invoice.php?id=' . $invoiceId);
             exit;
         }
     } elseif ($action === 'send_invoice') {
@@ -64,7 +64,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare('UPDATE invoices SET status = "sent" WHERE id = ?');
         $stmt->execute([$invoiceId]);
         $_SESSION['flash'] = 'Invoice marked as sent! (In a production system, an email would be sent to ' . htmlspecialchars($invoice['username']) . ')';
-        header('Location: /Kaveesha/view_invoice.php?id=' . $invoiceId);
+        header('Location: /view_invoice.php?id=' . $invoiceId);
         exit;
     }
 }
@@ -329,7 +329,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Logo at top-left -->
         <div class="flex justify-start">
           <div class="flex-shrink-0">
-            <img src="/Kaveesha/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
+            <img src="/logo/logo1.png" alt="MC YOMA electronic Logo" class="h-56 w-auto">
           </div>
         </div>
         <!-- Text content below logo in parallel columns -->

@@ -4,7 +4,7 @@ require_admin();
 
 $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : null;
 if (!$userId) {
-    header('Location: /Kaveesha/admin.php');
+    header('Location: /admin.php');
     exit;
 }
 
@@ -16,12 +16,12 @@ try {
     
     if (!$user) {
         $_SESSION['flash'] = 'User not found.';
-        header('Location: /Kaveesha/admin.php');
+        header('Location: /admin.php');
         exit;
     }
 } catch (Exception $e) {
     $_SESSION['flash'] = 'Error loading user: ' . $e->getMessage();
-    header('Location: /Kaveesha/admin.php');
+    header('Location: /admin.php');
     exit;
 }
 ?>
@@ -46,10 +46,10 @@ try {
         </div>
         <div class="flex items-center gap-4">
           <span id="totalCount" class="text-sm text-gray-600"></span>
-          <a href="/Kaveesha/add_listing.php?user_id=<?= $userId ?>" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+          <a href="/add_listing.php?user_id=<?= $userId ?>" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
             Add New Listing
           </a>
-          <a href="/Kaveesha/admin.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+          <a href="/admin.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
             Back to Users
           </a>
         </div>
@@ -71,7 +71,7 @@ try {
         <div class="text-gray-400 text-6xl mb-4">📋</div>
         <h3 class="text-lg font-semibold text-gray-700 mb-2">No listings found</h3>
         <p class="text-gray-600 mb-4">This user hasn't created any listings yet.</p>
-        <a href="/Kaveesha/add_listing.php?user_id=<?= $userId ?>" class="inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+        <a href="/add_listing.php?user_id=<?= $userId ?>" class="inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
           Create First Listing
         </a>
       </div>
@@ -117,7 +117,7 @@ try {
       container.classList.add('hidden');
 
       try {
-        const response = await fetch(`/Kaveesha/admin_user_listings_api.php?user_id=${userId}`);
+        const response = await fetch(`/admin_user_listings_api.php?user_id=${userId}`);
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);

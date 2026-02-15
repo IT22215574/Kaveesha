@@ -135,7 +135,7 @@ $pageTitle = 'Messages';
         });
         
         function loadConversations() {
-            fetch('messages_api.php?action=conversations')
+            fetch('/messages_api.php?action=conversations')
                 .then(response => response.json())
                 .then(data => {
                     if (data.conversations) {
@@ -223,7 +223,7 @@ $pageTitle = 'Messages';
         }
         
         function loadMessages(conversationId) {
-            fetch(`messages_api.php?action=messages&conversation_id=${conversationId}`)
+            fetch(`/messages_api.php?action=messages&conversation_id=${conversationId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.messages) {
@@ -288,7 +288,7 @@ $pageTitle = 'Messages';
                 button.disabled = true;
                 button.textContent = 'Sending...';
                 
-                fetch('messages_api.php?action=send', {
+                fetch('/messages_api.php?action=send', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ $pageTitle = 'Messages';
         }
         
         function markMessagesAsRead(conversationId) {
-            fetch('messages_api.php?action=mark_read', {
+            fetch('/messages_api.php?action=mark_read', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

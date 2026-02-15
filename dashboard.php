@@ -27,7 +27,7 @@ if (!empty($_SESSION['user_id'])) {
   <!-- Banner Section -->
   <div class="relative">
     <div class="w-full h-96 md:h-[450px] lg:h-[600px] overflow-hidden">
-      <img src="/Kaveesha/logo/banner.jpeg" alt="MC YOMA electronic Banner" class="w-full h-full object-cover" style="object-position: center 20%;">
+      <img src="/logo/banner.jpeg" alt="MC YOMA electronic Banner" class="w-full h-full object-cover" style="object-position: center 20%;">
       <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
         <div class="text-center text-white">
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Welcome to MC YOMA electronic</h1>
@@ -116,7 +116,7 @@ if (!empty($_SESSION['user_id'])) {
         <div class="text-gray-400 text-6xl mb-4">📋</div>
         <h4 class="text-lg font-semibold text-gray-700 mb-2">No service requests found</h4>
         <p class="text-gray-600 mb-4">You don't have any service requests yet. Contact us to get started!</p>
-        <a href="/Kaveesha/messages.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
+        <a href="/messages.php" class="inline-block px-6 py-2 text-white rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
           Send a Message
         </a>
       </div>
@@ -192,19 +192,16 @@ if (!empty($_SESSION['user_id'])) {
   </div>
   
   <script>
-    const APP_BASE = '/Kaveesha';
+    const APP_BASE = '';
 
     function toAppUrl(path) {
       if (!path) return '';
       const raw = String(path);
       if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
-      if (raw.startsWith(APP_BASE + '/')) return raw;
+      if (raw.startsWith('/')) return raw;
 
-      const trimmed = raw.replace(/^\/+/, '');
-      if (trimmed.startsWith('Kaveesha/') || trimmed.startsWith('kaveesha/')) {
-        return '/' + trimmed;
-      }
-      return `${APP_BASE}/${trimmed}`;
+      // Relative path - add leading slash
+      return '/' + raw;
     }
 
     let listings = [];
@@ -213,7 +210,7 @@ if (!empty($_SESSION['user_id'])) {
     // Load invoices
     async function loadInvoices() {
       try {
-          const response = await fetch('user_invoices_api.php');
+          const response = await fetch('/user_invoices_api.php');
 
           if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -293,7 +290,7 @@ if (!empty($_SESSION['user_id'])) {
                 <span class="text-lg font-bold" style="color: #692f69;">
                   Rs. ${parseFloat(invoice.total_amount).toFixed(2)}
                 </span>
-                 <a href="/Kaveesha/view_invoice.php?id=${invoice.id}" 
+                 <a href="/view_invoice.php?id=${invoice.id}" 
                    class="inline-flex items-center px-4 py-2 text-white text-sm rounded-lg transition" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -337,7 +334,7 @@ if (!empty($_SESSION['user_id'])) {
       container.classList.add('hidden');
 
       try {
-        const response = await fetch('user_listings_api.php');
+        const response = await fetch('/user_listings_api.php');
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);

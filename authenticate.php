@@ -2,7 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /Kaveesha/login.php');
+    header('Location: /login.php');
     exit;
 }
 
@@ -11,7 +11,7 @@ $password = isset($_POST['password']) ? $_POST['password'] : '';
 
 if ($username === '' || $password === '') {
     $_SESSION['flash'] = 'Please provide username and password.';
-    header('Location: /Kaveesha/login.php');
+    header('Location: /login.php');
     exit;
 }
 
@@ -40,14 +40,14 @@ if (check_credentials($username, $password)) {
         // leave as basic session if query fails
     }
     if (!empty($_SESSION['is_admin'])) {
-        header('Location: /Kaveesha/admin.php');
+        header('Location: /admin.php');
     } else {
-        header('Location: /Kaveesha/dashboard.php');
+        header('Location: /dashboard.php');
     }
     exit;
 } else {
     $_SESSION['flash'] = 'Invalid username or password.';
-    header('Location: /Kaveesha/login.php');
+    header('Location: /login.php');
     exit;
 }
 ?>

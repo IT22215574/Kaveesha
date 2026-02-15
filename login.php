@@ -4,12 +4,12 @@ require_once __DIR__ . '/config.php';
 if (!empty($_SESSION['user'])) {
   if (!empty($_SESSION['is_admin'])) {
     if (!empty($_SESSION['is_admin_confirmed'])) {
-      header('Location: /Kaveesha/admin.php');
+      header('Location: /admin.php');
     } else {
-      header('Location: /Kaveesha/admin_confirm.php');
+      header('Location: /admin_confirm.php');
     }
   } else {
-    header('Location: /Kaveesha/dashboard.php');
+    header('Location: /dashboard.php');
   }
   exit;
 }
@@ -35,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       unset($_SESSION['is_admin_confirmed']);
       if (!empty($_SESSION['is_admin'])) {
         // For admin via mobile login, require extra confirmation step
-        header('Location: /Kaveesha/admin_confirm.php');
+        header('Location: /admin_confirm.php');
       } else {
-        header('Location: /Kaveesha/dashboard.php');
+        header('Location: /dashboard.php');
       }
       exit;
     } else {
@@ -52,13 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login • mctronicservice</title>
-  <link rel="icon" type="image/png" href="/Kaveesha/logo/logo1.png">
+  <link rel="icon" type="image/png" href="/logo/logo1.png">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex items-center justify-center relative" style="background-image: url('/Kaveesha/logo/logo2.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+<body class="min-h-screen flex items-center justify-center relative" style="background-image: url('/logo/logo2.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
   <!-- Brand top-left -->
   <div class="fixed top-4 left-4">
-    <a href="/Kaveesha/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
+    <a href="/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
       <span class="text-xl">MC YOMA electronic</span>
     </a>
   </div>
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="mt-4 text-center">
       <p class="text-sm text-gray-600">
         No account yet? 
-        <a href="/Kaveesha/register_request.php" class="font-medium" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
+        <a href="/register_request.php" class="font-medium" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
           Request an account
         </a>
       </p>

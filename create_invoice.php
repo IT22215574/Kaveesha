@@ -6,7 +6,7 @@ require_admin();
 $listingId = (int)($_GET['listing_id'] ?? 0);
 if ($listingId <= 0) {
     $_SESSION['flash'] = 'Invalid listing ID.';
-    header('Location: /Kaveesha/add_listing.php');
+    header('Location: /add_listing.php');
     exit;
 }
 
@@ -19,7 +19,7 @@ $listing = $stmt->fetch();
 
 if (!$listing) {
     $_SESSION['flash'] = 'Listing not found.';
-    header('Location: /Kaveesha/add_listing.php');
+    header('Location: /add_listing.php');
     exit;
 }
 
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             db()->commit();
             
             // Redirect to view invoice
-            header('Location: /Kaveesha/view_invoice.php?id=' . $invoiceId);
+            header('Location: /view_invoice.php?id=' . $invoiceId);
             exit;
             
         } catch (Exception $e) {
@@ -207,7 +207,7 @@ if ($invoice) {
         <div class="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
           <p class="text-yellow-800">
             <strong>Note:</strong> This invoice has been sent (Status: <?= ucfirst($invoiceData['status']) ?>). 
-            <a href="/Kaveesha/view_invoice.php?id=<?= $invoice['id'] ?>" class="text-blue-600 underline">View Invoice</a>
+            <a href="/view_invoice.php?id=<?= $invoice['id'] ?>" class="text-blue-600 underline">View Invoice</a>
           </p>
         </div>
       <?php endif; ?>
@@ -363,7 +363,7 @@ if ($invoice) {
           </a>
           
           <?php if ($invoice): ?>
-            <a href="/Kaveesha/view_invoice.php?id=<?= $invoice['id'] ?>" class="px-6 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
+            <a href="/view_invoice.php?id=<?= $invoice['id'] ?>" class="px-6 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
               View Invoice
             </a>
           <?php endif; ?>

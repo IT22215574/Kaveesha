@@ -1,7 +1,7 @@
 # Sinhala Unicode Fix Summary
 
 ## File Fixed
-`/Applications/XAMPP/xamppfiles/htdocs/Kaveesha/consent_form_pdf.php`
+`/Applications/XAMPP/xamppfiles/htdocs/consent_form_pdf.php`
 
 ## Problem
 The Sinhala text had vowel signs (combining marks like ෙ, ේ, ො) appearing BEFORE consonants instead of AFTER them. This caused the text to display as boxes in the PDF because proper Sinhala Unicode requires the base consonant to come FIRST, followed by combining marks.

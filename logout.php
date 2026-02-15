@@ -10,6 +10,6 @@ if (ini_get('session.use_cookies')) {
     );
 }
 session_destroy();
-header('Location: /Kaveesha/login.php');
+header('Location: /login.php');
 exit;
 ?>

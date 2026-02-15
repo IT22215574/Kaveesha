@@ -57,17 +57,17 @@ function find_user_by_mobile($mobile) {
 // Ensures: user is logged in, is admin, and has passed admin confirmation step
 function require_admin() {
     if (empty($_SESSION['user'])) {
-        header('Location: /Kaveesha/login.php');
+        header('Location: /login.php');
         exit;
     }
     if (empty($_SESSION['is_admin'])) {
         // Logged-in but not an admin -> send to normal dashboard
-        header('Location: /Kaveesha/dashboard.php');
+        header('Location: /dashboard.php');
         exit;
     }
     if (empty($_SESSION['is_admin_confirmed'])) {
         // Admin but not yet confirmed -> require confirmation step
-        header('Location: /Kaveesha/admin_confirm.php');
+        header('Location: /admin_confirm.php');
         exit;
     }
 }
@@ -75,7 +75,7 @@ function require_admin() {
 // Helper: require login
 function require_login() {
     if (empty($_SESSION['user'])) {
-        header('Location: /Kaveesha/login.php');
+        header('Location: /login.php');
         exit;
     }
 }

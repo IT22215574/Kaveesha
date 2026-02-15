@@ -86,7 +86,7 @@ $pageTitle = 'Messages';
         </div>
     </div>
 
-    <script src="/Kaveesha/assets/js/chat_client.js"></script>
+    <script src="/assets/js/chat_client.js"></script>
     <script>
         const currentUserId = <?= json_encode($_SESSION['user_id']) ?>;
         const messagesList = document.getElementById('messagesList');
@@ -115,7 +115,7 @@ $pageTitle = 'Messages';
         }
 
         function markMessagesAsRead() {
-            fetch('messages_api.php?action=mark_read', {
+            fetch('/messages_api.php?action=mark_read', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ conversation_id: currentUserId })
             }).catch(err => console.warn('Mark read failed', err));
@@ -154,7 +154,7 @@ $pageTitle = 'Messages';
             const message = input.value.trim();
             if (!message) return;
             button.disabled = true; button.textContent = 'Sending...';
-            fetch('messages_api.php?action=send', {
+            fetch('/messages_api.php?action=send', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })
             }).then(r => r.json()).then(data => {

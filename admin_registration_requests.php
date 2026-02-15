@@ -103,7 +103,7 @@ try {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Registration Requests • Admin • mctronicservice</title>
-  <link rel="icon" type="image/png" href="/Kaveesha/logo/logo1.png">
+  <link rel="icon" type="image/png" href="/logo/logo1.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .modal {

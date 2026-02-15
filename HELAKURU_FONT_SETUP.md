@@ -15,7 +15,7 @@ The system now uses **FreeSans** by default, which provides excellent Unicode co
 ### Test Your Fonts
 You can check which fonts are available by visiting:
 ```
-http://localhost/Kaveesha/test_sinhala_fonts.php
+http://localhost/test_sinhala_fonts.php
 ```
 
 This diagnostic page shows:
@@ -45,14 +45,14 @@ You can get the Helakuru font from one of these sources:
 1. Download the font file (e.g., `helakuru.ttf` or `FM-Abhaya.ttf`)
 2. Place it in the main project directory:
    ```
-   /Applications/XAMPP/xamppfiles/htdocs/Kaveesha/
+   /Applications/XAMPP/xamppfiles/htdocs/
    ```
 
 ### Step 3: Run the Font Installation Script
 Open Terminal and run:
 
 ```bash
-cd /Applications/XAMPP/xamppfiles/htdocs/Kaveesha/
+cd /Applications/XAMPP/xamppfiles/htdocs/
 php add_helakuru_font.php
 ```
 
@@ -154,7 +154,7 @@ No setup needed! Simply:
 3. Sinhala text should display correctly using FreeSans
 
 ### Check Your Configuration
-Visit: `http://localhost/Kaveesha/test_sinhala_fonts.php`
+Visit: `http://localhost/test_sinhala_fonts.php`
 
 This shows:
 - Which font is currently being used

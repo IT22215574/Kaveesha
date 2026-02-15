@@ -7,10 +7,10 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/config.php';
 
 if (!empty($_SESSION['user'])) {
-    header('Location: /Kaveesha/dashboard.php');
+    header('Location: /dashboard.php');
     exit;
 } else {
-    header('Location: /Kaveesha/login.php');
+    header('Location: /login.php');
     exit;
 }
 ?>

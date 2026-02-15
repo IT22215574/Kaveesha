@@ -126,7 +126,7 @@ $stats = $statsStmt->fetch();
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               Search
             </button>
-            <a href="/Kaveesha/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+            <a href="/invoices.php" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
               Reset
             </a>
           </div>
@@ -193,7 +193,7 @@ $stats = $statsStmt->fetch();
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex gap-2">
-                       <a href="/Kaveesha/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
+                       <a href="/view_invoice.php?id=<?= (int)$invoice['id'] ?>" 
                          style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">View</a>
                       <a href="/create_invoice.php?listing_id=<?= (int)$invoice['listing_id'] ?>" 
                          class="text-green-600 hover:text-green-900">Edit</a>

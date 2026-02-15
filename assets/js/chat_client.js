@@ -3,7 +3,7 @@
 (function(global){
   function ChatClient(opts){
     this.conversationId = opts.conversationId;
-    this.fetchUrl = opts.fetchUrl || 'messages_api.php?action=messages&conversation_id=' + encodeURIComponent(this.conversationId);
+    this.fetchUrl = opts.fetchUrl || '/messages_api.php?action=messages&conversation_id=' + encodeURIComponent(this.conversationId);
     this.intervalMin = opts.intervalMin || 8000; // 8s after activity
     this.intervalMax = opts.intervalMax || 45000; // backoff upper bound
     this.interval = this.intervalMin;

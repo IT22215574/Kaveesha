@@ -4,9 +4,9 @@ require_once __DIR__ . '/config.php';
 // If already logged in, redirect to appropriate area
 if (!empty($_SESSION['user'])) {
   if (!empty($_SESSION['is_admin'])) {
-    header('Location: /Kaveesha/admin.php');
+    header('Location: /admin.php');
   } else {
-    header('Location: /Kaveesha/dashboard.php');
+    header('Location: /dashboard.php');
   }
   exit;
 }
@@ -63,13 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Request Account • mctronicservice</title>
-  <link rel="icon" type="image/png" href="/Kaveesha/logo/logo1.png">
+  <link rel="icon" type="image/png" href="/logo/logo1.png">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex items-center justify-center relative" style="background-image: url('/Kaveesha/logo/logo2.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+<body class="min-h-screen flex items-center justify-center relative" style="background-image: url('/logo/logo2.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
   <!-- Brand top-left -->
   <div class="fixed top-4 left-4">
-    <a href="/Kaveesha/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
+    <a href="/index.php" class="inline-flex items-center gap-2 font-bold tracking-tight" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
       <span class="text-xl">MC YOMA electronic</span>
     </a>
   </div>
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="mb-4 p-3 rounded-md border border-green-200 bg-green-50 text-green-700">
         <?=htmlspecialchars($success) ?>
         <div class="mt-3">
-          <a href="/Kaveesha/login.php" class="text-sm font-medium underline" style="color: #692f69;">Back to login</a>
+          <a href="/login.php" class="text-sm font-medium underline" style="color: #692f69;">Back to login</a>
         </div>
       </div>
     <?php else: ?>
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </button>
         </div>
         <div class="text-center">
-          <a href="/Kaveesha/login.php" class="text-sm font-medium inline-flex items-center gap-1" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
+          <a href="/login.php" class="text-sm font-medium inline-flex items-center gap-1" style="color: #692f69;" onmouseover="this.style.color='#7d3a7d'" onmouseout="this.style.color='#692f69'">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
             </svg>

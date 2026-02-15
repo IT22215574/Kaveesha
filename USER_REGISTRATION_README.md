@@ -6,7 +6,7 @@ This system allows new users to request accounts on their own, which then requir
 ## How It Works
 
 ### For New Users
-1. Visit the login page at `/Kaveesha/login.php`
+1. Visit the login page at `/login.php`
 2. Click on "Request an account" link at the bottom
 3. Fill in Name and Mobile Number (10 digits)
 4. Submit the registration request
@@ -74,7 +74,7 @@ This system allows new users to request accounts on their own, which then requir
 
 1. Run the database migration:
 ```bash
-/Applications/XAMPP/xamppfiles/bin/mysql -u root < /Applications/XAMPP/xamppfiles/htdocs/Kaveesha/user_registration_migration.sql
+/Applications/XAMPP/xamppfiles/bin/mysql -u root < /Applications/XAMPP/xamppfiles/htdocs/user_registration_migration.sql
 ```
 
 2. Ensure all new files are in place:
