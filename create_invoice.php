@@ -397,6 +397,9 @@ if ($invoice) {
           </p>
         </div>
         <div class="flex justify-end gap-3">
+          <button type="button" id="paymentNoticeCancelBtn" class="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+            Cancel
+          </button>
           <button type="button" id="paymentNoticeOkBtn" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
             Understood
           </button>
@@ -555,12 +558,13 @@ if ($invoice) {
       // Payment notice modal handlers
       const paymentModal = document.getElementById('paymentNoticeModal');
       const paymentOkBtn = document.getElementById('paymentNoticeOkBtn');
+      const paymentCancelBtn = document.getElementById('paymentNoticeCancelBtn');
       
-      if (paymentOkBtn) {
-        paymentOkBtn.addEventListener('click', hidePaymentNotice);
+      if (paymentCancelBtn) {
+        paymentCancelBtn.addEventListener('click', hidePaymentNotice);
       }
       
-      // Close modal when clicking outside
+      // Close modal when clicking outside or pressing Escape
       if (paymentModal) {
         paymentModal.addEventListener('click', function(e) {
           if (e.target === paymentModal) {
@@ -568,6 +572,12 @@ if ($invoice) {
           }
         });
       }
+      
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && paymentModal && !paymentModal.classList.contains('hidden')) {
+          hidePaymentNotice();
+        }
+      });
       
       // Show payment notice when Send Invoice button is clicked
       const sendButtons = document.querySelectorAll('button[value="send"]');

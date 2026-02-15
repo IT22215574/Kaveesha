@@ -272,7 +272,7 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
         
         <?php if ($invoice['status'] === 'draft' || $invoice['status'] === 'sent'): ?>
-          <form method="post" class="inline">
+          <form method="post" class="inline" onsubmit="return confirm('Are you sure you want to <?= $invoice['status'] === 'draft' ? 'send' : 'resend' ?> this invoice to <?= htmlspecialchars($invoice['username']) ?>?');">
             <input type="hidden" name="action" value="send_invoice">
             <button type="submit" class="px-4 py-2 text-white rounded-lg" style="background-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
               <?= $invoice['status'] === 'draft' ? 'Send to Customer' : 'Resend to Customer' ?>
