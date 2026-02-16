@@ -5,9 +5,9 @@ session_start();
 // Database configuration (hosted/production)
 define('DB_HOST', 'localhost'); // or your remote DB host
 define('DB_PORT', '3306');
-define('DB_NAME', 'Electronice');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', 'u983239990_electronics');
+define('DB_USER', 'u983239990_Yoma');
+define('DB_PASS', 'Yomal@1234@');
 
 
 // PDO singleton
