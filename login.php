@@ -41,7 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       exit;
     } else {
-      $flash = 'Mobile number not found.';
+      // Redirect to registration request page if mobile number not found
+      header('Location: /register_request.php');
+      exit;
     }
   }
 }
@@ -73,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="" method="post" class="space-y-5">
       <div>
         <label for="mobile" class="block text-sm font-medium text-gray-700">Mobile number</label>
-        <input id="mobile" name="mobile" type="tel" inputmode="numeric" pattern="[0-9\s+\-()]{7,}" placeholder="e.g., 0712345678" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2" style="--tw-ring-color: #692f69; --tw-border-opacity: 1;" onfocus="this.style.borderColor='#692f69'" onblur="this.style.borderColor=''" />
-        <p class="mt-1 text-xs text-gray-400">We’ll never share your number.</p>
+        <input id="mobile" name="mobile" type="tel" inputmode="numeric" pattern="\d{10}" maxlength="10" oninput="this.value=this.value.replace(/\D+/g,'').slice(0,10)" title="Enter exactly 10 digits" placeholder="e.g., 0712345678" required class="mt-1 block w-full px-3 py-2.5 rounded-lg border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2" style="--tw-ring-color: #692f69; --tw-border-opacity: 1;" onfocus="this.style.borderColor='#692f69'" onblur="this.style.borderColor=''" />
+        <p class="mt-1 text-xs text-gray-400">Enter exactly 10 digits (e.g., 0771234567)</p>
       </div>
       <div>
         <button type="submit" class="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg text-white font-medium shadow focus:outline-none focus-visible:ring-2" style="background-color: #692f69; --tw-ring-color: #692f69;" onmouseover="this.style.backgroundColor='#7d3a7d'" onmouseout="this.style.backgroundColor='#692f69'">
