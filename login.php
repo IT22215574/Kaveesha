@@ -16,6 +16,14 @@ if (!empty($_SESSION['user'])) {
 
 // Handle POST (classic embedded PHP in the same file)
 $flash = '';
+$success = '';
+
+// Check for registration success message
+if (!empty($_SESSION['registration_success'])) {
+  $success = $_SESSION['registration_success'];
+  unset($_SESSION['registration_success']);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : '';
   if ($mobile === '') {
@@ -69,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="max-w-md w-full bg-white/90 backdrop-blur p-8 rounded-xl shadow-xl border border-gray-100">
     <h1 class="text-2xl font-semibold text-gray-900">Welcome back</h1>
     <p class="text-sm text-gray-500 mb-6">Sign in with your mobile number to continue.</p>
+    <?php if ($success): ?>
+      <div class="mb-4 p-3 rounded-md border border-green-200 bg-green-50 text-green-700"><?=htmlspecialchars($success) ?></div>
+    <?php endif; ?>
     <?php if ($flash): ?>
       <div class="mb-4 p-3 rounded-md border border-red-200 bg-red-50 text-red-700"><?=htmlspecialchars($flash) ?></div>
     <?php endif; ?>

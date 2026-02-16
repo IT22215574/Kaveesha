@@ -48,7 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Create new registration request and redirect to login
             $stmt = db()->prepare('INSERT INTO user_registration_requests (username, mobile_number, status) VALUES (?, ?, "pending")');
             $stmt->execute([$name, $mobileDigits]);
-            // Redirect to login page after successful submission
+            // Set success message in session and redirect to login page
+            $_SESSION['registration_success'] = 'Your account request has been submitted successfully! The admin will review your request and approve it soon.';
             header('Location: /login.php');
             exit;
           }
