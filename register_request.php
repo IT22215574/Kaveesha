@@ -32,22 +32,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if ($existingUser->fetch()) {
         $flash = 'An account with this mobile number already exists. Please try logging in.';
       } else {
-        // Check if there's already a pending request with this mobile number
-        $pendingRequest = db()->prepare('SELECT id FROM user_registration_requests WHERE mobile_number = ? AND status = "pending" LIMIT 1');
-        $pendingRequest->execute([$mobileDigits]);
-        if ($pendingRequest->fetch()) {
-          $flash = 'A registration request with this mobile number is already pending approval.';
+        // Check if there's already ANY request with this mobile number (regardless of status)
+        // Only allow if admin has deleted the previous request
+        $existingRequest = db()->prepare('SELECT id FROM user_registration_requests WHERE mobile_number = ? LIMIT 1');
+        $existingRequest->execute([$mobileDigits]);
+        if ($existingRequest->fetch()) {
+          $flash = 'A registration request with this mobile number has already been submitted. Only one request per mobile number is allowed.';
         } else {
-          // Check if there's already a pending request with this username
-          $pendingUsername = db()->prepare('SELECT id FROM user_registration_requests WHERE username = ? AND status = "pending" LIMIT 1');
-          $pendingUsername->execute([$name]);
-          if ($pendingUsername->fetch()) {
-            $flash = 'A registration request with this username is already pending approval.';
+          // Check if there's already a request with this username
+          $existingUsername = db()->prepare('SELECT id FROM user_registration_requests WHERE username = ? LIMIT 1');
+          $existingUsername->execute([$name]);
+          if ($existingUsername->fetch()) {
+            $flash = 'A registration request with this username has already been submitted.';
           } else {
-            // Create new registration request
+            // Create new registration request and redirect to login
             $stmt = db()->prepare('INSERT INTO user_registration_requests (username, mobile_number, status) VALUES (?, ?, "pending")');
             $stmt->execute([$name, $mobileDigits]);
-            $success = 'Your registration request has been submitted successfully! The admin will review your request and notify you once it\'s approved.';
+            // Redirect to login page after successful submission
+            header('Location: /login.php');
+            exit;
           }
         }
       }
